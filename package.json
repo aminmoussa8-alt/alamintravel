@@ -10,4 +10,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build"
+  },
+  "browserslist": {
+    "production": [">0.2%", "not dead"],
+    "development": ["last 1 chrome version"]
   }
+}
