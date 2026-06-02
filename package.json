@@ -1,15 +1,13 @@
-# ============================================
-# ALAMIN TOURISM & TRAVEL — Configuration
-# ============================================
-# 1. Copiez ce fichier et renommez-le en .env
-# 2. Remplacez la valeur ci-dessous par votre vraie clé API
-# 3. NE JAMAIS partager ce fichier .env
-
-REACT_APP_ANTHROPIC_KEY=sk-ant-VOTRE_CLE_ICI
-
-# ============================================
-# INSTRUCTIONS VERCEL :
-# Settings → Environment Variables
-# Nom : REACT_APP_ANTHROPIC_KEY
-# Valeur : votre clé sk-ant-...
-# ============================================
+{
+  "name": "alamintravel",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  }
