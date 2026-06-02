@@ -20,15 +20,3 @@ cp .env.example .env
 npm start
 ```
 
-## Déploiement Vercel
-1. Connecter ce repo GitHub sur vercel.com
-2. Settings → Environment Variables → Ajouter REACT_APP_ANTHROPIC_KEY
-3. Deploy
-
-## Connexion domaine
-alamintravel-dj.com → Vercel → Settings → Domains
-
-DNS à configurer :
-- A     @    76.76.21.21
-- CNAME www  cname.vercel-dns.com
-
