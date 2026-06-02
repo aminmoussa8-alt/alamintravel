@@ -32,8 +32,3 @@ DNS à configurer :
 - A     @    76.76.21.21
 - CNAME www  cname.vercel-dns.com
 
-## Contact agence
-- Salines Ouest, Mohamed Kamil Road, Djibouti
-- Tel: +253 21 25 07 17
-- Mobile: +253 77 64 64 05 / 77 64 64 06
-- Email: reservations@alamintravel-dj.com
