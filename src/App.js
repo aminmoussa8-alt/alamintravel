@@ -380,11 +380,11 @@ export default function AlaminTravels() {
           <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>📞 +253 21 25 07 17 &nbsp;|&nbsp; 📱 +253 77 64 64 05</div>
         </div>
         {/* Main nav */}
-        <div style={{ padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ padding:"0 24px", height:90, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           {/* ── LOGO ALAMIN ── */}
           <div style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer" }} onClick={()=>navTo("home")}>
             {/* Globe SVG */}
-            <svg width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+            <svg width="72" height="72" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <radialGradient id="g1" cx="38%" cy="32%" r="65%">
                   <stop offset="0%" stopColor="#6ec6f5"/>
@@ -420,15 +420,15 @@ export default function AlaminTravels() {
             </svg>
             {/* Texte logo */}
             <div style={{ lineHeight:1 }}>
-              <div style={{ fontSize:22, fontWeight:900, color:"#ffffff", letterSpacing:2, fontFamily:"'Arial Black',Arial,sans-serif" }}>ALAMIN</div>
-              <div style={{ fontSize:9, fontWeight:700, color:C.blueLight, letterSpacing:2.5, marginTop:1 }}>TOURISM &amp; TRAVEL</div>
-              <div style={{ marginTop:3, background:"#0d2d6e", borderRadius:2, padding:"1px 6px", display:"inline-block" }}>
-                <span style={{ fontSize:7, color:"white", letterSpacing:1.2 }}>WHERE EVERY DREAMS TAKE FLIGHT</span>
+              <div style={{ fontSize:28, fontWeight:900, color:"#ffffff", letterSpacing:2, fontFamily:"'Arial Black',Arial,sans-serif" }}>ALAMIN</div>
+              <div style={{ fontSize:11, fontWeight:700, color:C.blueLight, letterSpacing:2.5, marginTop:2 }}>TOURISM &amp; TRAVEL</div>
+              <div style={{ marginTop:3, background:"#0d2d6e", borderRadius:2, padding:"2px 7px", display:"inline-block" }}>
+                <span style={{ fontSize:8, color:"white", letterSpacing:1.2 }}>WHERE EVERY DREAMS TAKE FLIGHT</span>
               </div>
             </div>
             {/* Séparateur + IATA */}
             <div style={{ borderLeft:`1px solid rgba(255,255,255,0.3)`, paddingLeft:10, marginLeft:4 }}>
-              <svg width="52" height="52" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+              <svg width="72" height="72" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
                 {/* Globe IATA */}
                 <circle cx="26" cy="22" r="16" fill="none" stroke="#4da3e8" strokeWidth="1.5"/>
                 <ellipse cx="26" cy="22" rx="8" ry="16" fill="none" stroke="#4da3e8" strokeWidth="1"/>
