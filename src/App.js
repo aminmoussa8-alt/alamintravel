@@ -548,31 +548,109 @@ export default function AlaminTravels() {
                 <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, background:"linear-gradient(to left, #f0f4f8, transparent)", zIndex:2 }}/>
                 <div className="airlines-track">
                   {[
-                    { name:"Qatar Airways", logo:"https://upload.wikimedia.org/wikipedia/en/thumb/9/9b/Qatar_Airways_Logo.svg/320px-Qatar_Airways_Logo.svg.png", bg:"#5C0632" },
-                    { name:"Ethiopian Airlines", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ethiopian_Airlines_Logo.svg/320px-Ethiopian_Airlines_Logo.svg.png", bg:"#007A4D" },
-                    { name:"Emirates", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/320px-Emirates_logo.svg.png", bg:"#CC0000" },
-                    { name:"Flydubai", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Flydubai_logo.svg/320px-Flydubai_logo.svg.png", bg:"#E3000F" },
-                    { name:"Flynas", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Flynas_logo.svg/320px-Flynas_logo.svg.png", bg:"#FF6B00" },
-                    { name:"Qatar Airways", logo:"https://upload.wikimedia.org/wikipedia/en/thumb/9/9b/Qatar_Airways_Logo.svg/320px-Qatar_Airways_Logo.svg.png", bg:"#5C0632" },
-                    { name:"Ethiopian Airlines", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ethiopian_Airlines_Logo.svg/320px-Ethiopian_Airlines_Logo.svg.png", bg:"#007A4D" },
-                    { name:"Emirates", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/320px-Emirates_logo.svg.png", bg:"#CC0000" },
-                    { name:"Flydubai", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Flydubai_logo.svg/320px-Flydubai_logo.svg.png", bg:"#E3000F" },
-                    { name:"Flynas", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Flynas_logo.svg/320px-Flynas_logo.svg.png", bg:"#FF6B00" },
+                    {
+                      name:"Qatar Airways",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#5C0632" rx="4"/>
+                        <text x="10" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="16" fill="white" letterSpacing="1">QATAR</text>
+                        <text x="10" y="36" fontFamily="Arial" fontSize="8" fill="#d4a843" letterSpacing="2">AIRWAYS</text>
+                        <polygon points="95,5 115,20 95,35 100,20" fill="#d4a843"/>
+                      </svg>)
+                    },
+                    {
+                      name:"Ethiopian Airlines",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#007A4D" rx="4"/>
+                        <circle cx="15" cy="20" r="10" fill="none" stroke="#FFCD00" strokeWidth="2"/>
+                        <text x="30" y="18" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="11" fill="white">ETHIOPIAN</text>
+                        <text x="30" y="32" fontFamily="Arial" fontSize="8" fill="#FFCD00" letterSpacing="1">AIRLINES</text>
+                        <line x1="8" y1="20" x2="22" y2="20" stroke="#FFCD00" strokeWidth="1.5"/>
+                        <line x1="15" y1="10" x2="15" y2="30" stroke="#FFCD00" strokeWidth="1.5"/>
+                      </svg>)
+                    },
+                    {
+                      name:"Emirates",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#CC0000" rx="4"/>
+                        <text x="8" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="20" fill="white" letterSpacing="1">EMIRATES</text>
+                        <path d="M105,8 Q115,20 105,32" fill="none" stroke="white" strokeWidth="2"/>
+                        <path d="M110,12 Q118,20 110,28" fill="none" stroke="white" strokeWidth="1.5"/>
+                      </svg>)
+                    },
+                    {
+                      name:"flydubai",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#E3000F" rx="4"/>
+                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
+                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">dubai</text>
+                        <polygon points="100,10 118,20 100,30 105,20" fill="white" opacity="0.9"/>
+                      </svg>)
+                    },
+                    {
+                      name:"flynas",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#FF6B00" rx="4"/>
+                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
+                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">nas</text>
+                        <text x="75" y="28" fontFamily="Arial" fontSize="11" fill="white" opacity="0.9">طيران ناس</text>
+                      </svg>)
+                    },
+                    {
+                      name:"Qatar Airways",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#5C0632" rx="4"/>
+                        <text x="10" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="16" fill="white" letterSpacing="1">QATAR</text>
+                        <text x="10" y="36" fontFamily="Arial" fontSize="8" fill="#d4a843" letterSpacing="2">AIRWAYS</text>
+                        <polygon points="95,5 115,20 95,35 100,20" fill="#d4a843"/>
+                      </svg>)
+                    },
+                    {
+                      name:"Ethiopian Airlines",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#007A4D" rx="4"/>
+                        <circle cx="15" cy="20" r="10" fill="none" stroke="#FFCD00" strokeWidth="2"/>
+                        <text x="30" y="18" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="11" fill="white">ETHIOPIAN</text>
+                        <text x="30" y="32" fontFamily="Arial" fontSize="8" fill="#FFCD00" letterSpacing="1">AIRLINES</text>
+                        <line x1="8" y1="20" x2="22" y2="20" stroke="#FFCD00" strokeWidth="1.5"/>
+                        <line x1="15" y1="10" x2="15" y2="30" stroke="#FFCD00" strokeWidth="1.5"/>
+                      </svg>)
+                    },
+                    {
+                      name:"Emirates",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#CC0000" rx="4"/>
+                        <text x="8" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="20" fill="white" letterSpacing="1">EMIRATES</text>
+                        <path d="M105,8 Q115,20 105,32" fill="none" stroke="white" strokeWidth="2"/>
+                        <path d="M110,12 Q118,20 110,28" fill="none" stroke="white" strokeWidth="1.5"/>
+                      </svg>)
+                    },
+                    {
+                      name:"flydubai",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#E3000F" rx="4"/>
+                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
+                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">dubai</text>
+                        <polygon points="100,10 118,20 100,30 105,20" fill="white" opacity="0.9"/>
+                      </svg>)
+                    },
+                    {
+                      name:"flynas",
+                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="120" height="40" fill="#FF6B00" rx="4"/>
+                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
+                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">nas</text>
+                        <text x="75" y="28" fontFamily="Arial" fontSize="11" fill="white" opacity="0.9">طيران ناس</text>
+                      </svg>)
+                    },
                   ].map((airline, i) => (
                     <div key={i} style={{
                       display:"flex", alignItems:"center", justifyContent:"center",
                       background:"#fff", border:"1px solid #e0eaf5",
-                      borderRadius:14, padding:"14px 24px", marginRight:16,
+                      borderRadius:14, padding:"12px 16px", marginRight:16,
                       boxShadow:"0 2px 8px rgba(0,0,0,0.06)",
-                      flexShrink:0, minWidth:160, height:70
+                      flexShrink:0
                     }}>
-                      <img
-                        src={airline.logo}
-                        alt={airline.name}
-                        style={{ maxHeight:40, maxWidth:130, objectFit:"contain" }}
-                        onError={e=>{ e.target.style.display="none"; e.target.nextSibling.style.display="block"; }}
-                      />
-                      <span style={{ display:"none", fontSize:13, fontWeight:700, color:C.navy }}>{airline.name}</span>
+                      {airline.svg}
                     </div>
                   ))}
                 </div>
