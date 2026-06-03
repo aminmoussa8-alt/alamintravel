@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <title>Test EmailJS - Alamin Travel</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>emailjs.init("eyyzPHwoyvglVr9wF");</script>
+  <style>
+    body { font-family: Arial; max-width: 400px; margin: 50px auto; padding: 20px; }
+    input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #1a6eb5; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    #result { margin-top: 16px; padding: 12px; border-radius: 6px; display: none; }
+  </style>
+</head>
+<body>
+  <h2>🧪 Test Email Alamin Travel</h2>
+  <input id="email" type="email" placeholder="Votre email" value="aminmoussa8@gmail.com"/>
+  <input id="prenom" type="text" placeholder="Prénom" value="Amin"/>
+  <input id="nom" type="text" placeholder="Nom" value="Moussa"/>
+  <button onclick="sendTest()">📧 Envoyer email test</button>
+  <div id="result"></div>
+
+  <script>
+    function sendTest() {
+      const result = document.getElementById("result");
+      result.style.display = "block";
+      result.style.background = "#fff3cd";
+      result.innerText = "⏳ Envoi en cours...";
+
+      emailjs.send("alamin_travels", "template_w7ejnx7", {
+        to_email: document.getElementById("email").value,
+        prenom: document.getElementById("prenom").value,
+        nom: document.getElementById("nom").value,
+        reference: "AT-TEST123",
+        type: "Vol Test",
+        date: new Date().toLocaleDateString("fr-FR"),
+        prix: "500",
+        paiement: "Payer à l'agence"
+      }).then(() => {
+        result.style.background = "#d4edda";
+        result.innerText = "✅ Email envoyé avec succès !";
+      }).catch(err => {
+        result.style.background = "#f8d7da";
+        result.innerText = "❌ Erreur: " + JSON.stringify(err);
+      });
+    }
+  </script>
+</body>
+</html>
