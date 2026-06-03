@@ -1,23 +1,82 @@
 import { useState, useEffect, useRef } from "react";
 
-// ── DESIGN TOKENS ──────────────────────────────────────────────────────────────
+// ── PALETTE ────────────────────────────────────────────────────────────────────
+const T = {
+  navy:    "#0B1F3A",
+  navyD:   "#060F1E",
+  blue:    "#1565C0",
+  blueL:   "#1E88E5",
+  sky:     "#4FC3F7",
+  gold:    "#F5A623",
+  goldD:   "#D4881A",
+  white:   "#FFFFFF",
+  gray50:  "#F8FAFC",
+  gray100: "#F1F5F9",
+  gray300: "#CBD5E1",
+  gray500: "#64748B",
+  gray700: "#334155",
+};
 
-// ── LOGO COMPOSANT ─────────────────────────────────────────────────────────────
-const AlaminLogo = ({ height = 60, dark = false }) => (
+// ── DESTINATIONS DJIBOUTI ──────────────────────────────────────────────────────
+const DESTINATIONS = [
+  { name:"Lac Assal", tag:"Incontournable", desc:"Le point le plus bas d'Afrique • 155m sous le niveau de la mer", img:"https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=900&q=90", color:"#0B4D68" },
+  { name:"Lac Abbé", tag:"Aventure", desc:"Cheminées de calcaire • Paysage lunaire unique au monde", img:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=90", color:"#5C3A1E" },
+  { name:"Requins baleines", tag:"Plongée", desc:"Golfe de Tadjoura • Novembre à Février", img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=90", color:"#0D4A7A" },
+  { name:"Ville de Djibouti", tag:"Culture", desc:"Capitale cosmopolite • Carrefour de l'Afrique et de l'Orient", img:"https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=90", color:"#1A237E" },
+  { name:"Golfe de Tadjoura", tag:"Nature", desc:"Eaux turquoise • Faune marine exceptionnelle", img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=900&q=90", color:"#01579B" },
+];
+
+// ── SERVICES ──────────────────────────────────────────────────────────────────
+const SERVICES = [
+  { icon:"✈️", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
+  { icon:"🏨", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
+  { icon:"🕌", title:"Hajj & Omra", desc:"Packages complets Hajj et Omra. Accompagnement spirituel.", color:"#4527A0" },
+  { icon:"🚗", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
+  { icon:"📋", title:"Visa & Documents", desc:"Assistance visa pour toutes destinations. Traitement rapide.", color:"#1B5E20" },
+  { icon:"🌍", title:"Voyages Organisés", desc:"Circuits à Djibouti et en Afrique de l'Est. Groupes et individuels.", color:"#E65100" },
+];
+
+// ── TÉMOIGNAGES ───────────────────────────────────────────────────────────────
+const TESTIMONIALS = [
+  { name:"Ahmed Hassan", role:"Homme d'affaires, Djibouti", text:"Alamin Travel a géré tous mes déplacements professionnels pendant 3 ans. Service impeccable, toujours disponibles à toute heure.", stars:5 },
+  { name:"Fatouma Ali", role:"Famille, Djibouti", text:"Nos vacances en famille étaient parfaites. Tout était organisé : billets, hôtel, transferts. Je recommande sans hésiter !", stars:5 },
+  { name:"Mohamed Idriss", role:"Pèlerin, Omra 2024", text:"Le package Omra était exceptionnel. Hébergement à deux pas de la Mosquée, accompagnement spirituel de qualité.", stars:5 },
+  { name:"Khadija Omar", role:"Étudiante, Paris", text:"Ils m'ont aidé avec mon visa étudiant et mon billet. Réactifs, professionnels. Merci infiniment à toute l'équipe !", stars:5 },
+];
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+const STATS = [
+  { value:"15+", label:"Années d'expérience", icon:"🏆" },
+  { value:"500+", label:"Clients satisfaits", icon:"👥" },
+  { value:"50+", label:"Destinations", icon:"🌍" },
+  { value:"24/7", label:"Support disponible", icon:"📞" },
+];
+
+// ── COMPAGNIES AÉRIENNES ──────────────────────────────────────────────────────
+const AIRLINES = [
+  { name:"Qatar Airways", code:"QR", bg:"#5C0632", accent:"#C8A96E" },
+  { name:"Ethiopian Airlines", code:"ET", bg:"#007A4D", accent:"#FFCD00" },
+  { name:"Emirates", code:"EK", bg:"#CC0000", accent:"#FFFFFF" },
+  { name:"flydubai", code:"FZ", bg:"#E3000F", accent:"#FFFFFF" },
+  { name:"flynas", code:"XY", bg:"#FF6B00", accent:"#FFFFFF" },
+];
+
+// ── COMPOSANT LOGO ────────────────────────────────────────────────────────────
+const Logo = ({ size = 52, light = true }) => (
   <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-    <svg height={height} width={height} viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size} height={size} viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="lg1" cx="38%" cy="32%" r="65%">
+        <radialGradient id="gL1" cx="38%" cy="32%" r="65%">
           <stop offset="0%" stopColor="#6ec6f5"/>
           <stop offset="40%" stopColor="#2a8fd4"/>
           <stop offset="100%" stopColor="#0a3d7a"/>
         </radialGradient>
-        <radialGradient id="lg2" cx="30%" cy="25%" r="45%">
+        <radialGradient id="gL2" cx="30%" cy="25%" r="45%">
           <stop offset="0%" stopColor="white" stopOpacity="0.5"/>
           <stop offset="100%" stopColor="white" stopOpacity="0"/>
         </radialGradient>
       </defs>
-      <circle cx="27" cy="27" r="25" fill="url(#lg1)"/>
+      <circle cx="27" cy="27" r="25" fill="url(#gL1)"/>
       <path d="M10,18 Q16,14 22,17 Q24,22 20,26 Q14,28 10,24Z" fill="#0a4a8a" opacity="0.7"/>
       <path d="M13,28 Q18,26 21,31 Q22,37 18,41 Q13,42 11,36Z" fill="#0a4a8a" opacity="0.65"/>
       <path d="M24,14 Q30,12 34,15 Q36,20 32,23 Q26,24 23,20Z" fill="#0a4a8a" opacity="0.65"/>
@@ -25,1211 +84,482 @@ const AlaminLogo = ({ height = 60, dark = false }) => (
       <path d="M34,13 Q42,11 46,17 Q48,23 44,27 Q38,28 34,22Z" fill="#0a4a8a" opacity="0.6"/>
       <ellipse cx="27" cy="27" rx="25" ry="7" fill="none" stroke="white" strokeWidth="0.5" opacity="0.25"/>
       <line x1="2" y1="27" x2="52" y2="27" stroke="white" strokeWidth="0.5" opacity="0.25"/>
-      <ellipse cx="27" cy="27" rx="12" ry="25" fill="none" stroke="white" strokeWidth="0.5" opacity="0.2"/>
-      <circle cx="27" cy="27" r="25" fill="url(#lg2)"/>
+      <circle cx="27" cy="27" r="25" fill="url(#gL2)"/>
       <g transform="translate(28,6) rotate(-35)">
         <ellipse cx="9" cy="3" rx="9" ry="2.8" fill="#0d2d6e"/>
         <polygon points="3,3.5 14,3.5 11,8 0,8" fill="#0d2d6e"/>
-        <polygon points="0,4 5,4 4,6.5 -1,6.5" fill="#0d2d6e"/>
       </g>
     </svg>
-    <div style={{ lineHeight:1 }}>
-      <div style={{ fontSize: height*0.35, fontWeight:900, color: dark ? "#0d2d6e" : "#ffffff", letterSpacing:2, fontFamily:"'Arial Black',Arial,sans-serif" }}>ALAMIN</div>
-      <div style={{ fontSize: height*0.14, fontWeight:700, color:"#4da3e8", letterSpacing:2, marginTop:1 }}>TOURISM &amp; TRAVEL</div>
-      <div style={{ marginTop:2, background:"#0d2d6e", borderRadius:2, padding:"1px 5px", display:"inline-block" }}>
-        <span style={{ fontSize: height*0.11, color:"white", letterSpacing:1 }}>WHERE EVERY DREAMS TAKE FLIGHT</span>
-      </div>
+    <div>
+      <div style={{ fontSize: size*0.33, fontWeight:900, color: light ? "#fff" : T.navy, letterSpacing:2, lineHeight:1, fontFamily:"Georgia, serif" }}>ALAMIN</div>
+      <div style={{ fontSize: size*0.13, fontWeight:600, color: light ? T.sky : T.blueL, letterSpacing:3, marginTop:1 }}>TOURISM & TRAVEL</div>
     </div>
   </div>
 );
 
-const C = {
-  navy: "#0a1628",
-  navyDark: "#060e1a",
-  navyLight: "#132238",
-  blue: "#1a6eb5",
-  blueDark: "#0f52a0",
-  blueLight: "#4da3e8",
-  gold: "#d4af37",
-  white: "#ffffff",
-  offWhite: "#f8f9fb",
-  gray50: "#f3f4f6",
-  gray100: "#e5e7eb",
-  gray300: "#d1d5db",
-  gray500: "#6b7280",
-  gray700: "#374151",
-  green: "#16a34a",
-  orange: "#ea580c",
-  red: "#dc2626",
-  text: "#0a1628",
-  textLight: "#6b7280",
-};
+// ── STYLES GLOBAUX ─────────────────────────────────────────────────────────────
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans', sans-serif; background:#fff; color:${T.navy}; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:#f1f5f9; }
+  ::-webkit-scrollbar-thumb { background:${T.blue}; border-radius:3px; }
 
-// ── DATA ───────────────────────────────────────────────────────────────────────
-const AIRPORTS = [
-  { code:"DJI", city:"Djibouti", flag:"🇩🇯" },
-  { code:"CDG", city:"Paris", flag:"🇫🇷" },
-  { code:"DXB", city:"Dubai", flag:"🇦🇪" },
-  { code:"IST", city:"Istanbul", flag:"🇹🇷" },
-  { code:"NBO", city:"Nairobi", flag:"🇰🇪" },
-  { code:"ADD", city:"Addis-Abeba", flag:"🇪🇹" },
-  { code:"JED", city:"Jeddah", flag:"🇸🇦" },
-  { code:"CAI", city:"Le Caire", flag:"🇪🇬" },
-  { code:"DOH", city:"Doha", flag:"🇶🇦" },
-  { code:"JFK", city:"New York", flag:"🇺🇸" },
-  { code:"LHR", city:"Londres", flag:"🇬🇧" },
-];
+  @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes scrollX { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-const HOTELS = [
-  { id:1, name:"Kempinski Palace Djibouti", city:"Djibouti", stars:5, prix:280, note:4.9, img:"https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80", amenities:["Piscine","Spa","Plage privée","WiFi"] },
-  { id:2, name:"Sheraton Djibouti", city:"Djibouti", stars:5, prix:210, note:4.6, img:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80", amenities:["Piscine","Restaurant","WiFi"] },
-  { id:3, name:"Hotel Le Méridien", city:"Djibouti", stars:4, prix:145, note:4.4, img:"https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&q=80", amenities:["Restaurant","WiFi","Bar"] },
-  { id:4, name:"Hilton Makkah Convention", city:"La Mecque", stars:5, prix:450, note:4.8, img:"https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&q=80", amenities:["Vue Kaaba","Halal","Navette"] },
-  { id:5, name:"Pullman Zamzam Makkah", city:"La Mecque", stars:5, prix:380, note:4.7, img:"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80", amenities:["Vue Haram","Halal","WiFi"] },
-  { id:6, name:"Anwar Al Madinah", city:"Médine", stars:5, prix:320, note:4.8, img:"https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&q=80", amenities:["Vue Nabawi","Halal","WiFi"] },
-];
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .fade-in { animation: fadeIn 0.5s ease both; }
+  .al-track { display:flex; animation:scrollX 25s linear infinite; width:max-content; }
+  .al-track:hover { animation-play-state:paused; }
+  .dest-card:hover .dest-img { transform:scale(1.08); }
+  .dest-card:hover .dest-overlay { opacity:1; }
+  .service-card:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(21,101,192,0.15) !important; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(21,101,192,0.4) !important; }
+  .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(245,166,35,0.5) !important; }
+  .nav-link:hover { color:${T.sky} !important; }
+  .testimonial-card:hover { transform:translateY(-4px); }
+`;
 
-const PACKAGES = [
-  { id:1, type:"hajj", title:"Hajj Premium 2026", emoji:"🕌", badge:"POPULAIRE", img:"https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&q=80", prix:4500, duree:"21 jours", places:30, inclus:["Vol A/R DJI→JED","Hôtel 5★ Vue Kaaba","Hôtel 5★ Médine","Transport","Guide FR","Repas","Visa Hajj","Assurance"] },
-  { id:2, type:"hajj", title:"Hajj Standard 2026", emoji:"🕌", badge:"", img:"https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&q=80", prix:3200, duree:"21 jours", places:50, inclus:["Vol A/R","Hôtel 4★","Transport","Guide","Petit-déjeuner","Visa Hajj"] },
-  { id:3, type:"omra", title:"Omra Ramadan Premium", emoji:"🌙", badge:"RAMADAN", img:"https://images.unsplash.com/photo-1519817650390-64a93db51149?w=600&q=80", prix:2800, duree:"14 jours", places:40, inclus:["Vol A/R","Hôtel 5★","Transport","Guide","Iftar & Suhour","Visa"] },
-  { id:4, type:"omra", title:"Omra Économique", emoji:"🌙", badge:"", img:"https://images.unsplash.com/photo-1519817650390-64a93db51149?w=600&q=80", prix:1600, duree:"10 jours", places:60, inclus:["Vol A/R","Hôtel 3★","Transport","Visa"] },
-  { id:5, type:"voyage", title:"Circuit Maroc Impérial", emoji:"🇲🇦", badge:"NOUVEAU", img:"https://images.unsplash.com/photo-1489493585363-d69421e0edd3?w=600&q=80", prix:1800, duree:"10 jours", places:25, inclus:["Vol","Hôtels 4★","Transport privé","Guide FR","Petits-déjeuners"] },
-  { id:6, type:"voyage", title:"Safari Kenya", emoji:"🦁", badge:"", img:"https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&q=80", prix:2200, duree:"8 jours", places:20, inclus:["Vol","Lodge safari","4x4","Guide","Pension complète"] },
-];
+// ══════════════════════════════════════════════════════════════════════════════
+// APP PRINCIPALE
+// ══════════════════════════════════════════════════════════════════════════════
+export default function AlaminLanding() {
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("accueil");
 
-const RESERVATIONS_DATA = [
-  { id:"AT-K8X2P9", client:"Mohamed Ali Hassan", type:"Vol", dest:"DJI→CDG", date:"15/07/2026", prix:840, status:"confirmed", pnr:"ABC123", email:"m.ali@gmail.com", tel:"+253 77 641 234" },
-  { id:"AT-L9M3Q1", client:"Fatima Omar Said", type:"Hajj Premium", dest:"DJI→JED", date:"20/06/2026", prix:4500, status:"pending", pnr:null, email:"fatima@gmail.com", tel:"+253 77 523 456" },
-  { id:"AT-R5T7W2", client:"Ahmed Ibrahim", type:"Hôtel Kempinski", dest:"Djibouti", date:"10/07/2026", prix:1680, status:"confirmed", pnr:"DEF456", email:"ahmed@gmail.com", tel:"+253 77 789 012" },
-  { id:"AT-X1Z4B8", client:"Hodan Abdi", type:"Omra", dest:"DJI→JED", date:"01/08/2026", prix:1600, status:"paid", pnr:"GHI789", email:"hodan@gmail.com", tel:"+253 77 345 678" },
-  { id:"AT-N6P2C5", client:"Hassan Yusuf", type:"Circuit Maroc", dest:"DJI→CMN", date:"25/07/2026", prix:3600, status:"pending", pnr:null, email:"hassan@gmail.com", tel:"+253 77 901 234" },
-];
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-const LOYALTY_TIERS = [
-  { name:"Bronze", emoji:"🥉", min:0, max:2000, color:"#cd7f32", discount:5 },
-  { name:"Silver", emoji:"🥈", min:2000, max:5000, color:"#94a3b8", discount:10 },
-  { name:"Gold", emoji:"🥇", min:5000, max:10000, color:C.gold, discount:15 },
-  { name:"Platinum", emoji:"💎", min:10000, max:Infinity, color:"#e2e8f0", discount:20 },
-];
+  useEffect(() => {
+    const t = setInterval(() => setActiveTestimonial(p => (p+1) % TESTIMONIALS.length), 5000);
+    return () => clearInterval(t);
+  }, []);
 
-const LIVE_FLIGHTS = [
-  { ref:"AT-K8X2P9", flight:"ET509", airline:"Ethiopian Airlines", from:"DJI", to:"CDG", status:"En vol", progress:65, depart:"08:00", arrivee:"14:30", eta:"14:28" },
-  { ref:"AT-X1Z4B8", flight:"TK764", airline:"Turkish Airlines", from:"DJI", to:"IST", status:"À l'heure", progress:20, depart:"23:30", arrivee:"05:15", eta:"05:12" },
-];
-
-const BOT_FLOWS = [
-  { trigger:"bonjour", reply:"👋 Bienvenue chez Alamin Travels!\n\n1️⃣ Rechercher un vol\n2️⃣ Réserver un hôtel\n3️⃣ Package Hajj/Omra\n4️⃣ Suivre ma réservation\n5️⃣ Parler à un agent" },
-  { trigger:"1", reply:"✈️ De quelle ville partez-vous?\nVers quelle destination?" },
-  { trigger:"4", reply:"📋 Entrez votre référence (ex: AT-K8X2P9)" },
-  { trigger:"AT-K8X2P9", reply:"✅ Réservation AT-K8X2P9\n👤 Mohamed Ali Hassan\n✈️ ET509 DJI→CDG\n📅 15/07/2026\n💰 840$\n🟢 CONFIRMÉ — Bon voyage!" },
-  { trigger:"5", reply:"📞 Un agent vous contactera sous 30min.\nTél: +253 77 02 07 07\n📧 reservations@alamintravel-dj.com" },
-];
-
-const STATUS = {
-  confirmed: { label:"Confirmé", color:C.green, bg:"#f0fdf4", border:"#bbf7d0" },
-  pending: { label:"En attente", color:C.orange, bg:"#fff7ed", border:"#fed7aa" },
-  paid: { label:"Payé", color:C.blue, bg:"#eff6ff", border:"#bfdbfe" },
-  cancelled: { label:"Annulé", color:C.red, bg:"#fef2f2", border:"#fecaca" },
-};
-
-const notifyWA = (msg) => window.open(`https://wa.me/25377020707?text=${encodeURIComponent(msg)}`, "_blank");
-
-// ── COMPONENTS ─────────────────────────────────────────────────────────────────
-const Badge = ({ children, type="blue" }) => {
-  const colors = { blue:`background:${C.blue};color:#fff`, gold:`background:${C.gold};color:#000`, green:`background:${C.green};color:#fff`, orange:`background:${C.orange};color:#fff` };
-  return <span style={{ padding:"2px 8px", borderRadius:4, fontSize:10, fontWeight:"bold", letterSpacing:0.5, ...Object.fromEntries(colors[type].split(";").map(s=>s.split(":"))) }}>{children}</span>;
-};
-
-const Btn = ({ children, onClick, disabled, variant="primary", size="md", fullWidth=false }) => {
-  const variants = {
-    primary: `background:linear-gradient(135deg,${C.blue},${C.blueDark});color:#fff;border:none`,
-    secondary: `background:#fff;color:${C.blue};border:1px solid ${C.blue}`,
-    danger: `background:#fff;color:${C.red};border:1px solid ${C.red}`,
-    ghost: `background:transparent;color:${C.blue};border:1px solid ${C.gray100}`,
-    gold: `background:linear-gradient(135deg,${C.gold},#b8902a);color:#000;border:none`,
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior:"smooth" });
+    setActiveSection(id);
   };
-  const sizes = { sm:"padding:6px 12px;font-size:12px", md:"padding:10px 20px;font-size:13px", lg:"padding:12px 28px;font-size:14px" };
-  const base = `border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;${fullWidth?"width:100%;":""}`;
-  const disabledStyle = disabled ? "opacity:0.5;cursor:not-allowed;" : "";
-  const styleStr = `${base}${variants[variant]};${sizes[size]};${disabledStyle}`;
-  const styleObj = Object.fromEntries(styleStr.split(";").filter(Boolean).map(s => { const [k,...v] = s.split(":"); return [k.trim().replace(/-([a-z])/g, (_,c)=>c.toUpperCase()), v.join(":").trim()]; }));
-  return <button onClick={onClick} disabled={disabled} style={styleObj}>{children}</button>;
-};
 
-const Input = ({ label, value, onChange, type="text", placeholder="" }) => (
-  <div style={{ marginBottom:12 }}>
-    {label && <label style={{ display:"block", fontSize:11, fontWeight:600, color:C.gray700, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5 }}>{label}</label>}
-    <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
-      style={{ width:"100%", padding:"9px 12px", border:`1px solid ${C.gray300}`, borderRadius:8, fontSize:13, color:C.text, outline:"none", boxSizing:"border-box", fontFamily:"inherit", background:"#fff" }}
-      onFocus={e=>e.target.style.border=`1px solid ${C.blue}`} onBlur={e=>e.target.style.border=`1px solid ${C.gray300}`} />
-  </div>
-);
-
-const Select = ({ label, value, onChange, options }) => (
-  <div style={{ marginBottom:12 }}>
-    {label && <label style={{ display:"block", fontSize:11, fontWeight:600, color:C.gray700, marginBottom:4, textTransform:"uppercase", letterSpacing:0.5 }}>{label}</label>}
-    <select value={value} onChange={e=>onChange(e.target.value)}
-      style={{ width:"100%", padding:"9px 12px", border:`1px solid ${C.gray300}`, borderRadius:8, fontSize:13, color:C.text, outline:"none", background:"#fff", cursor:"pointer", fontFamily:"inherit" }}>
-      {options.map(([v,l])=><option key={v} value={v}>{l}</option>)}
-    </select>
-  </div>
-);
-
-const Card = ({ children, style={}, onClick, hover=false }) => {
-  const [isHovered, setIsHovered] = useState(false);
   return (
-    <div onClick={onClick}
-      onMouseEnter={()=>hover&&setIsHovered(true)} onMouseLeave={()=>setIsHovered(false)}
-      style={{ background:"#fff", borderRadius:12, border:`1px solid ${isHovered?C.blue:C.gray100}`, boxShadow: isHovered?"0 8px 24px rgba(26,110,181,0.12)":"0 1px 4px rgba(0,0,0,0.06)", transition:"all 0.2s", cursor:onClick?"pointer":"default", overflow:"hidden", ...style }}>
-      {children}
-    </div>
-  );
-};
+    <div style={{ minHeight:"100vh" }}>
+      <style>{GLOBAL_CSS}</style>
 
-const StarRating = ({ note }) => (
-  <span style={{ color:C.gold, fontSize:11 }}>{"★".repeat(Math.floor(note))}{"☆".repeat(5-Math.floor(note))} <span style={{ color:C.gray500, fontSize:11 }}>{note}</span></span>
-);
+      {/* ══ NAVBAR ══ */}
+      <nav style={{
+        position:"fixed", top:0, left:0, right:0, zIndex:100,
+        background: scrolled ? "rgba(11,31,58,0.97)" : "transparent",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
+        transition:"all 0.4s ease",
+        padding:"0 40px",
+      }}>
+        <div style={{ maxWidth:1200, margin:"0 auto", height:72, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+          <Logo size={44} light />
+          <div style={{ display:"flex", gap:32, alignItems:"center" }}>
+            {[["accueil","Accueil"],["services","Services"],["destinations","Djibouti"],["packages","Packages"],["agence","Contact"]].map(([id,label])=>(
+              <button key={id} className="nav-link" onClick={()=>scrollTo(id)} style={{
+                background:"none", border:"none", cursor:"pointer",
+                color: activeSection===id ? T.sky : "rgba(255,255,255,0.8)",
+                fontFamily:"inherit", fontSize:14, fontWeight:500, letterSpacing:0.5,
+                transition:"color 0.2s", padding:"4px 0",
+                borderBottom: activeSection===id ? `2px solid ${T.sky}` : "2px solid transparent",
+              }}>{label}</button>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:12 }}>
+            <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
+              display:"flex", alignItems:"center", gap:6, padding:"8px 18px",
+              background:"#25D366", color:"white", borderRadius:8,
+              fontSize:13, fontWeight:600, textDecoration:"none", transition:"all 0.2s"
+            }}>💬 WhatsApp</a>
+            <button className="btn-gold" onClick={()=>scrollTo("packages")} style={{
+              padding:"8px 20px", background:`linear-gradient(135deg,${T.gold},${T.goldD})`,
+              color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:600,
+              cursor:"pointer", transition:"all 0.2s"
+            }}>Réserver →</button>
+          </div>
+        </div>
+      </nav>
 
-// ── MAIN APP ───────────────────────────────────────────────────────────────────
-export default function AlaminTravels() {
-  const [page, setPage] = useState("home");
-  const [mobileMenu, setMobileMenu] = useState(false);
+      {/* ══ HERO ══ */}
+      <section id="accueil" style={{ position:"relative", height:"100vh", minHeight:700, overflow:"hidden" }}>
+        {/* Background */}
+        <div style={{
+          position:"absolute", inset:0,
+          backgroundImage:"url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1600&q=90')",
+          backgroundSize:"cover", backgroundPosition:"center",
+          transform:"scale(1.05)",
+          animation:"float 20s ease-in-out infinite",
+        }}/>
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg, rgba(11,31,58,0.88) 0%, rgba(11,31,58,0.5) 50%, rgba(11,31,58,0.75) 100%)" }}/>
 
-  // Search
-  const [search, setSearch] = useState({ origin:"DJI", destination:"CDG", date:"", adults:"1", class:"ECONOMY", type:"oneway" });
-  const [flights, setFlights] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
+        {/* Contenu hero */}
+        <div style={{ position:"relative", zIndex:2, maxWidth:1200, margin:"0 auto", padding:"0 40px", height:"100%", display:"flex", alignItems:"center" }}>
+          <div style={{ maxWidth:680 }}>
+            {/* Badge */}
+            <div className="fade-up" style={{ animationDelay:"0.1s", display:"inline-flex", alignItems:"center", gap:8, background:"rgba(245,166,35,0.15)", border:"1px solid rgba(245,166,35,0.4)", borderRadius:30, padding:"6px 16px", marginBottom:24 }}>
+              <span style={{ fontSize:10 }}>⭐</span>
+              <span style={{ color:T.gold, fontSize:12, fontWeight:600, letterSpacing:2 }}>AGENT IATA ACCRÉDITÉ · DEPUIS 2010</span>
+            </div>
 
-  // Filters
-  const [hotelFilter, setHotelFilter] = useState("Tous");
-  const [pkgFilter, setPkgFilter] = useState("Tous");
+            <h1 className="fade-up" style={{ animationDelay:"0.2s", fontFamily:"'Playfair Display', serif", fontSize:68, fontWeight:900, color:"#fff", lineHeight:1.05, marginBottom:24 }}>
+              Votre Voyage<br/>
+              <span style={{ color:T.sky }}>Commence</span><br/>
+              à Djibouti
+            </h1>
 
-  // Booking
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [selectedHotel, setSelectedHotel] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [bookStep, setBookStep] = useState(0);
-  const [nights, setNights] = useState(3);
-  const [form, setForm] = useState({ prenom:"", nom:"", email:"", tel:"", passport:"", dob:"", paiement:"agence" });
-  const [confirmedBooking, setConfirmedBooking] = useState(null);
+            <p className="fade-up" style={{ animationDelay:"0.3s", fontSize:18, color:"rgba(255,255,255,0.75)", lineHeight:1.7, marginBottom:40, maxWidth:520 }}>
+              Vols internationaux, hôtels, Hajj & Omra, packages touristiques. 
+              Service personnalisé depuis plus de 15 ans.
+            </p>
 
-  // Admin
-  const [reservations, setReservations] = useState(RESERVATIONS_DATA);
-  const [selectedRes, setSelectedRes] = useState(null);
-  const [pnrInput, setPnrInput] = useState("");
-  const [showPNRModal, setShowPNRModal] = useState(false);
-  const [adminFilter, setAdminFilter] = useState("Tous");
+            <div className="fade-up" style={{ animationDelay:"0.4s", display:"flex", gap:16, flexWrap:"wrap" }}>
+              <button className="btn-primary" onClick={()=>scrollTo("packages")} style={{
+                padding:"16px 36px", background:`linear-gradient(135deg,${T.blue},${T.blueL})`,
+                color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:600,
+                cursor:"pointer", transition:"all 0.2s", display:"flex", alignItems:"center", gap:8
+              }}>✈️ Rechercher un vol</button>
+              <button className="btn-gold" onClick={()=>scrollTo("destinations")} style={{
+                padding:"16px 36px", background:`linear-gradient(135deg,${T.gold},${T.goldD})`,
+                color:"white", border:"none", borderRadius:12, fontSize:16, fontWeight:600,
+                cursor:"pointer", transition:"all 0.2s"
+              }}>🌍 Découvrir Djibouti</button>
+            </div>
 
-  // Chat IA
-  const [messages, setMessages] = useState([{ role:"assistant", content:"Bonjour ! Je suis votre conseiller voyage Alamin Travels. Comment puis-je vous aider aujourd'hui ? ✈️" }]);
-  const [chatInput, setChatInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
-  const chatEndRef = useRef(null);
+            {/* Stats rapides */}
+            <div className="fade-up" style={{ animationDelay:"0.5s", display:"flex", gap:40, marginTop:52, paddingTop:32, borderTop:"1px solid rgba(255,255,255,0.1)" }}>
+              {STATS.slice(0,3).map(s=>(
+                <div key={s.label}>
+                  <div style={{ fontSize:28, fontWeight:900, color:T.sky, fontFamily:"'Playfair Display', serif" }}>{s.value}</div>
+                  <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", marginTop:2 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-  // WhatsApp Bot
-  const [botMessages, setBotMessages] = useState([{ from:"bot", text:"👋 Bienvenue chez Alamin Travels!\n\n1️⃣ Rechercher un vol\n2️⃣ Réserver un hôtel\n3️⃣ Package Hajj/Omra\n4️⃣ Suivre ma réservation\n5️⃣ Parler à un agent" }]);
-  const [botInput, setBotInput] = useState("");
+          {/* Carte contact flottante */}
+          <div className="fade-up" style={{ animationDelay:"0.6s", marginLeft:"auto", background:"rgba(255,255,255,0.07)", backdropFilter:"blur(20px)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:20, padding:28, minWidth:260 }}>
+            <div style={{ fontSize:12, color:T.sky, fontWeight:700, letterSpacing:2, marginBottom:16 }}>CONTACTEZ-NOUS</div>
+            {[["📞","+253 21 25 07 17"],["📱","+253 77 64 64 05"],["✉️","reservations@alamintravel-dj.com"],["📍","Salines Ouest, Djibouti"],["🕐","Sam-Jeu 8h-20h"]].map(([icon,val])=>(
+              <div key={val} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:12 }}>
+                <span style={{ fontSize:15 }}>{icon}</span>
+                <span style={{ fontSize:12, color:"rgba(255,255,255,0.8)", lineBreak:"anywhere" }}>{val}</span>
+              </div>
+            ))}
+            <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
+              display:"block", marginTop:16, padding:"10px", background:"#25D366",
+              color:"white", borderRadius:10, textAlign:"center", fontSize:13,
+              fontWeight:600, textDecoration:"none"
+            }}>💬 Écrire sur WhatsApp</a>
+          </div>
+        </div>
 
-  // Loyalty
-  const clientPoints = 3850;
-  const clientTier = LOYALTY_TIERS.find(t => clientPoints >= t.min && clientPoints < t.max);
-  const nextTier = LOYALTY_TIERS[LOYALTY_TIERS.indexOf(clientTier)+1];
-  const loyaltyPct = nextTier ? ((clientPoints-clientTier.min)/(nextTier.min-clientTier.min))*100 : 100;
+        {/* Scroll indicator */}
+        <div style={{ position:"absolute", bottom:32, left:"50%", transform:"translateX(-50%)", animation:"float 2s ease-in-out infinite" }}>
+          <div style={{ width:1, height:48, background:"rgba(255,255,255,0.3)", margin:"0 auto" }}/>
+          <div style={{ width:6, height:6, background:T.sky, borderRadius:"50%", margin:"4px auto 0" }}/>
+        </div>
+      </section>
 
-  // Tracker
-  const [trackedFlight, setTrackedFlight] = useState(LIVE_FLIGHTS[0]);
-  const [trackProgress, setTrackProgress] = useState(0);
-  useEffect(() => { setTimeout(()=>setTrackProgress(trackedFlight.progress), 600); }, [trackedFlight]);
-  useEffect(() => { chatEndRef.current?.scrollIntoView({behavior:"smooth"}); }, [messages]);
-
-  // Mock flight search
-  const searchFlights = async () => {
-    if (!search.date) return;
-    setSearchLoading(true); setFlights([]);
-    await new Promise(r=>setTimeout(r,1500));
-    setFlights([
-      { id:1, logo:"🇪🇹", airline:"Ethiopian Airlines", code:"ET509", dep:search.origin, arr:search.destination, depTime:"08:00", arrTime:"14:30", stops:"Direct", duration:"6h30", price:Math.round(350+Math.random()*200) },
-      { id:2, logo:"🇹🇷", airline:"Turkish Airlines", code:"TK764", dep:search.origin, arr:search.destination, depTime:"23:30", arrTime:"13:45+1", stops:"1 escale", duration:"14h15", price:Math.round(280+Math.random()*150) },
-      { id:3, logo:"🇦🇪", airline:"Emirates", code:"EK723", dep:search.origin, arr:search.destination, depTime:"14:00", arrTime:"20:30", stops:"1 escale", duration:"6h30", price:Math.round(420+Math.random()*300) },
-      { id:4, logo:"🇫🇷", airline:"Air France", code:"AF490", dep:search.origin, arr:search.destination, depTime:"11:45", arrTime:"20:15", stops:"1 escale", duration:"8h30", price:Math.round(400+Math.random()*200) },
-    ].sort((a,b)=>a.price-b.price));
-    setSearchLoading(false);
-  };
-
-  // AI Chat
-  const sendChat = async (text) => {
-    const t = text||chatInput.trim();
-    if (!t||chatLoading) return;
-    setChatInput("");
-    const hist = [...messages, {role:"user",content:t}];
-    setMessages(hist);
-    setChatLoading(true);
-    try {
-      const res = await fetch("/api/chat", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ messages: hist.map(m=>({role:m.role,content:m.content})) })
-      });
-      const d = await res.json();
-      setMessages([...hist, {role:"assistant",content:d.content?.[0]?.text||"Désolé, une erreur est survenue."}]);
-    } catch(err) {
-      console.error("Chat error:", err);
-      setMessages([...hist, {role:"assistant",content:"⚠️ Erreur de connexion. Veuillez réessayer."}]);
-    }
-    setChatLoading(false);
-  };
-
-  // WhatsApp Bot
-  const sendBot = (t) => {
-    const msg = t||botInput.trim();
-    if (!msg) return;
-    setBotInput("");
-    const flow = BOT_FLOWS.find(f=>msg.toLowerCase().includes(f.trigger.toLowerCase()));
-    setBotMessages(prev=>[...prev, {from:"user",text:msg}, {from:"bot",text:flow?.reply||"Un agent vous contactera.\n📞 +253 77 02 07 07"}]);
-  };
-
-  // Booking
-  const confirmBooking = () => {
-    const ref = "AT-"+Math.random().toString(36).substr(2,8).toUpperCase();
-    const bk = { ref, ...form, type:selectedFlight?"Vol":selectedHotel?"Hôtel":"Package" };
-    setConfirmedBooking(bk);
-    setBookStep(3);
-    notifyWA(`🎉 NOUVELLE RÉSERVATION\nRef: ${ref}\nClient: ${form.prenom} ${form.nom}\nEmail: ${form.email}\nTél: ${form.tel}\nType: ${bk.type}\nPaiement: ${form.paiement==="agence"?"Agence":"Plus tard"}`);
-    try {
-      if (window.emailjs) {
-        window.emailjs.send(
-          process.env.REACT_APP_EMAILJS_SERVICE_ID || "alamin_travels",
-          process.env.REACT_APP_EMAILJS_TEMPLATE_ID || "z4qfy6d",
-          { prenom:form.prenom, nom:form.nom, email_client:form.email, reference:ref, type:bk.type, date:new Date().toLocaleDateString("fr-FR"), paiement:form.paiement==="agence"?"Payer à l'agence":"Payer plus tard" },
-          process.env.REACT_APP_EMAILJS_PUBLIC_KEY || "eyyzPHwoyvgIVr9wF"
-        );
-      }
-    } catch(e) { console.log("EmailJS:", e); }
-  };
-
-  // Admin
-  const updateRes = (id, status, pnr) => {
-    setReservations(prev=>prev.map(r=>r.id===id?{...r,status,...(pnr&&{pnr})}:r));
-    setSelectedRes(null); setShowPNRModal(false); setPnrInput("");
-    const r = reservations.find(r=>r.id===id);
-    if(r) notifyWA(`✅ MAJ ${id}\nClient: ${r.client}\nStatut: ${STATUS[status]?.label}${pnr?`\nPNR: ${pnr}`:""}`);
-  };
-
-  const navTo = (p) => { setPage(p); setMobileMenu(false); setBookStep(0); setSelectedFlight(null); setSelectedHotel(null); setSelectedPackage(null); setConfirmedBooking(null); };
-
-  const NAV_ITEMS = [["home","🏠","Accueil"],["vols","✈️","Vols"],["hotels","🏨","Hôtels"],["packages","🕌","Packages"],["agent","💬","Agent IA"],["tracker","📍","Tracker"],["loyalty","⭐","Fidélité"],["whatsapp","📱","WhatsApp"],["admin","⚙️","Admin"]];
-
-  const renderBooking = () => {
-    const item = selectedFlight||selectedHotel||selectedPackage;
-    const total = selectedFlight?selectedFlight.price*parseInt(search.adults):selectedHotel?selectedHotel.prix*nights:selectedPackage?selectedPackage.prix:0;
-    if (bookStep===3&&confirmedBooking) return (
-      <div style={{ maxWidth:560, margin:"40px auto", textAlign:"center" }}>
-        <div style={{ width:72, height:72, borderRadius:"50%", background:`linear-gradient(135deg,${C.blue},${C.blueDark})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 20px", boxShadow:`0 8px 24px rgba(26,110,181,0.3)` }}>✓</div>
-        <h2 style={{ fontSize:26, color:C.navy, marginBottom:6 }}>Réservation Confirmée !</h2>
-        <div style={{ fontSize:20, fontWeight:"bold", color:C.blue, letterSpacing:3, marginBottom:20 }}>{confirmedBooking.ref}</div>
-        <Card style={{ padding:"20px", marginBottom:20, textAlign:"left" }}>
-          <div style={{ fontWeight:"bold", color:C.navy, marginBottom:12, fontSize:13, textTransform:"uppercase", letterSpacing:0.5 }}>Récapitulatif</div>
-          {[["Type",confirmedBooking.type],["Client",`${confirmedBooking.prenom} ${confirmedBooking.nom}`],["Email",confirmedBooking.email],["Téléphone",confirmedBooking.tel],["Paiement",confirmedBooking.paiement==="agence"?"Payer à l'agence":"Payer plus tard"]].map(([l,v])=>(
-            <div key={l} style={{ display:"flex", justifyContent:"space-between", padding:"6px 0", borderBottom:`1px solid ${C.gray100}`, fontSize:13 }}>
-              <span style={{ color:C.gray500 }}>{l}</span><span style={{ fontWeight:600 }}>{v}</span>
+      {/* ══ CAROUSEL COMPAGNIES ══ */}
+      <div style={{ background:T.navy, padding:"16px 0", overflow:"hidden", position:"relative" }}>
+        <div style={{ position:"absolute", left:0, top:0, bottom:0, width:80, background:`linear-gradient(to right,${T.navy},transparent)`, zIndex:2 }}/>
+        <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:`linear-gradient(to left,${T.navy},transparent)`, zIndex:2 }}/>
+        <div className="al-track">
+          {[...AIRLINES, ...AIRLINES].map((a, i) => (
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, marginRight:40, flexShrink:0 }}>
+              <div style={{ width:40, height:40, borderRadius:8, background:a.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <span style={{ color:a.accent, fontWeight:900, fontSize:13 }}>{a.code}</span>
+              </div>
+              <span style={{ color:"rgba(255,255,255,0.7)", fontSize:13, fontWeight:500, whiteSpace:"nowrap" }}>{a.name}</span>
+              <span style={{ color:"rgba(255,255,255,0.2)", fontSize:20, marginLeft:10 }}>·</span>
             </div>
           ))}
-        </Card>
-        <div style={{ padding:"14px", borderRadius:8, background:"#f0fdf4", border:`1px solid #bbf7d0`, fontSize:12, color:"#166534", marginBottom:20, lineHeight:1.8 }}>
-          ✅ Notification envoyée au +253 77 02 07 07<br/>
-          📧 Confirmation à {confirmedBooking.email}<br/>
-          📍 Salines Ouest, Mohamed Kamil Road, Djibouti
-        </div>
-        <Btn onClick={()=>{setBookStep(0);setSelectedFlight(null);setSelectedHotel(null);setSelectedPackage(null);setConfirmedBooking(null);setForm({prenom:"",nom:"",email:"",tel:"",passport:"",dob:"",paiement:"agence"});}}>Nouvelle Réservation →</Btn>
-      </div>
-    );
-    if (bookStep===2) return (
-      <div style={{ maxWidth:560, margin:"40px auto" }}>
-        <h2 style={{ fontSize:22, color:C.navy, marginBottom:20 }}>Informations Voyageur</h2>
-        <Card style={{ padding:24 }}>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-            <Input label="Prénom *" value={form.prenom} onChange={v=>setForm(p=>({...p,prenom:v}))} />
-            <Input label="Nom *" value={form.nom} onChange={v=>setForm(p=>({...p,nom:v}))} />
-            <Input label="Email *" value={form.email} onChange={v=>setForm(p=>({...p,email:v}))} type="email" />
-            <Input label="Téléphone *" value={form.tel} onChange={v=>setForm(p=>({...p,tel:v}))} type="tel" />
-            <Input label="N° Passeport" value={form.passport} onChange={v=>setForm(p=>({...p,passport:v}))} />
-            <Input label="Date de naissance" value={form.dob} onChange={v=>setForm(p=>({...p,dob:v}))} type="date" />
-          </div>
-          <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:11, fontWeight:600, color:C.gray700, marginBottom:8, textTransform:"uppercase", letterSpacing:0.5 }}>Mode de paiement</div>
-            {[["agence","🏢 Payer à l'agence","Salines Ouest, Mohamed Kamil Road, Djibouti"],["later","⏰ Payer plus tard","Réservation maintenue 48 heures"]].map(([v,l,sub])=>(
-              <div key={v} onClick={()=>setForm(p=>({...p,paiement:v}))} style={{ padding:"12px 14px", borderRadius:8, border:`2px solid ${form.paiement===v?C.blue:C.gray100}`, background:form.paiement===v?"#eff6ff":"#fff", cursor:"pointer", marginBottom:8, display:"flex", alignItems:"center", gap:12 }}>
-                <div style={{ width:18, height:18, borderRadius:"50%", border:`2px solid ${form.paiement===v?C.blue:C.gray300}`, background:form.paiement===v?C.blue:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff", flexShrink:0 }}>{form.paiement===v?"✓":""}</div>
-                <div><div style={{ fontWeight:600, fontSize:13 }}>{l}</div><div style={{ fontSize:11, color:C.gray500 }}>{sub}</div></div>
-              </div>
-            ))}
-          </div>
-          <div style={{ padding:"12px 16px", borderRadius:8, background:C.gray50, border:`1px solid ${C.gray100}`, display:"flex", justifyContent:"space-between", marginBottom:16 }}>
-            <span style={{ fontWeight:600 }}>Total à payer</span><span style={{ fontSize:20, fontWeight:"bold", color:C.blue }}>{total}$</span>
-          </div>
-          <div style={{ display:"flex", gap:10 }}>
-            <Btn variant="ghost" onClick={()=>setBookStep(1)}>← Retour</Btn>
-            <Btn onClick={confirmBooking} disabled={!form.prenom||!form.email} fullWidth>✅ Confirmer la réservation</Btn>
-          </div>
-        </Card>
-      </div>
-    );
-    return (
-      <div style={{ maxWidth:560, margin:"40px auto" }}>
-        <h2 style={{ fontSize:22, color:C.navy, marginBottom:20 }}>Récapitulatif</h2>
-        <Card style={{ padding:20, marginBottom:16 }}>
-          {selectedFlight && <>
-            <div style={{ display:"flex", gap:12, marginBottom:12, alignItems:"center" }}>
-              <span style={{ fontSize:32 }}>{selectedFlight.logo}</span>
-              <div>
-                <div style={{ fontWeight:"bold", fontSize:16 }}>{selectedFlight.airline}</div>
-                <div style={{ color:C.gray500, fontSize:13 }}>{selectedFlight.code} · {selectedFlight.stops} · {selectedFlight.duration}</div>
-              </div>
-            </div>
-            <div style={{ padding:"10px 14px", background:C.gray50, borderRadius:8, fontSize:14, fontWeight:600, marginBottom:8 }}>
-              {selectedFlight.depTime} <span style={{ color:C.blue }}>→</span> {selectedFlight.arrTime} &nbsp;·&nbsp; {selectedFlight.dep} → {selectedFlight.arr}
-            </div>
-          </>}
-          {selectedHotel && <>
-            <img src={selectedHotel.img} alt={selectedHotel.name} style={{ width:"100%", height:140, objectFit:"cover", borderRadius:8, marginBottom:12 }} />
-            <div style={{ fontWeight:"bold", fontSize:16, marginBottom:4 }}>{selectedHotel.name}</div>
-            <div style={{ color:C.gray500, fontSize:13, marginBottom:12 }}>{selectedHotel.city} · {"⭐".repeat(selectedHotel.stars)}</div>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-              <span style={{ fontSize:13 }}>Nuits :</span>
-              <button onClick={()=>setNights(n=>Math.max(1,n-1))} style={{ width:28,height:28,borderRadius:"50%",border:`1px solid ${C.gray300}`,background:"#fff",cursor:"pointer",fontSize:14 }}>−</button>
-              <span style={{ fontSize:16,fontWeight:"bold",color:C.blue,minWidth:20,textAlign:"center" }}>{nights}</span>
-              <button onClick={()=>setNights(n=>n+1)} style={{ width:28,height:28,borderRadius:"50%",border:`1px solid ${C.gray300}`,background:"#fff",cursor:"pointer",fontSize:14 }}>+</button>
-            </div>
-          </>}
-          {selectedPackage && <>
-            <img src={selectedPackage.img} alt={selectedPackage.title} style={{ width:"100%", height:140, objectFit:"cover", borderRadius:8, marginBottom:12 }} />
-            <div style={{ fontWeight:"bold", fontSize:16, marginBottom:4 }}>{selectedPackage.emoji} {selectedPackage.title}</div>
-            <div style={{ color:C.gray500, fontSize:13, marginBottom:8 }}>{selectedPackage.duree} · {selectedPackage.places} places disponibles</div>
-            {selectedPackage.inclus.slice(0,4).map(i=><div key={i} style={{ fontSize:12, color:C.gray700, marginBottom:2 }}>✓ {i}</div>)}
-          </>}
-          <div style={{ borderTop:`1px solid ${C.gray100}`, marginTop:12, paddingTop:12, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <span style={{ fontWeight:600 }}>Total</span>
-            <span style={{ fontSize:22, fontWeight:"bold", color:C.blue }}>{total}$</span>
-          </div>
-        </Card>
-        <div style={{ display:"flex", gap:10 }}>
-          <Btn variant="ghost" onClick={()=>setBookStep(0)}>← Retour</Btn>
-          <Btn onClick={()=>setBookStep(2)} fullWidth>Continuer →</Btn>
         </div>
       </div>
-    );
-  };
 
-  const fmt = (t) => t.split("\n").map((l,i,a)=><span key={i}><span dangerouslySetInnerHTML={{__html:l.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}} />{i<a.length-1&&<br/>}</span>);
-
-  return (
-    <div style={{ minHeight:"100vh", background:C.offWhite, fontFamily:"'Segoe UI','Helvetica Neue',Arial,sans-serif", color:C.text }}>
-
-      {/* ── HEADER ── */}
-      <header style={{ background:C.navy, position:"sticky", top:0, zIndex:100, boxShadow:"0 2px 12px rgba(0,0,0,0.2)" }}>
-        {/* Top bar */}
-        <div style={{ background:C.navyDark, padding:"4px 24px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>📍 Salines Ouest, Djibouti &nbsp;|&nbsp; ✉️ reservations@alamintravel-dj.com</div>
-          <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>📞 +253 21 25 07 17 &nbsp;|&nbsp; 📱 +253 77 64 64 05</div>
-        </div>
-        {/* Main nav */}
-        <div style={{ padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer" }} onClick={()=>navTo("home")}>
-            <AlaminLogo height={70} />
+      {/* ══ SERVICES ══ */}
+      <section id="services" style={{ padding:"96px 40px", background:T.gray50 }}>
+        <div style={{ maxWidth:1200, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:64 }}>
+            <div style={{ display:"inline-block", background:`${T.blue}15`, color:T.blue, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>NOS SERVICES</div>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy, marginBottom:16 }}>
+              Tout ce dont vous<br/>avez besoin pour voyager
+            </h2>
+            <p style={{ fontSize:16, color:T.gray500, maxWidth:500, margin:"0 auto", lineHeight:1.7 }}>
+              De la réservation de vols à l'assistance visa, nous gérons chaque détail de votre voyage.
+            </p>
           </div>
-          {/* Desktop nav */}
-          <nav style={{ display:"flex", gap:2 }}>
-            {NAV_ITEMS.slice(1,-1).map(([tab,icon,label])=>(
-              <button key={tab} onClick={()=>navTo(tab)} style={{ padding:"8px 12px", background:page===tab?`rgba(26,110,181,0.3)`:"transparent", border:"none", borderRadius:6, color:page===tab?"#fff":"rgba(255,255,255,0.7)", cursor:"pointer", fontSize:13, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5, transition:"all 0.2s" }}>
-                <span style={{fontSize:14}}>{icon}</span><span>{label}</span>
-              </button>
-            ))}
-            <button onClick={()=>navTo("admin")} style={{ padding:"8px 12px", background:page==="admin"?`rgba(26,110,181,0.3)`:"transparent", border:"none", borderRadius:6, color:page==="admin"?"#fff":"rgba(255,255,255,0.7)", cursor:"pointer", fontSize:13, fontFamily:"inherit", display:"flex", alignItems:"center", gap:5 }}>
-              <span>⚙️</span><span>Admin</span>
-            </button>
-          </nav>
-          <button onClick={()=>navTo("vols")} style={{ padding:"9px 20px", background:`linear-gradient(135deg,${C.gold},#b8902a)`, border:"none", borderRadius:8, color:C.navy, fontWeight:"bold", fontSize:13, cursor:"pointer", fontFamily:"inherit" }}>
-            Réserver maintenant →
-          </button>
-        </div>
-      </header>
 
-      {/* ── MAIN ── */}
-      <main style={{ maxWidth:1200, margin:"0 auto", padding:"24px 20px" }}>
-
-        {/* ── HOME ── */}
-        {page==="home" && (
-          <div>
-            {/* Hero */}
-            <div style={{ borderRadius:16, overflow:"hidden", position:"relative", height:400, marginBottom:28 }}>
-              <div style={{ position:"absolute", inset:0, backgroundImage:"url(https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1200&q=80)", backgroundSize:"cover", backgroundPosition:"center" }} />
-              <div style={{ position:"absolute", inset:0, background:`linear-gradient(135deg, rgba(10,22,40,0.85) 0%, rgba(26,110,181,0.5) 100%)` }} />
-              <div style={{ position:"relative", padding:"60px 48px", height:"100%", display:"flex", flexDirection:"column", justifyContent:"center" }}>
-                <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(212,175,55,0.2)", border:"1px solid rgba(212,175,55,0.4)", borderRadius:20, padding:"4px 12px", marginBottom:16, width:"fit-content" }}>
-                  <span style={{ color:C.gold, fontSize:12 }}>✦</span>
-                  <span style={{ color:C.gold, fontSize:11, letterSpacing:2, fontWeight:600 }}>IATA ACCREDITED AGENT</span>
-                </div>
-                <h1 style={{ fontSize:40, fontWeight:"bold", color:"#fff", margin:"0 0 12px", lineHeight:1.2, textShadow:"0 2px 20px rgba(0,0,0,0.5)" }}>Votre Agence de Voyage<br/><span style={{ color:C.gold }}>à Djibouti</span></h1>
-                <p style={{ color:"rgba(255,255,255,0.8)", fontSize:16, marginBottom:28, maxWidth:500 }}>Vols, Hôtels, Hajj & Omra — Service professionnel depuis 2010</p>
-                <div style={{ display:"flex", gap:12 }}>
-                  <button onClick={()=>navTo("vols")} style={{ padding:"13px 28px", background:`linear-gradient(135deg,${C.gold},#b8902a)`, border:"none", borderRadius:8, color:C.navy, fontWeight:"bold", fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>✈️ Rechercher un vol</button>
-                  <button onClick={()=>navTo("packages")} style={{ padding:"13px 28px", background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", borderRadius:8, color:"#fff", fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>🕌 Hajj & Omra</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick search bar */}
-            <Card style={{ padding:20, marginBottom:24 }}>
-              <div style={{ fontSize:14, fontWeight:"bold", color:C.navy, marginBottom:14 }}>🔍 Recherche rapide</div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr auto", gap:10, alignItems:"end" }}>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:600, color:C.gray500, marginBottom:4 }}>DÉPART</div>
-                  <select value={search.origin} onChange={e=>setSearch(p=>({...p,origin:e.target.value}))} style={{ width:"100%", padding:"9px 12px", border:`1px solid ${C.gray300}`, borderRadius:8, fontSize:13, outline:"none", fontFamily:"inherit" }}>
-                    {AIRPORTS.map(a=><option key={a.code} value={a.code}>{a.flag} {a.city}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:600, color:C.gray500, marginBottom:4 }}>DESTINATION</div>
-                  <select value={search.destination} onChange={e=>setSearch(p=>({...p,destination:e.target.value}))} style={{ width:"100%", padding:"9px 12px", border:`1px solid ${C.gray300}`, borderRadius:8, fontSize:13, outline:"none", fontFamily:"inherit" }}>
-                    {AIRPORTS.map(a=><option key={a.code} value={a.code}>{a.flag} {a.city}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:600, color:C.gray500, marginBottom:4 }}>DATE</div>
-                  <input type="date" value={search.date} onChange={e=>setSearch(p=>({...p,date:e.target.value}))} min={new Date().toISOString().split('T')[0]} style={{ width:"100%", padding:"9px 12px", border:`1px solid ${C.gray300}`, borderRadius:8, fontSize:13, outline:"none", boxSizing:"border-box", cursor:"pointer" }} />
-                </div>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:600, color:C.gray500, marginBottom:4 }}>VOYAGEURS</div>
-                  <select value={search.adults} onChange={e=>setSearch(p=>({...p,adults:e.target.value}))} style={{ width:"100%", padding:"9px 12px", border:`1px solid ${C.gray300}`, borderRadius:8, fontSize:13, outline:"none", fontFamily:"inherit" }}>
-                    {[1,2,3,4,5,6].map(n=><option key={n} value={n}>{n} adulte{n>1?"s":""}</option>)}
-                  </select>
-                </div>
-                <button onClick={()=>{searchFlights();navTo("vols");}} disabled={!search.date} style={{ padding:"9px 20px", background:search.date?`linear-gradient(135deg,${C.blue},${C.blueDark})`:"#ccc", border:"none", borderRadius:8, color:"#fff", fontWeight:"bold", cursor:search.date?"pointer":"not-allowed", fontSize:13, fontFamily:"inherit", whiteSpace:"nowrap" }}>
-                  🔍 Rechercher
-                </button>
-              </div>
-            </Card>
-
-            {/* Stats */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:24 }}>
-              {[["500+","Clients satisfaits","👥"],["15+","Destinations","🌍"],["24/7","Support IA","🤖"],["IATA","Accrédité","✈️"]].map(([v,l,icon])=>(
-                <Card key={l} style={{ padding:"20px", textAlign:"center" }}>
-                  <div style={{ fontSize:28, marginBottom:6 }}>{icon}</div>
-                  <div style={{ fontSize:24, fontWeight:"bold", color:C.blue, marginBottom:4 }}>{v}</div>
-                  <div style={{ fontSize:12, color:C.gray500 }}>{l}</div>
-                </Card>
-              ))}
-            </div>
-
-
-            {/* ═══ COMPAGNIES AÉRIENNES - DÉFILEMENT INFINI ═══ */}
-            <div style={{ marginBottom:28 }}>
-              <h2 style={{ fontSize:20, fontWeight:"bold", color:C.navy, marginBottom:6 }}>✈️ Nos Compagnies Partenaires</h2>
-              <p style={{ fontSize:13, color:C.gray500, marginBottom:16 }}>Nous travaillons avec les meilleures compagnies aériennes desservant Djibouti</p>
-              <style>{`
-                @keyframes scrollAirlines {
-                  0% { transform: translateX(0); }
-                  100% { transform: translateX(-50%); }
-                }
-                .airlines-track {
-                  display: flex;
-                  animation: scrollAirlines 18s linear infinite;
-                  width: max-content;
-                }
-                .airlines-track:hover {
-                  animation-play-state: paused;
-                }
-              `}</style>
-              <div style={{ overflow:"hidden", position:"relative", padding:"8px 0" }}>
-                {/* Dégradé gauche */}
-                <div style={{ position:"absolute", left:0, top:0, bottom:0, width:60, background:"linear-gradient(to right, #f0f4f8, transparent)", zIndex:2 }}/>
-                {/* Dégradé droite */}
-                <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, background:"linear-gradient(to left, #f0f4f8, transparent)", zIndex:2 }}/>
-                <div className="airlines-track">
-                  {[
-                    {
-                      name:"Qatar Airways",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#5C0632" rx="4"/>
-                        <text x="10" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="16" fill="white" letterSpacing="1">QATAR</text>
-                        <text x="10" y="36" fontFamily="Arial" fontSize="8" fill="#d4a843" letterSpacing="2">AIRWAYS</text>
-                        <polygon points="95,5 115,20 95,35 100,20" fill="#d4a843"/>
-                      </svg>)
-                    },
-                    {
-                      name:"Ethiopian Airlines",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#007A4D" rx="4"/>
-                        <circle cx="15" cy="20" r="10" fill="none" stroke="#FFCD00" strokeWidth="2"/>
-                        <text x="30" y="18" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="11" fill="white">ETHIOPIAN</text>
-                        <text x="30" y="32" fontFamily="Arial" fontSize="8" fill="#FFCD00" letterSpacing="1">AIRLINES</text>
-                        <line x1="8" y1="20" x2="22" y2="20" stroke="#FFCD00" strokeWidth="1.5"/>
-                        <line x1="15" y1="10" x2="15" y2="30" stroke="#FFCD00" strokeWidth="1.5"/>
-                      </svg>)
-                    },
-                    {
-                      name:"Emirates",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#CC0000" rx="4"/>
-                        <text x="8" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="20" fill="white" letterSpacing="1">EMIRATES</text>
-                        <path d="M105,8 Q115,20 105,32" fill="none" stroke="white" strokeWidth="2"/>
-                        <path d="M110,12 Q118,20 110,28" fill="none" stroke="white" strokeWidth="1.5"/>
-                      </svg>)
-                    },
-                    {
-                      name:"flydubai",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#E3000F" rx="4"/>
-                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
-                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">dubai</text>
-                        <polygon points="100,10 118,20 100,30 105,20" fill="white" opacity="0.9"/>
-                      </svg>)
-                    },
-                    {
-                      name:"flynas",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#FF6B00" rx="4"/>
-                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
-                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">nas</text>
-                        <text x="75" y="28" fontFamily="Arial" fontSize="11" fill="white" opacity="0.9">طيران ناس</text>
-                      </svg>)
-                    },
-                    {
-                      name:"Qatar Airways",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#5C0632" rx="4"/>
-                        <text x="10" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="16" fill="white" letterSpacing="1">QATAR</text>
-                        <text x="10" y="36" fontFamily="Arial" fontSize="8" fill="#d4a843" letterSpacing="2">AIRWAYS</text>
-                        <polygon points="95,5 115,20 95,35 100,20" fill="#d4a843"/>
-                      </svg>)
-                    },
-                    {
-                      name:"Ethiopian Airlines",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#007A4D" rx="4"/>
-                        <circle cx="15" cy="20" r="10" fill="none" stroke="#FFCD00" strokeWidth="2"/>
-                        <text x="30" y="18" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="11" fill="white">ETHIOPIAN</text>
-                        <text x="30" y="32" fontFamily="Arial" fontSize="8" fill="#FFCD00" letterSpacing="1">AIRLINES</text>
-                        <line x1="8" y1="20" x2="22" y2="20" stroke="#FFCD00" strokeWidth="1.5"/>
-                        <line x1="15" y1="10" x2="15" y2="30" stroke="#FFCD00" strokeWidth="1.5"/>
-                      </svg>)
-                    },
-                    {
-                      name:"Emirates",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#CC0000" rx="4"/>
-                        <text x="8" y="26" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="20" fill="white" letterSpacing="1">EMIRATES</text>
-                        <path d="M105,8 Q115,20 105,32" fill="none" stroke="white" strokeWidth="2"/>
-                        <path d="M110,12 Q118,20 110,28" fill="none" stroke="white" strokeWidth="1.5"/>
-                      </svg>)
-                    },
-                    {
-                      name:"flydubai",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#E3000F" rx="4"/>
-                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
-                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">dubai</text>
-                        <polygon points="100,10 118,20 100,30 105,20" fill="white" opacity="0.9"/>
-                      </svg>)
-                    },
-                    {
-                      name:"flynas",
-                      svg:(<svg viewBox="0 0 120 40" width="120" height="40" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="120" height="40" fill="#FF6B00" rx="4"/>
-                        <text x="8" y="16" fontFamily="Arial" fontSize="10" fill="white" opacity="0.8">fly</text>
-                        <text x="8" y="32" fontFamily="Arial Black,Arial" fontWeight="900" fontSize="18" fill="white">nas</text>
-                        <text x="75" y="28" fontFamily="Arial" fontSize="11" fill="white" opacity="0.9">طيران ناس</text>
-                      </svg>)
-                    },
-                  ].map((airline, i) => (
-                    <div key={i} style={{
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      background:"#fff", border:"1px solid #e0eaf5",
-                      borderRadius:14, padding:"12px 16px", marginRight:16,
-                      boxShadow:"0 2px 8px rgba(0,0,0,0.06)",
-                      flexShrink:0
-                    }}>
-                      {airline.svg}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Services */}
-            <div style={{ marginBottom:24 }}>
-              <h2 style={{ fontSize:20, fontWeight:"bold", color:C.navy, marginBottom:16 }}>Nos Services</h2>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:14 }}>
-                {[["✈️","Vols","Amadeus temps réel","vols",C.blue],["🏨","Hôtels","Djibouti & Monde","hotels","#0891b2"],["🕌","Hajj & Omra","Packages complets","packages",C.gold],["💬","Agent IA","Conseiller 24h/24","agent","#7c3aed"],["📍","Tracker","Suivi vols live","tracker",C.green],["⭐","Fidélité","Points & Avantages","loyalty",C.orange]].map(([icon,title,sub,tab,color])=>(
-                  <Card key={tab} hover onClick={()=>navTo(tab)} style={{ padding:20, textAlign:"center", cursor:"pointer" }}>
-                    <div style={{ width:48, height:48, borderRadius:12, background:`${color}18`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, margin:"0 auto 10px" }}>{icon}</div>
-                    <div style={{ fontWeight:"bold", fontSize:14, color:C.navy, marginBottom:4 }}>{title}</div>
-                    <div style={{ fontSize:11, color:C.gray500 }}>{sub}</div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Featured packages */}
-            <div>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-                <h2 style={{ fontSize:20, fontWeight:"bold", color:C.navy, margin:0 }}>🕌 Packages Phares</h2>
-                <button onClick={()=>navTo("packages")} style={{ color:C.blue, background:"none", border:"none", cursor:"pointer", fontSize:13, fontWeight:600 }}>Voir tout →</button>
-              </div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:16 }}>
-                {PACKAGES.slice(0,3).map(p=>(
-                  <Card key={p.id} hover style={{ overflow:"hidden" }}>
-                    <div style={{ position:"relative", height:150 }}>
-                      <img src={p.img} alt={p.title} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                      <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 60%)" }} />
-                      {p.badge && <div style={{ position:"absolute", top:10, left:10, padding:"3px 8px", background:C.gold, borderRadius:4, fontSize:10, fontWeight:"bold", color:C.navy }}>{p.badge}</div>}
-                      <div style={{ position:"absolute", bottom:10, left:12, fontSize:22 }}>{p.emoji}</div>
-                    </div>
-                    <div style={{ padding:"14px 16px" }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                        <div style={{ fontWeight:"bold", fontSize:14 }}>{p.title}</div>
-                        <div style={{ textAlign:"right" }}>
-                          <div style={{ fontSize:18, fontWeight:"bold", color:C.blue }}>{p.prix}$</div>
-                          <div style={{ fontSize:10, color:C.gray500 }}>/personne</div>
-                        </div>
-                      </div>
-                      <div style={{ fontSize:12, color:C.gray500, marginBottom:10 }}>{p.duree} · {p.places} places</div>
-                      <button onClick={()=>{setSelectedPackage(p);setBookStep(1);navTo("packages");}} style={{ width:"100%", padding:"8px", background:`linear-gradient(135deg,${C.blue},${C.blueDark})`, border:"none", borderRadius:8, color:"#fff", fontWeight:"bold", cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>Réserver →</button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── VOLS ── */}
-        {page==="vols" && bookStep===0 && (
-          <div>
-            <div style={{ marginBottom:24 }}>
-              <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, marginBottom:4 }}>✈️ Recherche de Vols</h1>
-              <p style={{ color:C.gray500, fontSize:14 }}>Trouvez les meilleurs vols depuis Djibouti</p>
-            </div>
-            <Card style={{ padding:24, marginBottom:24 }}>
-              <div style={{ display:"flex", gap:8, marginBottom:16 }}>
-                {[["oneway","Aller simple"],["roundtrip","Aller-retour"]].map(([v,l])=>(
-                  <button key={v} onClick={()=>setSearch(p=>({...p,type:v}))} style={{ padding:"7px 16px", borderRadius:20, border:`1px solid ${search.type===v?C.blue:C.gray300}`, background:search.type===v?"#eff6ff":"#fff", color:search.type===v?C.blue:C.gray700, cursor:"pointer", fontSize:13, fontFamily:"inherit" }}>{l}</button>
-                ))}
-              </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:14, marginBottom:14 }}>
-                <Select label="Départ" value={search.origin} onChange={v=>setSearch(p=>({...p,origin:v}))} options={AIRPORTS.map(a=>[a.code,`${a.flag} ${a.city} (${a.code})`])} />
-                <Select label="Destination" value={search.destination} onChange={v=>setSearch(p=>({...p,destination:v}))} options={AIRPORTS.map(a=>[a.code,`${a.flag} ${a.city} (${a.code})`])} />
-                <div>
-                  <label style={{ fontSize:11, fontWeight:600, color:"#374151", marginBottom:4, display:"block", textTransform:"uppercase", letterSpacing:0.5 }}>DATE DÉPART *</label>
-                  <input type="date" value={search.date} onChange={e=>setSearch(p=>({...p,date:e.target.value}))}
-                    min={new Date().toISOString().split('T')[0]}
-                    style={{ width:"100%", padding:"9px 12px", border:"1px solid #d1d5db", borderRadius:8, fontSize:13, color:"#0a1628", outline:"none", boxSizing:"border-box", cursor:"pointer" }} />
-                </div>
-                <Select label="Voyageurs" value={search.adults} onChange={v=>setSearch(p=>({...p,adults:v}))} options={[1,2,3,4,5,6].map(n=>[n,`${n} adulte${n>1?"s":""}`])} />
-              </div>
-              <Select label="Classe" value={search.class} onChange={v=>setSearch(p=>({...p,class:v}))} options={[["ECONOMY","Économique"],["PREMIUM_ECONOMY","Premium Économique"],["BUSINESS","Business"],["FIRST","Première classe"]]} />
-              <Btn onClick={searchFlights} disabled={searchLoading||!search.date} fullWidth size="lg">
-                {searchLoading?"⏳ Recherche en cours...":"🔍 Rechercher des vols"}
-              </Btn>
-            </Card>
-            {flights.length>0 && (
-              <div>
-                <div style={{ fontSize:13, color:C.gray500, marginBottom:12 }}>{flights.length} vol{flights.length>1?"s":""} trouvé{flights.length>1?"s":""} · {search.origin} → {search.destination}</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                  {flights.map(f=>(
-                    <Card key={f.id} hover onClick={()=>{setSelectedFlight(f);setBookStep(1);}} style={{ padding:"16px 20px", cursor:"pointer" }}>
-                      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
-                        <div style={{ display:"flex", gap:14, alignItems:"center" }}>
-                          <span style={{ fontSize:32 }}>{f.logo}</span>
-                          <div>
-                            <div style={{ fontWeight:"bold", fontSize:15 }}>{f.airline}</div>
-                            <div style={{ color:C.gray500, fontSize:12 }}>{f.code} · {f.stops} · {f.duration}</div>
-                          </div>
-                        </div>
-                        <div style={{ textAlign:"center" }}>
-                          <div style={{ fontSize:18, fontWeight:"bold" }}>{f.depTime} <span style={{ color:C.blue }}>→</span> {f.arrTime}</div>
-                          <div style={{ color:C.gray500, fontSize:12 }}>{f.dep} → {f.arr}</div>
-                        </div>
-                        <div style={{ textAlign:"right" }}>
-                          <div style={{ fontSize:28, fontWeight:"bold", color:C.blue }}>{f.price}$</div>
-                          <div style={{ fontSize:11, color:C.gray500 }}>/ personne</div>
-                          <div style={{ marginTop:6 }}><Btn size="sm">Sélectionner →</Btn></div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-        {page==="vols" && bookStep>0 && renderBooking()}
-
-        {/* ── HOTELS ── */}
-        {page==="hotels" && bookStep===0 && (
-          <div>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24, flexWrap:"wrap", gap:12 }}>
-              <div>
-                <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, margin:0 }}>🏨 Hôtels</h1>
-                <p style={{ color:C.gray500, fontSize:14, margin:"4px 0 0" }}>Djibouti, La Mecque & Médine</p>
-              </div>
-              <div style={{ display:"flex", gap:8 }}>
-                {["Tous","Djibouti","La Mecque","Médine"].map(f=>(
-                  <button key={f} onClick={()=>setHotelFilter(f)} style={{ padding:"7px 14px", borderRadius:20, border:`1px solid ${hotelFilter===f?C.blue:C.gray300}`, background:hotelFilter===f?"#eff6ff":"#fff", color:hotelFilter===f?C.blue:C.gray700, cursor:"pointer", fontSize:13, fontFamily:"inherit" }}>{f}</button>
-                ))}
-              </div>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:18 }}>
-              {HOTELS.filter(h=>hotelFilter==="Tous"||h.city===hotelFilter).map(h=>(
-                <Card key={h.id} hover style={{ overflow:"hidden" }}>
-                  <div style={{ position:"relative", height:180 }}>
-                    <img src={h.img} alt={h.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.5s" }} />
-                    <div style={{ position:"absolute", top:10, right:10, background:"rgba(255,255,255,0.95)", borderRadius:6, padding:"4px 8px", fontSize:11, fontWeight:"bold", color:C.navy }}>{h.city}</div>
-                  </div>
-                  <div style={{ padding:"16px" }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
-                      <div style={{ fontWeight:"bold", fontSize:15 }}>{h.name}</div>
-                      <div style={{ textAlign:"right" }}>
-                        <div style={{ fontSize:20, fontWeight:"bold", color:C.blue }}>{h.prix}$</div>
-                        <div style={{ fontSize:10, color:C.gray500 }}>/nuit</div>
-                      </div>
-                    </div>
-                    <div style={{ marginBottom:8 }}><StarRating note={h.note} /></div>
-                    <div style={{ display:"flex", gap:5, flexWrap:"wrap", marginBottom:12 }}>
-                      {h.amenities.map(a=><span key={a} style={{ padding:"2px 8px", background:C.gray50, border:`1px solid ${C.gray100}`, borderRadius:4, fontSize:10, color:C.gray700 }}>{a}</span>)}
-                    </div>
-                    <Btn onClick={()=>{setSelectedHotel(h);setBookStep(1);}} fullWidth>Réserver →</Btn>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-        {page==="hotels" && bookStep>0 && renderBooking()}
-
-        {/* ── PACKAGES ── */}
-        {page==="packages" && bookStep===0 && (
-          <div>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24, flexWrap:"wrap", gap:12 }}>
-              <div>
-                <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, margin:0 }}>🕌 Hajj, Omra & Voyages</h1>
-                <p style={{ color:C.gray500, fontSize:14, margin:"4px 0 0" }}>Packages tout inclus depuis Djibouti</p>
-              </div>
-              <div style={{ display:"flex", gap:8 }}>
-                {[["Tous","Tous"],["hajj","🕌 Hajj"],["omra","🌙 Omra"],["voyage","✈️ Voyages"]].map(([v,l])=>(
-                  <button key={v} onClick={()=>setPkgFilter(v)} style={{ padding:"7px 14px", borderRadius:20, border:`1px solid ${pkgFilter===v?C.blue:C.gray300}`, background:pkgFilter===v?"#eff6ff":"#fff", color:pkgFilter===v?C.blue:C.gray700, cursor:"pointer", fontSize:13, fontFamily:"inherit" }}>{l}</button>
-                ))}
-              </div>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))", gap:18 }}>
-              {PACKAGES.filter(p=>pkgFilter==="Tous"||p.type===pkgFilter).map(p=>(
-                <Card key={p.id} hover style={{ overflow:"hidden" }}>
-                  <div style={{ position:"relative", height:180 }}>
-                    <img src={p.img} alt={p.title} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 60%)" }} />
-                    {p.badge && <div style={{ position:"absolute", top:10, left:10, padding:"3px 8px", background:C.gold, borderRadius:4, fontSize:10, fontWeight:"bold", color:C.navy }}>{p.badge}</div>}
-                    <div style={{ position:"absolute", top:10, right:10, background:"rgba(0,0,0,0.6)", borderRadius:4, padding:"3px 8px", fontSize:11, color:"#fff" }}>{p.duree}</div>
-                    <div style={{ position:"absolute", bottom:10, left:12, fontSize:24 }}>{p.emoji}</div>
-                  </div>
-                  <div style={{ padding:"16px" }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                      <div style={{ fontWeight:"bold", fontSize:15 }}>{p.title}</div>
-                      <div style={{ textAlign:"right" }}>
-                        <div style={{ fontSize:20, fontWeight:"bold", color:C.blue }}>{p.prix}$</div>
-                        <div style={{ fontSize:10, color:C.gray500 }}>/personne</div>
-                      </div>
-                    </div>
-                    <div style={{ marginBottom:10 }}>
-                      {p.inclus.slice(0,3).map(i=><div key={i} style={{ fontSize:12, color:C.gray600, marginBottom:2 }}>✓ {i}</div>)}
-                      {p.inclus.length>3 && <div style={{ fontSize:12, color:C.blue }}>+{p.inclus.length-3} services inclus</div>}
-                    </div>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                      <span style={{ fontSize:11, color:C.gray500 }}>👥 {p.places} places dispo</span>
-                      <Btn size="sm" onClick={()=>{setSelectedPackage(p);setBookStep(1);}}>Réserver →</Btn>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-        {page==="packages" && bookStep>0 && renderBooking()}
-
-        {/* ── AGENT IA ── */}
-        {page==="agent" && (
-          <div style={{ maxWidth:720, margin:"0 auto" }}>
-            <div style={{ textAlign:"center", marginBottom:20 }}>
-              <div style={{ width:56, height:56, borderRadius:"50%", background:`linear-gradient(135deg,${C.blue},${C.blueDark})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, margin:"0 auto 10px", boxShadow:`0 8px 24px rgba(26,110,181,0.3)` }}>✦</div>
-              <h1 style={{ fontSize:22, fontWeight:"bold", color:C.navy, margin:"0 0 4px" }}>Agent IA Alamin Travels</h1>
-              <p style={{ color:C.gray500, fontSize:13 }}>Conseiller voyage disponible 24h/24 · 7j/7</p>
-            </div>
-            <Card style={{ display:"flex", flexDirection:"column", height:500 }}>
-              {/* Messages */}
-              <div style={{ flex:1, overflowY:"auto", padding:20, display:"flex", flexDirection:"column", gap:14 }}>
-                {messages.map((m,i)=>(
-                  <div key={i} style={{ display:"flex", gap:10, justifyContent:m.role==="user"?"flex-end":"flex-start", alignItems:"flex-start" }}>
-                    {m.role==="assistant" && <div style={{ width:32,height:32,borderRadius:"50%",background:`linear-gradient(135deg,${C.blue},${C.blueDark})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,flexShrink:0,marginTop:2,color:"#fff" }}>✦</div>}
-                    <div style={{ maxWidth:"72%", padding:"11px 14px", borderRadius:m.role==="user"?"16px 16px 4px 16px":"4px 16px 16px 16px", background:m.role==="user"?`linear-gradient(135deg,${C.blue},${C.blueDark})`:"#f8f9fb", border:m.role==="user"?"none":`1px solid ${C.gray100}`, color:m.role==="user"?"#fff":C.text, fontSize:13, lineHeight:1.7 }}>
-                      {fmt(m.content)}
-                    </div>
-                  </div>
-                ))}
-                {chatLoading && <div style={{ display:"flex", gap:10 }}>
-                  <div style={{ width:32,height:32,borderRadius:"50%",background:`linear-gradient(135deg,${C.blue},${C.blueDark})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:"#fff" }}>✦</div>
-                  <div style={{ padding:"11px 16px",background:C.gray50,border:`1px solid ${C.gray100}`,borderRadius:"4px 16px 16px 16px",display:"flex",gap:4,alignItems:"center" }}>
-                    {[0,1,2].map(d=><div key={d} style={{ width:6,height:6,borderRadius:"50%",background:C.blue,animation:`pulse 1.2s ease-in-out ${d*0.2}s infinite` }}/>)}
-                  </div>
-                </div>}
-                <div ref={chatEndRef}/>
-              </div>
-              {/* Quick replies */}
-              <div style={{ padding:"10px 20px", borderTop:`1px solid ${C.gray100}`, display:"flex", gap:8, flexWrap:"wrap" }}>
-                {["✈️ Vol Djibouti-Paris","🕌 Package Hajj 2026","🏨 Hôtel 5★ Mecque","🦈 Requins baleines"].map(s=>(
-                  <button key={s} onClick={()=>sendChat(s)} style={{ padding:"5px 12px", background:C.gray50, border:`1px solid ${C.gray100}`, borderRadius:16, color:C.blue, cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>{s}</button>
-                ))}
-              </div>
-              {/* Input */}
-              <div style={{ padding:"12px 16px", borderTop:`1px solid ${C.gray100}`, display:"flex", gap:8 }}>
-                <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}}} placeholder="Posez votre question..." style={{ flex:1, padding:"10px 14px", border:`1px solid ${C.gray300}`, borderRadius:24, fontSize:13, outline:"none", fontFamily:"inherit" }}
-                  onFocus={e=>e.target.style.border=`1px solid ${C.blue}`} onBlur={e=>e.target.style.border=`1px solid ${C.gray300}`} />
-                <button onClick={()=>sendChat()} disabled={chatLoading||!chatInput.trim()} style={{ width:40,height:40,borderRadius:"50%",background:chatInput.trim()&&!chatLoading?`linear-gradient(135deg,${C.blue},${C.blueDark})`:"#e5e7eb",border:"none",cursor:chatInput.trim()&&!chatLoading?"pointer":"not-allowed",color:"#fff",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>➤</button>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* ── TRACKER ── */}
-        {page==="tracker" && (
-          <div style={{ maxWidth:800, margin:"0 auto" }}>
-            <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, marginBottom:4 }}>📍 Suivi de Vols en Direct</h1>
-            <p style={{ color:C.gray500, fontSize:14, marginBottom:20 }}>Suivez vos vols en temps réel</p>
-            <div style={{ display:"flex", gap:8, marginBottom:16 }}>
-              {LIVE_FLIGHTS.map(f=>(
-                <button key={f.ref} onClick={()=>{setTrackedFlight(f);setTrackProgress(0);setTimeout(()=>setTrackProgress(f.progress),300);}} style={{ padding:"8px 16px", borderRadius:8, border:`1px solid ${trackedFlight.ref===f.ref?C.blue:C.gray300}`, background:trackedFlight.ref===f.ref?"#eff6ff":"#fff", color:trackedFlight.ref===f.ref?C.blue:C.gray700, cursor:"pointer", fontSize:13, fontFamily:"inherit" }}>✈️ {f.flight} ({f.ref})</button>
-              ))}
-            </div>
-            <Card style={{ padding:24, marginBottom:16 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20, flexWrap:"wrap", gap:10 }}>
-                <div>
-                  <div style={{ fontSize:22, fontWeight:"bold", marginBottom:4 }}>✈️ {trackedFlight.flight}</div>
-                  <div style={{ color:C.gray500, fontSize:14 }}>{trackedFlight.airline}</div>
-                  <div style={{ fontSize:12, color:C.gray400, marginTop:2 }}>Réf: {trackedFlight.ref}</div>
-                </div>
-                <div style={{ padding:"8px 16px", borderRadius:20, background:trackedFlight.status==="En vol"?"#f0fdf4":"#fff7ed", border:`1px solid ${trackedFlight.status==="En vol"?"#bbf7d0":"#fed7aa"}`, color:trackedFlight.status==="En vol"?C.green:C.orange, fontWeight:"bold", fontSize:13, display:"flex", alignItems:"center", gap:6 }}>
-                  {trackedFlight.status==="En vol"?"🟢":"🟡"} {trackedFlight.status}
-                </div>
-              </div>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-                <div style={{ textAlign:"center" }}>
-                  <div style={{ fontSize:28, fontWeight:"bold", color:C.navy }}>{trackedFlight.from}</div>
-                  <div style={{ fontSize:12, color:C.gray500 }}>Départ {trackedFlight.depart}</div>
-                </div>
-                <div style={{ flex:1, margin:"0 20px", position:"relative" }}>
-                  <div style={{ height:6, background:C.gray100, borderRadius:3 }}>
-                    <div style={{ height:"100%", background:`linear-gradient(90deg,${C.blue},${C.blueLight})`, borderRadius:3, width:`${trackProgress}%`, transition:"width 1.5s ease" }}/>
-                    <div style={{ position:"absolute", top:"50%", left:`${trackProgress}%`, transform:"translate(-50%,-50%)", fontSize:20, transition:"left 1.5s ease" }}>✈️</div>
-                  </div>
-                  <div style={{ textAlign:"center", marginTop:10, fontSize:12, color:C.gray500 }}>{trackProgress}% du trajet · ETA {trackedFlight.eta}</div>
-                </div>
-                <div style={{ textAlign:"center" }}>
-                  <div style={{ fontSize:28, fontWeight:"bold", color:C.navy }}>{trackedFlight.to}</div>
-                  <div style={{ fontSize:12, color:C.gray500 }}>Arrivée {trackedFlight.arrivee}</div>
-                </div>
-              </div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
-                {[["Réf",trackedFlight.ref,"📋"],["Départ",trackedFlight.depart,"🛫"],["Arrivée",trackedFlight.arrivee,"🛬"],["ETA",trackedFlight.eta,"⏰"]].map(([l,v,icon])=>(
-                  <div key={l} style={{ padding:"12px", borderRadius:8, background:C.gray50, textAlign:"center" }}>
-                    <div style={{ fontSize:18, marginBottom:4 }}>{icon}</div>
-                    <div style={{ fontSize:14, fontWeight:"bold", color:C.navy }}>{v}</div>
-                    <div style={{ fontSize:10, color:C.gray500 }}>{l}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* ── LOYALTY ── */}
-        {page==="loyalty" && (
-          <div style={{ maxWidth:800, margin:"0 auto" }}>
-            <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, marginBottom:4 }}>⭐ Programme de Fidélité</h1>
-            <p style={{ color:C.gray500, fontSize:14, marginBottom:20 }}>Gagnez des points à chaque voyage</p>
-            {/* Member card */}
-            <div style={{ borderRadius:16, background:`linear-gradient(135deg,${C.navy},${C.navyLight},${C.blue})`, padding:"28px 32px", marginBottom:24, position:"relative", overflow:"hidden", boxShadow:`0 12px 40px rgba(10,22,40,0.3)` }}>
-              <div style={{ position:"absolute", top:-40, right:-40, width:200, height:200, borderRadius:"50%", background:"rgba(255,255,255,0.04)" }}/>
-              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:20 }}>
-                <div>
-                  <div style={{ fontSize:11, letterSpacing:3, color:"rgba(255,255,255,0.5)", marginBottom:6 }}>MEMBRE ALAMIN TRAVELS</div>
-                  <div style={{ fontSize:20, fontWeight:"bold", color:"#fff" }}>Mohamed Ali Hassan</div>
-                  <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>m.ali@gmail.com</div>
-                </div>
-                <div style={{ textAlign:"right" }}>
-                  <div style={{ fontSize:36 }}>{clientTier?.emoji}</div>
-                  <div style={{ fontSize:16, fontWeight:"bold", color:clientTier?.color }}>{clientTier?.name}</div>
-                </div>
-              </div>
-              <div style={{ marginBottom:16 }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-                  <span style={{ fontSize:28, fontWeight:"bold", color:C.gold }}>{clientPoints.toLocaleString()} pts</span>
-                  {nextTier && <span style={{ fontSize:12, color:"rgba(255,255,255,0.5)", alignSelf:"center" }}>{nextTier.name} → {nextTier.min.toLocaleString()} pts</span>}
-                </div>
-                <div style={{ height:8, borderRadius:4, background:"rgba(255,255,255,0.15)", overflow:"hidden" }}>
-                  <div style={{ height:"100%", background:`linear-gradient(90deg,${C.gold},#f5e07a)`, borderRadius:4, width:`${loyaltyPct}%`, transition:"width 1.5s ease" }}/>
-                </div>
-              </div>
-              <div style={{ display:"flex", gap:24 }}>
-                {[["3","Voyages"],["5 240$","Dépensé"],[`${clientTier?.discount}%`,"Réduction"]].map(([v,l])=>(
-                  <div key={l}><div style={{ fontSize:18, fontWeight:"bold", color:"#fff" }}>{v}</div><div style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{l}</div></div>
-                ))}
-              </div>
-            </div>
-            {/* Tiers */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12 }}>
-              {LOYALTY_TIERS.map(tier=>(
-                <Card key={tier.name} style={{ padding:16, border:`2px solid ${clientTier?.name===tier.name?tier.color:C.gray100}`, background:clientTier?.name===tier.name?"#fafafa":"#fff" }}>
-                  <div style={{ fontSize:28, marginBottom:8 }}>{tier.emoji}</div>
-                  <div style={{ fontWeight:"bold", fontSize:14, color:tier.color, marginBottom:4 }}>{tier.name}</div>
-                  <div style={{ fontSize:12, color:C.gray500, marginBottom:8 }}>{tier.min.toLocaleString()}+ pts</div>
-                  <div style={{ fontSize:13, fontWeight:"bold", color:C.blue }}>-{tier.discount}% vols</div>
-                  {clientTier?.name===tier.name && <div style={{ marginTop:8, padding:"3px 8px", background:`${tier.color}22`, borderRadius:4, fontSize:10, color:tier.color, textAlign:"center", fontWeight:"bold" }}>MON NIVEAU</div>}
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── WHATSAPP BOT ── */}
-        {page==="whatsapp" && (
-          <div style={{ maxWidth:440, margin:"0 auto" }}>
-            <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, marginBottom:4, textAlign:"center" }}>📱 WhatsApp Bot</h1>
-            <p style={{ color:C.gray500, fontSize:14, marginBottom:20, textAlign:"center" }}>Assistante automatique 24h/24</p>
-            <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 20px 60px rgba(0,0,0,0.2)" }}>
-              <div style={{ background:"#075E54", padding:"12px 16px", display:"flex", alignItems:"center", gap:10 }}>
-                <div style={{ width:40, height:40, borderRadius:"50%", background:`linear-gradient(135deg,${C.blue},${C.blueLight})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:"#fff", fontWeight:"bold" }}>A</div>
-                <div><div style={{ fontWeight:"bold", color:"#fff", fontSize:14 }}>Alamin Travels</div><div style={{ fontSize:11, color:"rgba(255,255,255,0.7)" }}>🟢 En ligne · Répond instantanément</div></div>
-              </div>
-              <div style={{ background:"#e5ddd5", height:380, overflowY:"auto", padding:"12px", display:"flex", flexDirection:"column", gap:8 }}>
-                {botMessages.map((m,i)=>(
-                  <div key={i} style={{ display:"flex", justifyContent:m.from==="user"?"flex-end":"flex-start" }}>
-                    <div style={{ maxWidth:"82%", padding:"8px 12px", borderRadius:m.from==="user"?"16px 16px 4px 16px":"16px 16px 16px 4px", background:m.from==="user"?"#dcf8c6":"#fff", fontSize:12, color:"#333", lineHeight:1.6, whiteSpace:"pre-line", boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }}>{m.text}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background:"#f0f0f0", padding:"6px 10px", display:"flex", gap:5, overflowX:"auto" }}>
-                {["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣"].map(r=>(
-                  <button key={r} onClick={()=>sendBot(r)} style={{ padding:"5px 10px", borderRadius:16, border:"1px solid #ccc", background:"#fff", cursor:"pointer", fontSize:12, fontFamily:"inherit", whiteSpace:"nowrap" }}>{r}</button>
-                ))}
-              </div>
-              <div style={{ background:"#f0f0f0", padding:"8px 10px", display:"flex", gap:8 }}>
-                <input value={botInput} onChange={e=>setBotInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&sendBot()} placeholder="Tapez un message..." style={{ flex:1, padding:"8px 12px", background:"#fff", border:"none", borderRadius:20, fontSize:12, outline:"none", fontFamily:"inherit" }}/>
-                <button onClick={()=>sendBot()} style={{ width:36, height:36, borderRadius:"50%", background:"#25D366", border:"none", color:"#fff", cursor:"pointer", fontSize:14, display:"flex", alignItems:"center", justifyContent:"center" }}>➤</button>
-              </div>
-            </div>
-            <Card style={{ padding:16, marginTop:16 }}>
-              <div style={{ fontSize:12, fontWeight:"bold", color:C.navy, marginBottom:8 }}>Capacités du Bot</div>
-              {["✅ Disponible 24h/24 · 7j/7","✅ Réponse en français et arabe","✅ Suivi de réservation","✅ Info Hajj & Omra","✅ Transfert vers agent humain"].map(c=>(
-                <div key={c} style={{ fontSize:12, color:C.gray600, marginBottom:4 }}>{c}</div>
-              ))}
-            </Card>
-          </div>
-        )}
-
-        {/* ── ADMIN ── */}
-        {page==="admin" && (
-          <div>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-              <div>
-                <h1 style={{ fontSize:26, fontWeight:"bold", color:C.navy, margin:0 }}>⚙️ Back-Office</h1>
-                <p style={{ color:C.gray500, fontSize:14, margin:"4px 0 0" }}>Gestion des réservations et clients</p>
-              </div>
-            </div>
-            {/* Stats */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:24 }}>
-              {[[reservations.length,"Total","📋",C.blue],[reservations.filter(r=>r.status==="confirmed"||r.status==="paid").length,"Confirmées","✅",C.green],[reservations.filter(r=>r.status==="pending").length,"En attente","⏳",C.orange],[`${reservations.reduce((s,r)=>s+r.prix,0).toLocaleString()}$`,"Revenus","💰",C.navy]].map(([v,l,icon,color])=>(
-                <Card key={l} style={{ padding:18, textAlign:"center" }}>
-                  <div style={{ fontSize:24, marginBottom:6 }}>{icon}</div>
-                  <div style={{ fontSize:22, fontWeight:"bold", color, marginBottom:4 }}>{v}</div>
-                  <div style={{ fontSize:11, color:C.gray500 }}>{l}</div>
-                </Card>
-              ))}
-            </div>
-            {/* Filters */}
-            <div style={{ display:"flex", gap:8, marginBottom:14 }}>
-              {["Tous","pending","confirmed","paid"].map(f=>(
-                <button key={f} onClick={()=>setAdminFilter(f)} style={{ padding:"6px 14px", borderRadius:20, border:`1px solid ${adminFilter===f?C.blue:C.gray300}`, background:adminFilter===f?"#eff6ff":"#fff", color:adminFilter===f?C.blue:C.gray700, cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>
-                  {f==="Tous"?"Tous":STATUS[f]?.label}
-                </button>
-              ))}
-            </div>
-            {/* Reservations */}
-            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-              {reservations.filter(r=>adminFilter==="Tous"||r.status===adminFilter).map(r=>(
-                <Card key={r.id} hover onClick={()=>setSelectedRes(selectedRes?.id===r.id?null:r)} style={{ padding:"16px 20px", cursor:"pointer", border:selectedRes?.id===r.id?`1px solid ${C.blue}`:undefined, background:selectedRes?.id===r.id?"#eff6ff":"#fff" }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
-                    <div style={{ display:"flex", gap:12, alignItems:"center" }}>
-                      <div style={{ width:44, height:44, borderRadius:10, background:C.gray50, border:`1px solid ${C.gray100}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>
-                        {r.type==="Vol"?"✈️":r.type.includes("Hajj")||r.type.includes("Omra")?"🕌":r.type.includes("Hôtel")?"🏨":"📦"}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight:"bold", fontSize:14 }}>{r.client}</div>
-                        <div style={{ fontSize:12, color:C.gray500 }}>{r.id} · {r.dest} · {r.date}</div>
-                        {r.pnr && <div style={{ fontSize:11, color:C.blue, fontWeight:600 }}>PNR: {r.pnr}</div>}
-                      </div>
-                    </div>
-                    <div style={{ textAlign:"right" }}>
-                      <div style={{ fontSize:18, fontWeight:"bold", color:C.blue }}>{r.prix}$</div>
-                      <div style={{ marginTop:4 }}>
-                        <span style={{ padding:"3px 8px", borderRadius:4, fontSize:11, fontWeight:"bold", background:STATUS[r.status]?.bg, color:STATUS[r.status]?.color, border:`1px solid ${STATUS[r.status]?.border}` }}>{STATUS[r.status]?.label}</span>
-                      </div>
-                    </div>
-                  </div>
-                  {selectedRes?.id===r.id && (
-                    <div style={{ marginTop:14, paddingTop:14, borderTop:`1px solid ${C.gray100}`, display:"flex", gap:8, flexWrap:"wrap" }}>
-                      <Btn size="sm" variant="secondary" onClick={e=>{e.stopPropagation();updateRes(r.id,"confirmed",r.pnr);}}>✅ Confirmer</Btn>
-                      <Btn size="sm" onClick={e=>{e.stopPropagation();updateRes(r.id,"paid",r.pnr);}}>💳 Payé</Btn>
-                      <button onClick={e=>{e.stopPropagation();setShowPNRModal(true);}} style={{ padding:"6px 12px", background:"#fff7ed", border:`1px solid #fed7aa`, borderRadius:8, color:C.orange, cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>📋 Ajouter PNR</button>
-                      <button onClick={e=>{e.stopPropagation();notifyWA(`📋 ${r.id}\n${r.client}\n${r.dest}\n${r.date}\n${r.prix}$\nPNR:${r.pnr||"N/A"}`);}} style={{ padding:"6px 12px", background:"#f0fdf4", border:`1px solid #bbf7d0`, borderRadius:8, color:"#25D366", cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>📱 WhatsApp</button>
-                      <button onClick={e=>{e.stopPropagation();updateRes(r.id,"cancelled");}} style={{ padding:"6px 12px", background:"#fef2f2", border:`1px solid #fecaca`, borderRadius:8, color:C.red, cursor:"pointer", fontSize:12, fontFamily:"inherit" }}>🚫 Annuler</button>
-                    </div>
-                  )}
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* PNR Modal */}
-      {showPNRModal && selectedRes && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:999, padding:20 }}>
-          <Card style={{ padding:28, maxWidth:380, width:"100%" }}>
-            <h3 style={{ color:C.navy, fontWeight:"bold", marginBottom:4 }}>Ajouter un PNR</h3>
-            <p style={{ color:C.gray500, fontSize:13, marginBottom:14 }}>Réservation : {selectedRes.id}</p>
-            <Input label="Numéro PNR" value={pnrInput} onChange={setPnrInput} placeholder="Ex: ABC123" />
-            <div style={{ display:"flex", gap:10 }}>
-              <Btn variant="ghost" onClick={()=>setShowPNRModal(false)} fullWidth>Annuler</Btn>
-              <Btn onClick={()=>updateRes(selectedRes.id,"confirmed",pnrInput)} fullWidth>Enregistrer</Btn>
-            </div>
-          </Card>
-        </div>
-      )}
-
-
-      {/* ═══ SECTION AGENCE & LOCALISATION ═══ */}
-      {page === "home" && (
-        <div style={{ maxWidth:1200, margin:"0 auto 48px", padding:"0 24px" }}>
-          <h2 style={{ fontSize:22, fontWeight:"bold", color:C.navy, marginBottom:20, textAlign:"center" }}>
-            📍 Notre Agence à Djibouti
-          </h2>
-
-          {/* Photos galerie */}
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24 }}>
-            {[
-              { src:"/agence1.jpg.jpeg", label:"Notre façade" },
-              { src:"/agence2.jpg.jpeg", label:"Notre bureau" },
-              { src:"/agence3.jpg.jpeg", label:"Notre équipe" },
-              { src:"/agence4.jpg.jpeg", label:"Vue extérieure" },
-              { src:"/agence5.jpg.jpeg", label:"Espace travail" },
-            ].map((photo, i) => (
-              <div key={i} style={{
-                borderRadius:12,
-                overflow:"hidden",
-                height: i === 0 ? 220 : 160,
-                gridColumn: i === 0 ? "span 2" : "span 1",
-                position:"relative",
-                boxShadow:"0 4px 16px rgba(0,0,0,0.12)"
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:24 }}>
+            {SERVICES.map((s, i) => (
+              <div key={i} className="service-card" style={{
+                background:"white", borderRadius:20, padding:32,
+                boxShadow:"0 4px 24px rgba(11,31,58,0.06)",
+                border:"1px solid rgba(11,31,58,0.06)",
+                transition:"all 0.3s ease", cursor:"default"
               }}>
-                <img src={photo.src} alt={photo.label} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.6))", padding:"8px 12px" }}>
-                  <span style={{ color:"white", fontSize:11, fontWeight:600 }}>{photo.label}</span>
+                <div style={{ width:56, height:56, borderRadius:16, background:`${s.color}12`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, marginBottom:20 }}>
+                  {s.icon}
+                </div>
+                <h3 style={{ fontFamily:"'Playfair Display', serif", fontSize:20, fontWeight:700, color:T.navy, marginBottom:10 }}>{s.title}</h3>
+                <p style={{ fontSize:14, color:T.gray500, lineHeight:1.7 }}>{s.desc}</p>
+                <div style={{ marginTop:20, color:s.color, fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
+                  En savoir plus <span>→</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ DESTINATIONS DJIBOUTI ══ */}
+      <section id="destinations" style={{ padding:"96px 40px", background:"white" }}>
+        <div style={{ maxWidth:1200, margin:"0 auto" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:48 }}>
+            <div>
+              <div style={{ display:"inline-block", background:`${T.gold}15`, color:T.goldD, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>TOURISME LOCAL</div>
+              <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>
+                Découvrez<br/><span style={{ color:T.blue }}>Djibouti</span>
+              </h2>
+            </div>
+            <p style={{ fontSize:15, color:T.gray500, maxWidth:340, textAlign:"right", lineHeight:1.7 }}>
+              Des paysages d'une beauté rare. Djibouti, carrefour entre mer Rouge et golfe d'Aden.
+            </p>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr", gridTemplateRows:"240px 240px", gap:16 }}>
+            {DESTINATIONS.map((d, i) => (
+              <div key={i} className="dest-card" style={{
+                position:"relative", borderRadius:20, overflow:"hidden",
+                gridRow: i===0 ? "span 2" : "auto",
+                cursor:"pointer",
+                boxShadow:"0 8px 32px rgba(0,0,0,0.12)"
+              }}>
+                <img className="dest-img" src={d.img} alt={d.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.6s ease" }}/>
+                <div style={{ position:"absolute", inset:0, background:`linear-gradient(to top, ${d.color}ee 0%, ${d.color}44 50%, transparent 100%)` }}/>
+                <div className="dest-overlay" style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.2)", opacity:0, transition:"opacity 0.3s" }}/>
+                <div style={{ position:"absolute", top:16, left:16 }}>
+                  <span style={{ background:`${T.gold}`, color:"white", fontSize:9, fontWeight:700, padding:"4px 10px", borderRadius:20, letterSpacing:1 }}>{d.tag}</span>
+                </div>
+                <div style={{ position:"absolute", bottom:20, left:20, right:20 }}>
+                  <div style={{ fontFamily:"'Playfair Display', serif", fontSize:i===0?22:16, fontWeight:700, color:"white", marginBottom:4 }}>{d.name}</div>
+                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.75)", lineHeight:1.5 }}>{d.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ PACKAGES ══ */}
+      <section id="packages" style={{ padding:"96px 40px", background:`linear-gradient(135deg, ${T.navyD} 0%, ${T.navy} 100%)` }}>
+        <div style={{ maxWidth:1200, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:64 }}>
+            <div style={{ display:"inline-block", background:"rgba(79,195,247,0.15)", color:T.sky, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>PACKAGES PHARES</div>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>Nos Meilleures Offres</h2>
+            <p style={{ fontSize:16, color:"rgba(255,255,255,0.55)", maxWidth:500, margin:"0 auto" }}>Packages complets incluant vols, hébergement et accompagnement</p>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
+            {[
+              { name:"Hajj Premium 2026", price:"810 000", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://images.unsplash.com/photo-1591604328740-f52fc7af0f76?w=600&q=80", tagColor:T.gold },
+              { name:"Omra Ramadan", price:"504 000", duration:"14 jours", places:"40 places", tag:"RAMADAN", img:"https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=600&q=80", tagColor:"#E91E63" },
+              { name:"Dubai City Break", price:"180 000", duration:"5 jours", places:"20 places", tag:"NOUVEAU", img:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80", tagColor:T.blue },
+            ].map((p, i) => (
+              <div key={i} style={{ borderRadius:20, overflow:"hidden", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", transition:"all 0.3s" }}>
+                <div style={{ position:"relative", height:200, overflow:"hidden" }}>
+                  <img src={p.img} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, transparent, rgba(0,0,0,0.4))" }}/>
+                  <div style={{ position:"absolute", top:12, left:12, background:p.tagColor, color:"white", fontSize:9, fontWeight:800, padding:"4px 10px", borderRadius:20, letterSpacing:1 }}>{p.tag}</div>
+                </div>
+                <div style={{ padding:24 }}>
+                  <h3 style={{ fontFamily:"'Playfair Display', serif", fontSize:18, fontWeight:700, color:"white", marginBottom:8 }}>{p.name}</h3>
+                  <div style={{ display:"flex", gap:16, marginBottom:16 }}>
+                    <span style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>📅 {p.duration}</span>
+                    <span style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>👥 {p.places}</span>
+                  </div>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div>
+                      <span style={{ fontSize:22, fontWeight:800, color:T.sky, fontFamily:"'Playfair Display', serif" }}>{p.price}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginLeft:4 }}>FDJ/pers.</span>
+                    </div>
+                    <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
+                      padding:"10px 20px", background:`linear-gradient(135deg,${T.gold},${T.goldD})`,
+                      color:"white", borderRadius:10, fontSize:13, fontWeight:600, textDecoration:"none"
+                    }}>Réserver →</a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ TÉMOIGNAGES ══ */}
+      <section style={{ padding:"96px 40px", background:"white" }}>
+        <div style={{ maxWidth:1200, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:64 }}>
+            <div style={{ display:"inline-block", background:`${T.blue}15`, color:T.blue, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>TÉMOIGNAGES</div>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>Ce que disent nos clients</h2>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:24 }}>
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="testimonial-card" style={{
+                padding:36, borderRadius:20,
+                background: i === activeTestimonial ? `linear-gradient(135deg,${T.navy},${T.blue})` : T.gray50,
+                border: `1px solid ${i === activeTestimonial ? "transparent" : T.gray100}`,
+                transition:"all 0.4s ease", cursor:"pointer"
+              }} onClick={() => setActiveTestimonial(i)}>
+                <div style={{ display:"flex", gap:4, marginBottom:16 }}>
+                  {[...Array(t.stars)].map((_,j)=><span key={j} style={{ color:T.gold, fontSize:16 }}>★</span>)}
+                </div>
+                <p style={{ fontSize:15, lineHeight:1.8, color: i===activeTestimonial ? "rgba(255,255,255,0.85)" : T.gray700, marginBottom:24, fontStyle:"italic" }}>
+                  "{t.text}"
+                </p>
+                <div>
+                  <div style={{ fontWeight:700, color: i===activeTestimonial ? "white" : T.navy, fontSize:15 }}>{t.name}</div>
+                  <div style={{ fontSize:12, color: i===activeTestimonial ? T.sky : T.gray500, marginTop:2 }}>{t.role}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ AGENCE & CARTE ══ */}
+      <section id="agence" style={{ padding:"96px 40px", background:T.gray50 }}>
+        <div style={{ maxWidth:1200, margin:"0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:48 }}>
+            <div style={{ display:"inline-block", background:`${T.gold}15`, color:T.goldD, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>NOTRE AGENCE</div>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>Visitez-nous à Djibouti</h2>
+          </div>
+
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, marginBottom:32 }}>
+            {[
+              { src:"/agence1.jpg.jpeg", label:"Notre façade", span:2 },
+              { src:"/agence2.jpg.jpeg", label:"Notre bureau", span:1 },
+              { src:"/agence5.jpg.jpeg", label:"Notre équipe", span:1 },
+              { src:"/agence3.jpg.jpeg", label:"Espace travail", span:1 },
+              { src:"/agence4.jpg.jpeg", label:"Vue extérieure", span:1 },
+            ].map((p, i) => (
+              <div key={i} style={{ gridColumn:`span ${p.span}`, borderRadius:16, overflow:"hidden", height:i===0?220:160, position:"relative", boxShadow:"0 4px 20px rgba(0,0,0,0.1)" }}>
+                <img src={p.src} alt={p.label} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.6))", padding:"10px 14px" }}>
+                  <span style={{ color:"white", fontSize:11, fontWeight:600 }}>{p.label}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Google Maps + Infos */}
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
-            {/* Google Maps embed */}
-            <div style={{ borderRadius:16, overflow:"hidden", boxShadow:"0 4px 16px rgba(0,0,0,0.1)", height:280 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+            <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,0.1)", height:300 }}>
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.0!2d43.1456!3d11.5886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDM1JzE5LjAiTiA0M8KwMDgnNDQuMiJF!5e0!3m2!1sfr!2sdj!4v1234567890"
-                width="100%"
-                height="280"
-                style={{ border:0 }}
-                allowFullScreen=""
-                loading="lazy"
-                title="Alamin Tourism & Travel - Djibouti"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3885.5!2d43.1456!3d11.5886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zQWxhbWluIFRvdXJpc20!5e0!3m2!1sfr!2sdj"
+                width="100%" height="300" style={{ border:0 }} allowFullScreen loading="lazy" title="Alamin Tourism Djibouti"
               />
             </div>
-
-            {/* Infos contact */}
-            <div style={{ background:"#f8faff", borderRadius:16, padding:24, border:"1px solid #e0eaf5" }}>
-              <div style={{ fontWeight:"bold", color:C.navy, fontSize:16, marginBottom:16 }}>📋 Informations</div>
+            <div style={{ background:"white", borderRadius:20, padding:32, boxShadow:"0 4px 24px rgba(0,0,0,0.06)" }}>
+              <h3 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, fontWeight:700, color:T.navy, marginBottom:24 }}>Informations pratiques</h3>
               {[
-                ["📍", "Adresse", "Salines Ouest, Mohamed Kamil Road, Djibouti"],
-                ["📞", "Téléphone", "+253 21 25 07 17"],
-                ["📱", "Mobile", "+253 77 64 64 05"],
-                ["✉️", "Email", "reservations@alamintravel-dj.com"],
-                ["🕐", "Horaires", "Sam-Jeu : 8h00-20h00"],
-                ["🌍", "Site web", "alamintravel-dj.com"],
-              ].map(([icon, label, value]) => (
-                <div key={label} style={{ display:"flex", gap:10, marginBottom:12, alignItems:"flex-start" }}>
-                  <span style={{ fontSize:16 }}>{icon}</span>
+                ["📍","Adresse","Salines Ouest, Mohamed Kamil Road, Djibouti"],
+                ["📞","Téléphone","+253 21 25 07 17"],
+                ["📱","Mobile","+253 77 64 64 05"],
+                ["✉️","Email","reservations@alamintravel-dj.com"],
+                ["🕐","Horaires","Samedi–Jeudi : 8h00 – 20h00"],
+                ["🌐","Site web","alamintravel-dj.com"],
+              ].map(([icon,label,val])=>(
+                <div key={label} style={{ display:"flex", gap:14, marginBottom:14, alignItems:"flex-start" }}>
+                  <span style={{ fontSize:18, flexShrink:0 }}>{icon}</span>
                   <div>
-                    <div style={{ fontSize:10, color:"#888", fontWeight:600 }}>{label}</div>
-                    <div style={{ fontSize:13, color:C.navy, fontWeight:500 }}>{value}</div>
+                    <div style={{ fontSize:10, color:T.gray500, fontWeight:700, letterSpacing:1, marginBottom:2 }}>{label.toUpperCase()}</div>
+                    <div style={{ fontSize:13, color:T.navy, fontWeight:500 }}>{val}</div>
                   </div>
                 </div>
               ))}
-              <a
-                href="https://maps.google.com/?q=Alamin+Tourism+Travel+Djibouti"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display:"block", marginTop:16, background:C.blue, color:"white", borderRadius:8, padding:"10px 16px", textAlign:"center", fontSize:13, fontWeight:600, textDecoration:"none" }}
-              >
-                🗺️ Ouvrir dans Google Maps
-              </a>
+              <a href="https://maps.google.com/?q=Alamin+Tourism+Travel+Djibouti" target="_blank" rel="noopener noreferrer" style={{
+                display:"block", marginTop:20, padding:"12px", background:`linear-gradient(135deg,${T.blue},${T.blueL})`,
+                color:"white", borderRadius:12, textAlign:"center", fontSize:14, fontWeight:600, textDecoration:"none"
+              }}>🗺️ Ouvrir dans Google Maps</a>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Footer */}
-      <footer style={{ background:C.navy, color:"rgba(255,255,255,0.6)", marginTop:48, padding:"32px 24px 16px" }}>
+      {/* ══ CTA FINAL ══ */}
+      <section style={{ padding:"80px 40px", background:`linear-gradient(135deg, ${T.blue} 0%, ${T.navy} 100%)`, textAlign:"center" }}>
+        <div style={{ maxWidth:700, margin:"0 auto" }}>
+          <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>
+            Prêt à voyager ?
+          </h2>
+          <p style={{ fontSize:17, color:"rgba(255,255,255,0.7)", marginBottom:40, lineHeight:1.7 }}>
+            Notre équipe est disponible 6 jours sur 7 pour vous aider à planifier le voyage parfait.
+          </p>
+          <div style={{ display:"flex", gap:16, justifyContent:"center", flexWrap:"wrap" }}>
+            <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
+              padding:"16px 40px", background:"#25D366", color:"white", borderRadius:12,
+              fontSize:16, fontWeight:700, textDecoration:"none", display:"flex", alignItems:"center", gap:8
+            }}>💬 Nous contacter sur WhatsApp</a>
+            <a href="tel:+25321250717" style={{
+              padding:"16px 40px", background:"rgba(255,255,255,0.1)", border:"2px solid rgba(255,255,255,0.3)",
+              color:"white", borderRadius:12, fontSize:16, fontWeight:600, textDecoration:"none"
+            }}>📞 +253 21 25 07 17</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FOOTER ══ */}
+      <footer style={{ background:T.navyD, padding:"48px 40px 24px", borderTop:"1px solid rgba(255,255,255,0.05)" }}>
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
-          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:32, marginBottom:24 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:40, marginBottom:40 }}>
             <div>
-              <AlaminLogo height={50} />
-              <p style={{ fontSize:12, lineHeight:1.8 }}>Alamin Travels, votre partenaire de confiance pour voyager depuis Djibouti vers le monde entier. IATA Accrédité, service personnalisé et prix compétitifs.</p>
+              <Logo size={48} light />
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginTop:16, lineHeight:1.8, maxWidth:280 }}>
+                Votre partenaire de voyage de confiance à Djibouti depuis 2010. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Hajj & Omra.
+              </p>
+              <div style={{ display:"flex", gap:12, marginTop:20 }}>
+                {["Facebook","Instagram","WhatsApp"].map(s=>(
+                  <div key={s} style={{ width:36, height:36, borderRadius:8, background:"rgba(255,255,255,0.08)", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:14 }}>
+                    {s==="Facebook"?"f":s==="Instagram"?"📷":"💬"}
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
-              <div style={{ fontWeight:"bold", color:"#fff", marginBottom:10, fontSize:13 }}>Services</div>
-              {["Vols internationaux","Hôtels","Omra","Voyages organisés","Visa assistance"].map(s=><div key={s} style={{ fontSize:12, marginBottom:5, cursor:"pointer" }}>{s}</div>)}
+              <div style={{ fontSize:11, fontWeight:700, color:T.sky, letterSpacing:2, marginBottom:20 }}>SERVICES</div>
+              {["Billets d'avion","Hôtels","Hajj & Omra","Location voiture","Assistance visa","Voyages organisés"].map(s=>(
+                <div key={s} style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginBottom:10, cursor:"pointer" }}>{s}</div>
+              ))}
             </div>
             <div>
-              <div style={{ fontWeight:"bold", color:"#fff", marginBottom:10, fontSize:13 }}>Contact</div>
-              {["📍 Salines Ouest, Mohamed Kamil Road","📞 +253 21 25 07 17","📱 +253 77 64 64 05","📱 +253 77 64 64 06","📧 reservations@alamintravel-dj.com"].map(c=><div key={c} style={{ fontSize:12, marginBottom:5 }}>{c}</div>)}
+              <div style={{ fontSize:11, fontWeight:700, color:T.sky, letterSpacing:2, marginBottom:20 }}>LIENS RAPIDES</div>
+              {["Accueil","À propos","Packages","Destinations","Contact"].map(s=>(
+                <div key={s} style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginBottom:10, cursor:"pointer" }}>{s}</div>
+              ))}
             </div>
             <div>
-              <div style={{ fontWeight:"bold", color:"#fff", marginBottom:10, fontSize:13 }}>Horaires</div>
-              {["Sam - Jeu : 8h00 - 20h00","Vendredi : Fermé","Agent IA : 24h/24 · 7j/7"].map(h=><div key={h} style={{ fontSize:12, marginBottom:5 }}>{h}</div>)}
+              <div style={{ fontSize:11, fontWeight:700, color:T.sky, letterSpacing:2, marginBottom:20 }}>CONTACT</div>
+              {["+253 21 25 07 17","+253 77 64 64 05","reservations@alamintravel-dj.com","Salines Ouest, Djibouti"].map(s=>(
+                <div key={s} style={{ fontSize:12, color:"rgba(255,255,255,0.45)", marginBottom:10, lineBreak:"anywhere" }}>{s}</div>
+              ))}
             </div>
           </div>
-          <div style={{ borderTop:"1px solid rgba(255,255,255,0.1)", paddingTop:16, display:"flex", justifyContent:"space-between", fontSize:11 }}>
-            <span>© 2026 Alamin Travels — IATA Accredited Agent · Djibouti</span>
-            <span>Propulsé par l'Intelligence Artificielle 🤖</span>
+          <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", paddingTop:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.3)" }}>© 2026 Alamin Tourism & Travel. Tous droits réservés. Agent IATA Accrédité.</div>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.3)" }}>alamintravel-dj.com</div>
           </div>
         </div>
       </footer>
-
-      <style>{`
-        @keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1)}}
-        input::placeholder{color:#9ca3af}
-        *{box-sizing:border-box}
-        ::-webkit-scrollbar{width:4px}
-        ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px}
-      `}</style>
     </div>
   );
 }
