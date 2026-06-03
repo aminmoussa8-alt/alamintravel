@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 
 // ── EMAILJS CONFIG ─────────────────────────────────────────────────────────────
 const EMAILJS_SERVICE_ID = "alamin_travels";
-const EMAILJS_TEMPLATE_ID = "z4qfy6d";
+const EMAILJS_TEMPLATE_ID = "template_w7ejnx7";
 
 // ── DESIGN TOKENS ──────────────────────────────────────────────────────────────
 const C = {
