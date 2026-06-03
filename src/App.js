@@ -381,8 +381,68 @@ export default function AlaminTravels() {
         </div>
         {/* Main nav */}
         <div style={{ padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div style={{ cursor:"pointer" }} onClick={()=>navTo("home")}>
-            <img src="/alamin-logo.png" alt="Alamin Tourism & Travel" style={{ height:70, width:"auto", objectFit:"contain", display:"block" }} />
+          {/* ── LOGO ALAMIN ── */}
+          <div style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer" }} onClick={()=>navTo("home")}>
+            {/* Globe SVG */}
+            <svg width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="g1" cx="38%" cy="32%" r="65%">
+                  <stop offset="0%" stopColor="#6ec6f5"/>
+                  <stop offset="40%" stopColor="#2a8fd4"/>
+                  <stop offset="100%" stopColor="#0a3d7a"/>
+                </radialGradient>
+                <radialGradient id="g2" cx="30%" cy="25%" r="45%">
+                  <stop offset="0%" stopColor="white" stopOpacity="0.5"/>
+                  <stop offset="100%" stopColor="white" stopOpacity="0"/>
+                </radialGradient>
+              </defs>
+              {/* Sphère */}
+              <circle cx="27" cy="27" r="25" fill="url(#g1)"/>
+              {/* Continents */}
+              <path d="M10,18 Q16,14 22,17 Q24,22 20,26 Q14,28 10,24 Z" fill="#0a4a8a" opacity="0.7"/>
+              <path d="M13,28 Q18,26 21,31 Q22,37 18,41 Q13,42 11,36 Z" fill="#0a4a8a" opacity="0.65"/>
+              <path d="M24,14 Q30,12 34,15 Q36,20 32,23 Q26,24 23,20 Z" fill="#0a4a8a" opacity="0.65"/>
+              <path d="M28,22 Q35,20 38,26 Q40,33 36,38 Q30,40 26,35 Q24,28 28,22Z" fill="#0a4a8a" opacity="0.7"/>
+              <path d="M34,13 Q42,11 46,17 Q48,23 44,27 Q38,28 34,22 Z" fill="#0a4a8a" opacity="0.6"/>
+              {/* Lignes lat/long */}
+              <ellipse cx="27" cy="27" rx="25" ry="7" fill="none" stroke="white" strokeWidth="0.5" opacity="0.25"/>
+              <line x1="2" y1="27" x2="52" y2="27" stroke="white" strokeWidth="0.5" opacity="0.25"/>
+              <ellipse cx="27" cy="27" rx="12" ry="25" fill="none" stroke="white" strokeWidth="0.5" opacity="0.2"/>
+              {/* Shine */}
+              <circle cx="27" cy="27" r="25" fill="url(#g2)"/>
+              <circle cx="27" cy="27" r="25" fill="none" stroke="#7dd4f8" strokeWidth="1" opacity="0.5"/>
+              {/* Avion */}
+              <g transform="translate(28,6) rotate(-35)">
+                <ellipse cx="9" cy="3" rx="9" ry="2.8" fill="#0d2d6e"/>
+                <polygon points="3,3.5 14,3.5 11,8 0,8" fill="#0d2d6e"/>
+                <polygon points="0,4 5,4 4,6.5 -1,6.5" fill="#0d2d6e"/>
+              </g>
+            </svg>
+            {/* Texte logo */}
+            <div style={{ lineHeight:1 }}>
+              <div style={{ fontSize:22, fontWeight:900, color:"#ffffff", letterSpacing:2, fontFamily:"'Arial Black',Arial,sans-serif" }}>ALAMIN</div>
+              <div style={{ fontSize:9, fontWeight:700, color:C.blueLight, letterSpacing:2.5, marginTop:1 }}>TOURISM &amp; TRAVEL</div>
+              <div style={{ marginTop:3, background:"#0d2d6e", borderRadius:2, padding:"1px 6px", display:"inline-block" }}>
+                <span style={{ fontSize:7, color:"white", letterSpacing:1.2 }}>WHERE EVERY DREAMS TAKE FLIGHT</span>
+              </div>
+            </div>
+            {/* Séparateur + IATA */}
+            <div style={{ borderLeft:`1px solid rgba(255,255,255,0.3)`, paddingLeft:10, marginLeft:4 }}>
+              <svg width="52" height="52" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+                {/* Globe IATA */}
+                <circle cx="26" cy="22" r="16" fill="none" stroke="#4da3e8" strokeWidth="1.5"/>
+                <ellipse cx="26" cy="22" rx="8" ry="16" fill="none" stroke="#4da3e8" strokeWidth="1"/>
+                <ellipse cx="26" cy="22" rx="15" ry="7" fill="none" stroke="#4da3e8" strokeWidth="0.8"/>
+                <line x1="10" y1="22" x2="42" y2="22" stroke="#4da3e8" strokeWidth="0.8"/>
+                {/* Ailes */}
+                <path d="M10,22 Q2,15 5,10 Q12,6 18,13 Q14,17 10,22Z" fill="#4da3e8"/>
+                <path d="M42,22 Q50,15 47,10 Q40,6 34,13 Q38,17 42,22Z" fill="#4da3e8"/>
+                {/* IATA text */}
+                <text x="26" y="27" fontFamily="'Arial Black',Arial,sans-serif" fontSize="10" fontWeight="900" fill="#4da3e8" textAnchor="middle" letterSpacing="1.5">IATA</text>
+                {/* Accredited Agent */}
+                <text x="26" y="44" fontFamily="Arial,sans-serif" fontSize="6" fontWeight="700" fill="#4da3e8" textAnchor="middle" letterSpacing="0.5">ACCREDITED AGENT</text>
+              </svg>
+            </div>
           </div>
           {/* Desktop nav */}
           <nav style={{ display:"flex", gap:2 }}>
