@@ -934,11 +934,11 @@ export default function AlaminTravels() {
                 <div style={{ width:36, height:36, background:`linear-gradient(135deg,${C.gold},#b8902a)`, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16, fontWeight:"bold", color:C.navy }}>✈</div>
                 <div style={{ fontWeight:"bold", color:"#fff", fontSize:16 }}>Alamin Travels</div>
               </div>
-              <p style={{ fontSize:12, lineHeight:1.8 }}>Votre agence de voyage IATA accréditée à Djibouti. Spécialiste des voyages vers La Mecque, Médine et les destinations mondiales depuis 2010.</p>
+              <p style={{ fontSize:12, lineHeight:1.8 }}>Alamin Travels, votre partenaire de confiance pour voyager depuis Djibouti vers le monde entier. IATA Accrédité, service personnalisé et prix compétitifs.</p>
             </div>
             <div>
               <div style={{ fontWeight:"bold", color:"#fff", marginBottom:10, fontSize:13 }}>Services</div>
-              {["Vols internationaux","Hôtels","Packages Hajj & Omra","Voyages organisés","Visa assistance"].map(s=><div key={s} style={{ fontSize:12, marginBottom:5, cursor:"pointer" }}>{s}</div>)}
+              {["Vols internationaux","Hôtels","Omra","Voyages organisés","Visa assistance"].map(s=><div key={s} style={{ fontSize:12, marginBottom:5, cursor:"pointer" }}>{s}</div>)}
             </div>
             <div>
               <div style={{ fontWeight:"bold", color:"#fff", marginBottom:10, fontSize:13 }}>Contact</div>
@@ -946,7 +946,7 @@ export default function AlaminTravels() {
             </div>
             <div>
               <div style={{ fontWeight:"bold", color:"#fff", marginBottom:10, fontSize:13 }}>Horaires</div>
-              {["Lun-Jeu: 7h30 - 17h00","Vendredi: 7h30 - 11h30","Samedi: 9h00 - 13h00","Agent IA: 24h/24 · 7j/7"].map(h=><div key={h} style={{ fontSize:12, marginBottom:5 }}>{h}</div>)}
+              {["Sam - Jeu : 8h00 - 20h00","Vendredi : Fermé","Agent IA : 24h/24 · 7j/7"].map(h=><div key={h} style={{ fontSize:12, marginBottom:5 }}>{h}</div>)}
             </div>
           </div>
           <div style={{ borderTop:"1px solid rgba(255,255,255,0.1)", paddingTop:16, display:"flex", justifyContent:"space-between", fontSize:11 }}>
