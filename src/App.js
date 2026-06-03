@@ -382,7 +382,7 @@ export default function AlaminTravels() {
         {/* Main nav */}
         <div style={{ padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div style={{ cursor:"pointer" }} onClick={()=>navTo("home")}>
-            <img src="/alamin-logo.png" alt="Alamin Tourism & Travel" style={{ height:52, width:"auto", objectFit:"contain", display:"block" }} />
+            <img src="/alamin-logo.png" alt="Alamin Tourism & Travel" style={{ height:70, width:"auto", objectFit:"contain", display:"block" }} />
           </div>
           {/* Desktop nav */}
           <nav style={{ display:"flex", gap:2 }}>
