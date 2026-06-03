@@ -1048,11 +1048,11 @@ export default function AlaminTravels() {
           {/* Photos galerie */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24 }}>
             {[
-              { src:"/agence1.jpg", label:"Notre façade" },
-              { src:"/agence2.jpg", label:"Notre bureau" },
-              { src:"/agence3.jpg", label:"Notre équipe" },
-              { src:"/agence4.jpg", label:"Vue extérieure" },
-              { src:"/agence5.jpg", label:"Espace travail" },
+              { src:"/agence1.jpg.jpeg", label:"Notre façade" },
+              { src:"/agence2.jpg.jpeg", label:"Notre bureau" },
+              { src:"/agence3.jpg.jpeg", label:"Notre équipe" },
+              { src:"/agence4.jpg.jpeg", label:"Vue extérieure" },
+              { src:"/agence5.jpg.jpeg", label:"Espace travail" },
             ].map((photo, i) => (
               <div key={i} style={{
                 borderRadius:12,
