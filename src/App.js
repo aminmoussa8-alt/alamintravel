@@ -381,12 +381,8 @@ export default function AlaminTravels() {
         </div>
         {/* Main nav */}
         <div style={{ padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer" }} onClick={()=>navTo("home")}>
-            <div style={{ width:38, height:38, background:`linear-gradient(135deg,${C.gold},#b8902a)`, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, fontWeight:"bold", color:C.navy }}>✈</div>
-            <div>
-              <div style={{ fontSize:16, fontWeight:"bold", color:"#fff", letterSpacing:1, lineHeight:1 }}>Alamin Travels</div>
-              <div style={{ fontSize:9, color:C.gold, letterSpacing:2 }}>IATA ACCREDITED · DJIBOUTI</div>
-            </div>
+          <div style={{ cursor:"pointer" }} onClick={()=>navTo("home")}>
+            <img src="/alamin-logo.png" alt="Alamin Tourism & Travel" style={{ height:52, width:"auto", objectFit:"contain", display:"block" }} />
           </div>
           {/* Desktop nav */}
           <nav style={{ display:"flex", gap:2 }}>
