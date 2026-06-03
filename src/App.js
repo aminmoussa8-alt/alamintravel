@@ -548,34 +548,31 @@ export default function AlaminTravels() {
                 <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, background:"linear-gradient(to left, #f0f4f8, transparent)", zIndex:2 }}/>
                 <div className="airlines-track">
                   {[
-                    { name:"Qatar Airways", color:"#5C0632", text:"#fff", emoji:"🇶🇦", code:"QR" },
-                    { name:"Ethiopian Airlines", color:"#007A4D", text:"#fff", emoji:"🇪🇹", code:"ET" },
-                    { name:"Emirates", color:"#CC0000", text:"#fff", emoji:"🇦🇪", code:"EK" },
-                    { name:"Flydubai", color:"#E3000F", text:"#fff", emoji:"✈️", code:"FZ" },
-                    { name:"Flynas", color:"#FF6B00", text:"#fff", emoji:"🇸🇦", code:"XY" },
-                    { name:"Qatar Airways", color:"#5C0632", text:"#fff", emoji:"🇶🇦", code:"QR" },
-                    { name:"Ethiopian Airlines", color:"#007A4D", text:"#fff", emoji:"🇪🇹", code:"ET" },
-                    { name:"Emirates", color:"#CC0000", text:"#fff", emoji:"🇦🇪", code:"EK" },
-                    { name:"Flydubai", color:"#E3000F", text:"#fff", emoji:"✈️", code:"FZ" },
-                    { name:"Flynas", color:"#FF6B00", text:"#fff", emoji:"🇸🇦", code:"XY" },
+                    { name:"Qatar Airways", logo:"https://upload.wikimedia.org/wikipedia/en/thumb/9/9b/Qatar_Airways_Logo.svg/320px-Qatar_Airways_Logo.svg.png", bg:"#5C0632" },
+                    { name:"Ethiopian Airlines", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ethiopian_Airlines_Logo.svg/320px-Ethiopian_Airlines_Logo.svg.png", bg:"#007A4D" },
+                    { name:"Emirates", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/320px-Emirates_logo.svg.png", bg:"#CC0000" },
+                    { name:"Flydubai", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Flydubai_logo.svg/320px-Flydubai_logo.svg.png", bg:"#E3000F" },
+                    { name:"Flynas", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Flynas_logo.svg/320px-Flynas_logo.svg.png", bg:"#FF6B00" },
+                    { name:"Qatar Airways", logo:"https://upload.wikimedia.org/wikipedia/en/thumb/9/9b/Qatar_Airways_Logo.svg/320px-Qatar_Airways_Logo.svg.png", bg:"#5C0632" },
+                    { name:"Ethiopian Airlines", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ethiopian_Airlines_Logo.svg/320px-Ethiopian_Airlines_Logo.svg.png", bg:"#007A4D" },
+                    { name:"Emirates", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/320px-Emirates_logo.svg.png", bg:"#CC0000" },
+                    { name:"Flydubai", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Flydubai_logo.svg/320px-Flydubai_logo.svg.png", bg:"#E3000F" },
+                    { name:"Flynas", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Flynas_logo.svg/320px-Flynas_logo.svg.png", bg:"#FF6B00" },
                   ].map((airline, i) => (
                     <div key={i} style={{
-                      display:"flex", alignItems:"center", gap:10,
+                      display:"flex", alignItems:"center", justifyContent:"center",
                       background:"#fff", border:"1px solid #e0eaf5",
-                      borderRadius:14, padding:"12px 20px", marginRight:16,
+                      borderRadius:14, padding:"14px 24px", marginRight:16,
                       boxShadow:"0 2px 8px rgba(0,0,0,0.06)",
-                      flexShrink:0, minWidth:180
+                      flexShrink:0, minWidth:160, height:70
                     }}>
-                      <div style={{
-                        width:44, height:44, borderRadius:10,
-                        background:airline.color,
-                        display:"flex", alignItems:"center", justifyContent:"center",
-                        fontSize:22, flexShrink:0
-                      }}>{airline.emoji}</div>
-                      <div>
-                        <div style={{ fontSize:13, fontWeight:700, color:C.navy, whiteSpace:"nowrap" }}>{airline.name}</div>
-                        <div style={{ fontSize:10, color:C.gray500 }}>Code IATA: {airline.code}</div>
-                      </div>
+                      <img
+                        src={airline.logo}
+                        alt={airline.name}
+                        style={{ maxHeight:40, maxWidth:130, objectFit:"contain" }}
+                        onError={e=>{ e.target.style.display="none"; e.target.nextSibling.style.display="block"; }}
+                      />
+                      <span style={{ display:"none", fontSize:13, fontWeight:700, color:C.navy }}>{airline.name}</span>
                     </div>
                   ))}
                 </div>
