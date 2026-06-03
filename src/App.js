@@ -1,6 +1,48 @@
 import { useState, useEffect, useRef } from "react";
 
 // ── DESIGN TOKENS ──────────────────────────────────────────────────────────────
+
+// ── LOGO COMPOSANT ─────────────────────────────────────────────────────────────
+const AlaminLogo = ({ height = 60, dark = false }) => (
+  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+    <svg height={height} width={height} viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="lg1" cx="38%" cy="32%" r="65%">
+          <stop offset="0%" stopColor="#6ec6f5"/>
+          <stop offset="40%" stopColor="#2a8fd4"/>
+          <stop offset="100%" stopColor="#0a3d7a"/>
+        </radialGradient>
+        <radialGradient id="lg2" cx="30%" cy="25%" r="45%">
+          <stop offset="0%" stopColor="white" stopOpacity="0.5"/>
+          <stop offset="100%" stopColor="white" stopOpacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="27" cy="27" r="25" fill="url(#lg1)"/>
+      <path d="M10,18 Q16,14 22,17 Q24,22 20,26 Q14,28 10,24Z" fill="#0a4a8a" opacity="0.7"/>
+      <path d="M13,28 Q18,26 21,31 Q22,37 18,41 Q13,42 11,36Z" fill="#0a4a8a" opacity="0.65"/>
+      <path d="M24,14 Q30,12 34,15 Q36,20 32,23 Q26,24 23,20Z" fill="#0a4a8a" opacity="0.65"/>
+      <path d="M28,22 Q35,20 38,26 Q40,33 36,38 Q30,40 26,35 Q24,28 28,22Z" fill="#0a4a8a" opacity="0.7"/>
+      <path d="M34,13 Q42,11 46,17 Q48,23 44,27 Q38,28 34,22Z" fill="#0a4a8a" opacity="0.6"/>
+      <ellipse cx="27" cy="27" rx="25" ry="7" fill="none" stroke="white" strokeWidth="0.5" opacity="0.25"/>
+      <line x1="2" y1="27" x2="52" y2="27" stroke="white" strokeWidth="0.5" opacity="0.25"/>
+      <ellipse cx="27" cy="27" rx="12" ry="25" fill="none" stroke="white" strokeWidth="0.5" opacity="0.2"/>
+      <circle cx="27" cy="27" r="25" fill="url(#lg2)"/>
+      <g transform="translate(28,6) rotate(-35)">
+        <ellipse cx="9" cy="3" rx="9" ry="2.8" fill="#0d2d6e"/>
+        <polygon points="3,3.5 14,3.5 11,8 0,8" fill="#0d2d6e"/>
+        <polygon points="0,4 5,4 4,6.5 -1,6.5" fill="#0d2d6e"/>
+      </g>
+    </svg>
+    <div style={{ lineHeight:1 }}>
+      <div style={{ fontSize: height*0.35, fontWeight:900, color: dark ? "#0d2d6e" : "#ffffff", letterSpacing:2, fontFamily:"'Arial Black',Arial,sans-serif" }}>ALAMIN</div>
+      <div style={{ fontSize: height*0.14, fontWeight:700, color:"#4da3e8", letterSpacing:2, marginTop:1 }}>TOURISM &amp; TRAVEL</div>
+      <div style={{ marginTop:2, background:"#0d2d6e", borderRadius:2, padding:"1px 5px", display:"inline-block" }}>
+        <span style={{ fontSize: height*0.11, color:"white", letterSpacing:1 }}>WHERE EVERY DREAMS TAKE FLIGHT</span>
+      </div>
+    </div>
+  </div>
+);
+
 const C = {
   navy: "#0a1628",
   navyDark: "#060e1a",
@@ -394,11 +436,7 @@ export default function AlaminTravels() {
         {/* Main nav */}
         <div style={{ padding:"0 24px", height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer" }} onClick={()=>navTo("home")}>
-            <div style={{ width:38, height:38, background:`linear-gradient(135deg,${C.gold},#b8902a)`, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, fontWeight:"bold", color:C.navy }}>✈</div>
-            <div>
-              <div style={{ fontSize:16, fontWeight:"bold", color:"#fff", letterSpacing:1, lineHeight:1 }}>Alamin Travels</div>
-              <div style={{ fontSize:9, color:C.gold, letterSpacing:2 }}>IATA ACCREDITED · DJIBOUTI</div>
-            </div>
+            <AlaminLogo height={70} />
           </div>
           {/* Desktop nav */}
           <nav style={{ display:"flex", gap:2 }}>
@@ -482,6 +520,66 @@ export default function AlaminTravels() {
                   <div style={{ fontSize:12, color:C.gray500 }}>{l}</div>
                 </Card>
               ))}
+            </div>
+
+
+            {/* ═══ COMPAGNIES AÉRIENNES - DÉFILEMENT INFINI ═══ */}
+            <div style={{ marginBottom:28 }}>
+              <h2 style={{ fontSize:20, fontWeight:"bold", color:C.navy, marginBottom:6 }}>✈️ Nos Compagnies Partenaires</h2>
+              <p style={{ fontSize:13, color:C.gray500, marginBottom:16 }}>Nous travaillons avec les meilleures compagnies aériennes desservant Djibouti</p>
+              <style>{`
+                @keyframes scrollAirlines {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                .airlines-track {
+                  display: flex;
+                  animation: scrollAirlines 18s linear infinite;
+                  width: max-content;
+                }
+                .airlines-track:hover {
+                  animation-play-state: paused;
+                }
+              `}</style>
+              <div style={{ overflow:"hidden", position:"relative", padding:"8px 0" }}>
+                {/* Dégradé gauche */}
+                <div style={{ position:"absolute", left:0, top:0, bottom:0, width:60, background:"linear-gradient(to right, #f0f4f8, transparent)", zIndex:2 }}/>
+                {/* Dégradé droite */}
+                <div style={{ position:"absolute", right:0, top:0, bottom:0, width:60, background:"linear-gradient(to left, #f0f4f8, transparent)", zIndex:2 }}/>
+                <div className="airlines-track">
+                  {[
+                    { name:"Qatar Airways", color:"#5C0632", text:"#fff", emoji:"🇶🇦", code:"QR" },
+                    { name:"Ethiopian Airlines", color:"#007A4D", text:"#fff", emoji:"🇪🇹", code:"ET" },
+                    { name:"Emirates", color:"#CC0000", text:"#fff", emoji:"🇦🇪", code:"EK" },
+                    { name:"Flydubai", color:"#E3000F", text:"#fff", emoji:"✈️", code:"FZ" },
+                    { name:"Flynas", color:"#FF6B00", text:"#fff", emoji:"🇸🇦", code:"XY" },
+                    { name:"Qatar Airways", color:"#5C0632", text:"#fff", emoji:"🇶🇦", code:"QR" },
+                    { name:"Ethiopian Airlines", color:"#007A4D", text:"#fff", emoji:"🇪🇹", code:"ET" },
+                    { name:"Emirates", color:"#CC0000", text:"#fff", emoji:"🇦🇪", code:"EK" },
+                    { name:"Flydubai", color:"#E3000F", text:"#fff", emoji:"✈️", code:"FZ" },
+                    { name:"Flynas", color:"#FF6B00", text:"#fff", emoji:"🇸🇦", code:"XY" },
+                  ].map((airline, i) => (
+                    <div key={i} style={{
+                      display:"flex", alignItems:"center", gap:10,
+                      background:"#fff", border:"1px solid #e0eaf5",
+                      borderRadius:14, padding:"12px 20px", marginRight:16,
+                      boxShadow:"0 2px 8px rgba(0,0,0,0.06)",
+                      flexShrink:0, minWidth:180
+                    }}>
+                      <div style={{
+                        width:44, height:44, borderRadius:10,
+                        background:airline.color,
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        fontSize:22, flexShrink:0
+                      }}>{airline.emoji}</div>
+                      <div>
+                        <div style={{ fontSize:13, fontWeight:700, color:C.navy, whiteSpace:"nowrap" }}>{airline.name}</div>
+                        <div style={{ fontSize:10, color:C.gray500 }}>Code IATA: {airline.code}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Services */}
@@ -942,15 +1040,92 @@ export default function AlaminTravels() {
         </div>
       )}
 
+
+      {/* ═══ SECTION AGENCE & LOCALISATION ═══ */}
+      {page === "home" && (
+        <div style={{ maxWidth:1200, margin:"0 auto 48px", padding:"0 24px" }}>
+          <h2 style={{ fontSize:22, fontWeight:"bold", color:C.navy, marginBottom:20, textAlign:"center" }}>
+            📍 Notre Agence à Djibouti
+          </h2>
+
+          {/* Photos galerie */}
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24 }}>
+            {[
+              { src:"/agence1.jpg", label:"Notre façade" },
+              { src:"/agence2.jpg", label:"Notre bureau" },
+              { src:"/agence3.jpg", label:"Notre équipe" },
+              { src:"/agence4.jpg", label:"Vue extérieure" },
+              { src:"/agence5.jpg", label:"Espace travail" },
+            ].map((photo, i) => (
+              <div key={i} style={{
+                borderRadius:12,
+                overflow:"hidden",
+                height: i === 0 ? 220 : 160,
+                gridColumn: i === 0 ? "span 2" : "span 1",
+                position:"relative",
+                boxShadow:"0 4px 16px rgba(0,0,0,0.12)"
+              }}>
+                <img src={photo.src} alt={photo.label} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.6))", padding:"8px 12px" }}>
+                  <span style={{ color:"white", fontSize:11, fontWeight:600 }}>{photo.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Google Maps + Infos */}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
+            {/* Google Maps embed */}
+            <div style={{ borderRadius:16, overflow:"hidden", boxShadow:"0 4px 16px rgba(0,0,0,0.1)", height:280 }}>
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.0!2d43.1456!3d11.5886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDM1JzE5LjAiTiA0M8KwMDgnNDQuMiJF!5e0!3m2!1sfr!2sdj!4v1234567890"
+                width="100%"
+                height="280"
+                style={{ border:0 }}
+                allowFullScreen=""
+                loading="lazy"
+                title="Alamin Tourism & Travel - Djibouti"
+              />
+            </div>
+
+            {/* Infos contact */}
+            <div style={{ background:"#f8faff", borderRadius:16, padding:24, border:"1px solid #e0eaf5" }}>
+              <div style={{ fontWeight:"bold", color:C.navy, fontSize:16, marginBottom:16 }}>📋 Informations</div>
+              {[
+                ["📍", "Adresse", "Salines Ouest, Mohamed Kamil Road, Djibouti"],
+                ["📞", "Téléphone", "+253 21 25 07 17"],
+                ["📱", "Mobile", "+253 77 64 64 05"],
+                ["✉️", "Email", "reservations@alamintravel-dj.com"],
+                ["🕐", "Horaires", "Sam-Jeu : 8h00-20h00"],
+                ["🌍", "Site web", "alamintravel-dj.com"],
+              ].map(([icon, label, value]) => (
+                <div key={label} style={{ display:"flex", gap:10, marginBottom:12, alignItems:"flex-start" }}>
+                  <span style={{ fontSize:16 }}>{icon}</span>
+                  <div>
+                    <div style={{ fontSize:10, color:"#888", fontWeight:600 }}>{label}</div>
+                    <div style={{ fontSize:13, color:C.navy, fontWeight:500 }}>{value}</div>
+                  </div>
+                </div>
+              ))}
+              <a
+                href="https://maps.google.com/?q=Alamin+Tourism+Travel+Djibouti"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display:"block", marginTop:16, background:C.blue, color:"white", borderRadius:8, padding:"10px 16px", textAlign:"center", fontSize:13, fontWeight:600, textDecoration:"none" }}
+              >
+                🗺️ Ouvrir dans Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer style={{ background:C.navy, color:"rgba(255,255,255,0.6)", marginTop:48, padding:"32px 24px 16px" }}>
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
           <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:32, marginBottom:24 }}>
             <div>
-              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-                <div style={{ width:36, height:36, background:`linear-gradient(135deg,${C.gold},#b8902a)`, borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16, fontWeight:"bold", color:C.navy }}>✈</div>
-                <div style={{ fontWeight:"bold", color:"#fff", fontSize:16 }}>Alamin Travels</div>
-              </div>
+              <AlaminLogo height={50} />
               <p style={{ fontSize:12, lineHeight:1.8 }}>Alamin Travels, votre partenaire de confiance pour voyager depuis Djibouti vers le monde entier. IATA Accrédité, service personnalisé et prix compétitifs.</p>
             </div>
             <div>
