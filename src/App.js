@@ -66,7 +66,15 @@ const AIRLINES = [
   { name:"IATA", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/IATA_logo.svg" },
 ];
 
-// ── COMPOSANT LOGO ────────────────────────────────────────────────────────────
+// ── ICÔNE WHATSAPP (SVG officielle) ───────────────────────────────────────────
+const WhatsAppIcon = ({ size = 18, color = "white" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M12.001 2.003c-5.514 0-9.997 4.483-9.997 9.997 0 1.762.462 3.489 1.34 5.007L2.06 21.998l5.13-1.246a9.96 9.96 0 004.81 1.226h.004c5.514 0 9.997-4.483 9.997-9.997 0-2.67-1.04-5.18-2.929-7.07a9.933 9.933 0 00-7.07-2.908zm0 18.174h-.003a8.28 8.28 0 01-4.216-1.156l-.303-.18-3.043.784.812-2.968-.198-.305a8.283 8.283 0 01-1.267-4.408c0-4.583 3.729-8.313 8.32-8.313 2.222 0 4.31.868 5.879 2.44a8.26 8.26 0 012.436 5.878c0 4.583-3.73 8.229-8.417 8.229z"/>
+  </svg>
+);
+
+
 // Logo officiel Alamin Tourism & Travel — image fournie, affichée telle quelle
 // (aucune retouche de couleur/forme), centrée, responsive, proportions conservées.
 // Fichier attendu : /public/alamin-logo.png
@@ -142,6 +150,7 @@ const GLOBAL_CSS = `
     .agence-info-grid { grid-template-columns:1fr !important; }
     .footer-grid { grid-template-columns:1fr 1fr !important; gap:28px !important; }
     .cta-title { font-size:32px !important; }
+    .cta-split { grid-template-columns:1fr !important; }
   }
 
   @media (max-width: 480px) {
@@ -412,7 +421,7 @@ export default function AlaminLanding() {
               display:"flex", alignItems:"center", gap:6, padding:"8px 18px",
               background:"#25D366", color:"white", borderRadius:8,
               fontSize:13, fontWeight:600, textDecoration:"none", transition:"all 0.2s"
-            }}>💬 WhatsApp</a>
+            }}><WhatsAppIcon size={16}/> WhatsApp</a>
             <button className="btn-gold" onClick={()=>scrollTo("packages")} style={{
               padding:"8px 20px", background:`linear-gradient(135deg,${T.gold},${T.goldD})`,
               color:"white", border:"none", borderRadius:8, fontSize:13, fontWeight:600,
@@ -455,7 +464,7 @@ export default function AlaminLanding() {
                 flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:6, padding:"12px",
                 background:"#25D366", color:"white", borderRadius:8,
                 fontSize:14, fontWeight:600, textDecoration:"none",
-              }}>💬 WhatsApp</a>
+              }}><WhatsAppIcon size={16}/> WhatsApp</a>
               <button onClick={()=>scrollTo("packages")} style={{
                 flex:1, padding:"12px", background:`linear-gradient(135deg,${T.gold},${T.goldD})`,
                 color:"white", border:"none", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer",
@@ -518,7 +527,7 @@ export default function AlaminLanding() {
           {/* Carte contact flottante */}
           <div className="fade-up hero-contact-card" style={{ animationDelay:"0.6s", marginLeft:"auto", background:"rgba(255,255,255,0.07)", backdropFilter:"blur(20px)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:20, padding:28, minWidth:260 }}>
             <div style={{ fontSize:12, color:T.sky, fontWeight:700, letterSpacing:2, marginBottom:16 }}>CONTACTEZ-NOUS</div>
-            {[["📞","+253 21 25 07 17"],["📱","+253 77 64 64 05"],["✉️","reservations@alamintravel-dj.com"],["📍","Salines Ouest, Djibouti"],["🕐","Sam-Jeu 8h-20h"]].map(([icon,val])=>(
+            {[["📞","+253 21 25 07 17"],["📱","+253 77 64 64 06"],["✉️","reservations@alamintravel-dj.com"],["📍","Salines Ouest, Djibouti"],["🕐","Sam-Jeu 8h-20h"]].map(([icon,val])=>(
               <div key={val} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:12 }}>
                 <span style={{ fontSize:15 }}>{icon}</span>
                 <span style={{ fontSize:12, color:"rgba(255,255,255,0.8)", lineBreak:"anywhere" }}>{val}</span>
@@ -528,7 +537,7 @@ export default function AlaminLanding() {
               display:"block", marginTop:16, padding:"10px", background:"#25D366",
               color:"white", borderRadius:10, textAlign:"center", fontSize:13,
               fontWeight:600, textDecoration:"none"
-            }}>💬 Écrire sur WhatsApp</a>
+              }}><WhatsAppIcon size={14}/> Écrire sur WhatsApp</a>
           </div>
         </div>
 
@@ -542,19 +551,19 @@ export default function AlaminLanding() {
       <FlightSearchWidget />
 
       {/* ══ CAROUSEL COMPAGNIES ══ */}
-      <div style={{ background:T.navy, padding:"28px 0 16px", overflow:"hidden", position:"relative" }}>
-        <div style={{ textAlign:"center", marginBottom:16 }}>
-          <span style={{ color:"rgba(255,255,255,0.5)", fontSize:11, fontWeight:700, letterSpacing:3 }}>NOS PARTENAIRES</span>
+      <div style={{ background:"white", padding:"40px 0 20px", overflow:"hidden", position:"relative" }}>
+        <div style={{ textAlign:"center", marginBottom:24 }}>
+          <span style={{ fontFamily:"'Playfair Display', serif", color:T.navy, fontSize:32, fontWeight:700, letterSpacing:1 }}>Nos partenaires</span>
         </div>
-        <div style={{ position:"absolute", left:0, top:0, bottom:0, width:80, background:`linear-gradient(to right,${T.navy},transparent)`, zIndex:2 }}/>
-        <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:`linear-gradient(to left,${T.navy},transparent)`, zIndex:2 }}/>
+        <div style={{ position:"absolute", left:0, top:0, bottom:0, width:80, background:"linear-gradient(to right,white,transparent)", zIndex:2 }}/>
+        <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:"linear-gradient(to left,white,transparent)", zIndex:2 }}/>
         <div className="al-track">
           {[...AIRLINES, ...AIRLINES].map((a, i) => (
             <div key={i} style={{ display:"flex", alignItems:"center", marginRight:32, flexShrink:0 }}>
-              <div style={{ background:"white", borderRadius:10, padding:"8px 18px", height:44, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 10px rgba(0,0,0,0.15)" }}>
-                <img src={a.logo} alt={a.name} style={{ height:24, maxWidth:110, width:"auto", objectFit:"contain" }} />
+              <div style={{ background:T.gray50, border:`1px solid ${T.gray100}`, borderRadius:10, padding:"6px 10px", height:60, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(11,31,58,0.06)" }}>
+                <img src={a.logo} alt={a.name} style={{ height:42, maxWidth:150, width:"auto", objectFit:"contain" }} />
               </div>
-              <span style={{ color:"rgba(255,255,255,0.2)", fontSize:20, marginLeft:20 }}>·</span>
+              <span style={{ color:"rgba(11,31,58,0.15)", fontSize:20, marginLeft:20 }}>·</span>
             </div>
           ))}
         </div>
@@ -752,7 +761,7 @@ export default function AlaminLanding() {
               {[
                 ["📍","Adresse","Salines Ouest, Mohamed Kamil Road, Djibouti"],
                 ["📞","Téléphone","+253 21 25 07 17"],
-                ["📱","Mobile","+253 77 64 64 05"],
+                ["📱","Mobile","+253 77 64 64 06"],
                 ["✉️","Email","reservations@alamintravel-dj.com"],
                 ["🕐","Horaires","Samedi–Jeudi : 8h00 – 20h00"],
                 ["🌐","Site web","alamintravel-dj.com"],
@@ -775,23 +784,50 @@ export default function AlaminLanding() {
       </section>
 
       {/* ══ CTA FINAL ══ */}
-      <section style={{ padding:"80px 40px", background:`linear-gradient(135deg, ${T.blue} 0%, ${T.navy} 100%)`, textAlign:"center" }}>
-        <div style={{ maxWidth:700, margin:"0 auto" }}>
-          <h2 className="cta-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>
-            Prêt à voyager ?
-          </h2>
-          <p style={{ fontSize:17, color:"rgba(255,255,255,0.7)", marginBottom:40, lineHeight:1.7 }}>
-            Notre équipe est disponible 6 jours sur 7 pour vous aider à planifier le voyage parfait.
-          </p>
-          <div style={{ display:"flex", gap:16, justifyContent:"center", flexWrap:"wrap" }}>
-            <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
-              padding:"16px 40px", background:"#25D366", color:"white", borderRadius:12,
-              fontSize:16, fontWeight:700, textDecoration:"none", display:"flex", alignItems:"center", gap:8
-            }}>💬 Nous contacter sur WhatsApp</a>
-            <a href="tel:+25321250717" style={{
-              padding:"16px 40px", background:"rgba(255,255,255,0.1)", border:"2px solid rgba(255,255,255,0.3)",
-              color:"white", borderRadius:12, fontSize:16, fontWeight:600, textDecoration:"none"
-            }}>📞 +253 21 25 07 17</a>
+      <section style={{ background:T.gray50 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", minHeight:420 }} className="cta-split">
+          {/* Colonne gauche — texte */}
+          <div style={{ padding:"72px 56px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, marginBottom:20 }}>
+              <span style={{ width:8, height:8, borderRadius:"50%", background:"#25D366" }}/>
+              <span style={{ fontSize:12, fontWeight:700, color:T.gray500, letterSpacing:2 }}>ÉQUIPE DISPONIBLE MAINTENANT</span>
+            </div>
+            <h2 className="cta-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:44, fontWeight:700, color:T.navy, marginBottom:20, lineHeight:1.15 }}>
+              Prêt à voyager ?
+            </h2>
+            <p style={{ fontSize:16, color:T.gray500, marginBottom:36, lineHeight:1.7, maxWidth:420 }}>
+              Décrivez-nous votre projet de voyage — vols, hôtels, Omra ou packages — et notre équipe s'occupe du reste, 6 jours sur 7.
+            </p>
+            <div style={{ display:"flex", gap:14, flexWrap:"wrap" }}>
+              <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
+                padding:"15px 30px", background:"#25D366", color:"white", borderRadius:100,
+                fontSize:15, fontWeight:700, textDecoration:"none", display:"inline-flex", alignItems:"center", gap:8,
+              }}><WhatsAppIcon size={18}/> WhatsApp</a>
+              <a href="tel:+25321250717" style={{
+                padding:"15px 30px", background:"white", border:`1.5px solid ${T.gray300}`,
+                color:T.navy, borderRadius:100, fontSize:15, fontWeight:600, textDecoration:"none",
+                display:"inline-flex", alignItems:"center", gap:8,
+              }}>📞 +253 21 25 07 17</a>
+            </div>
+          </div>
+
+          {/* Colonne droite — image + carte flottante */}
+          <div style={{ position:"relative", minHeight:320, backgroundImage:"url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1000&q=85')", backgroundSize:"cover", backgroundPosition:"center" }}>
+            <div style={{ position:"absolute", inset:0, background:`linear-gradient(135deg, ${T.navy}55, ${T.blue}30)` }}/>
+            <div style={{ position:"absolute", bottom:28, left:28, right:28, background:"white", borderRadius:16, padding:20, boxShadow:"0 10px 40px rgba(0,0,0,0.2)", display:"flex", gap:16 }}>
+              <div style={{ flex:1, textAlign:"center", borderRight:`1px solid ${T.gray100}` }}>
+                <div style={{ fontSize:20, fontWeight:800, color:T.blue, fontFamily:"'Playfair Display', serif" }}>6j/7</div>
+                <div style={{ fontSize:10, color:T.gray500 }}>Disponibilité</div>
+              </div>
+              <div style={{ flex:1, textAlign:"center", borderRight:`1px solid ${T.gray100}` }}>
+                <div style={{ fontSize:20, fontWeight:800, color:T.blue, fontFamily:"'Playfair Display', serif" }}>&lt;1h</div>
+                <div style={{ fontSize:10, color:T.gray500 }}>Réponse</div>
+              </div>
+              <div style={{ flex:1, textAlign:"center" }}>
+                <div style={{ fontSize:20, fontWeight:800, color:T.blue, fontFamily:"'Playfair Display', serif" }}>IATA</div>
+                <div style={{ fontSize:10, color:T.gray500 }}>Accrédité</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -808,7 +844,7 @@ export default function AlaminLanding() {
               <div style={{ display:"flex", gap:12, marginTop:20 }}>
                 {["Facebook","Instagram","WhatsApp"].map(s=>(
                   <div key={s} style={{ width:36, height:36, borderRadius:8, background:"rgba(255,255,255,0.08)", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:14 }}>
-                    {s==="Facebook"?"f":s==="Instagram"?"📷":"💬"}
+                    {s==="Facebook"?"f":s==="Instagram"?"📷":<WhatsAppIcon size={15}/>}
                   </div>
                 ))}
               </div>
@@ -827,7 +863,7 @@ export default function AlaminLanding() {
             </div>
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:T.sky, letterSpacing:2, marginBottom:20 }}>CONTACT</div>
-              {["+253 21 25 07 17","+253 77 64 64 05","reservations@alamintravel-dj.com","Salines Ouest, Djibouti"].map(s=>(
+              {["+253 21 25 07 17","+253 77 64 64 06","reservations@alamintravel-dj.com","Salines Ouest, Djibouti"].map(s=>(
                 <div key={s} style={{ fontSize:12, color:"rgba(255,255,255,0.45)", marginBottom:10, lineBreak:"anywhere" }}>{s}</div>
               ))}
             </div>
