@@ -2,7 +2,7 @@
 // Recherche de vols via Duffel. Le token Duffel reste ici, côté serveur — JAMAIS envoyé au navigateur.
 // Configurer dans Vercel > Settings > Environment Variables : DUFFEL_API_KEY
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée' });
   }
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const response = await fetch('https://api.duffel.com/air/offer_requests?return_offers=true', {
       method: 'POST',
       headers: {
-        Authorization: Bearer ${process.env.DUFFEL_API_KEY},
+        Authorization: `Bearer ${process.env.DUFFEL_API_KEY}`,
         'Duffel-Version': 'v2',
         'Content-Type': 'application/json',
         Accept: 'application/json',
