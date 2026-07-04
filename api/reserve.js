@@ -12,7 +12,7 @@
 
 const nodemailer = require('nodemailer');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Méthode non autorisée' });
   }
@@ -25,19 +25,19 @@ export default async function handler(req, res) {
 
   const firstSlice = offer.slices?.[0];
   const summary = firstSlice
-    ? ${firstSlice.origin} -> ${firstSlice.destination}, départ ${firstSlice.segments?.[0]?.departing_at || ''}
+    ? `${firstSlice.origin} -> ${firstSlice.destination}, départ ${firstSlice.segments?.[0]?.departing_at || ''}`
     : 'Vol sélectionné';
 
   const message =
-    Nouvelle demande de réservation - Alamin Travel\n +
-    Client: ${customerName}\n +
-    Tél: ${customerPhone}\n +
-    Email: ${customerEmail || '-'}\n +
-    Vol: ${summary}\n +
-    Compagnie: ${offer.owner || '-'}\n +
-    Prix: ${offer.total_amount || '-'} ${offer.total_currency || ''}\n +
-    Notes: ${notes || '-'}\n +
-    Offer ID (Duffel): ${offer.id || '-'};
+    `Nouvelle demande de réservation - Alamin Travel\n` +
+    `Client: ${customerName}\n` +
+    `Tél: ${customerPhone}\n` +
+    `Email: ${customerEmail || '-'}\n` +
+    `Vol: ${summary}\n` +
+    `Compagnie: ${offer.owner || '-'}\n` +
+    `Prix: ${offer.total_amount || '-'} ${offer.total_currency || ''}\n` +
+    `Notes: ${notes || '-'}\n` +
+    `Offer ID (Duffel): ${offer.id || '-'}`;
 
   const results = {};
 
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to: process.env.NOTIFY_EMAIL || process.env.GMAIL_USER,
-      subject: Nouvelle demande de réservation - ${customerName},
+      subject: `Nouvelle demande de réservation - ${customerName}`,
       text: message,
     });
 
