@@ -54,11 +54,11 @@ const STATS = [
 
 // ── COMPAGNIES AÉRIENNES ──────────────────────────────────────────────────────
 const AIRLINES = [
-  { name:"Qatar Airways", code:"QR", bg:"#5C0632", accent:"#C8A96E" },
-  { name:"Ethiopian Airlines", code:"ET", bg:"#007A4D", accent:"#FFCD00" },
-  { name:"Emirates", code:"EK", bg:"#CC0000", accent:"#FFFFFF" },
-  { name:"flydubai", code:"FZ", bg:"#E3000F", accent:"#FFFFFF" },
-  { name:"flynas", code:"XY", bg:"#FF6B00", accent:"#FFFFFF" },
+  { name:"Qatar Airways", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Qatar_Airways_logo.svg" },
+  { name:"Ethiopian Airlines", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Ethiopian_Airlines_Logo.svg" },
+  { name:"Emirates", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Emirates_logo.svg" },
+  { name:"flydubai", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Fly_Dubai_logo_2010_05.svg" },
+  { name:"flynas", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Flynas_Logo.svg" },
 ];
 
 // ── COMPOSANT LOGO ────────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ const GLOBAL_CSS = `
   @media (max-width: 768px) {
     section { padding-left:20px !important; padding-right:20px !important; }
     .hero-section { padding-left:0 !important; padding-right:0 !important; }
-    .hero-content { padding-left:20px !important; padding-right:20px !important; }
+    .hero-content { padding-left:20px !important; padding-right:20px !important; padding-top:110px !important; }
     .hero-flex { flex-direction:column !important; align-items:flex-start !important; }
     .hero-title { font-size:38px !important; }
     .hero-contact-card { margin-left:0 !important; margin-top:28px !important; width:100%; }
@@ -475,12 +475,6 @@ export default function AlaminLanding() {
         {/* Contenu hero */}
         <div className="hero-content hero-flex" style={{ position:"relative", zIndex:2, maxWidth:1200, margin:"0 auto", padding:"0 40px", height:"100%", display:"flex", alignItems:"center" }}>
           <div style={{ maxWidth:680 }}>
-            {/* Badge */}
-            <div className="fade-up" style={{ animationDelay:"0.1s", display:"inline-flex", alignItems:"center", gap:8, background:"rgba(245,166,35,0.15)", border:"1px solid rgba(245,166,35,0.4)", borderRadius:30, padding:"6px 16px", marginBottom:24 }}>
-              <span style={{ fontSize:10 }}>⭐</span>
-              <span style={{ color:T.gold, fontSize:12, fontWeight:600, letterSpacing:2 }}>AGENT IATA ACCRÉDITÉ</span>
-            </div>
-
             <h1 className="fade-up hero-title" style={{ animationDelay:"0.2s", fontFamily:"'Playfair Display', serif", fontSize:68, fontWeight:900, color:"#fff", lineHeight:1.05, marginBottom:24 }}>
               Votre Voyage<br/>
               <span style={{ color:T.sky }}>Commence</span><br/>
@@ -548,12 +542,11 @@ export default function AlaminLanding() {
         <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:`linear-gradient(to left,${T.navy},transparent)`, zIndex:2 }}/>
         <div className="al-track">
           {[...AIRLINES, ...AIRLINES].map((a, i) => (
-            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, marginRight:40, flexShrink:0 }}>
-              <div style={{ width:40, height:40, borderRadius:8, background:a.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ color:a.accent, fontWeight:900, fontSize:13 }}>{a.code}</span>
+            <div key={i} style={{ display:"flex", alignItems:"center", marginRight:32, flexShrink:0 }}>
+              <div style={{ background:"white", borderRadius:10, padding:"8px 18px", height:44, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 10px rgba(0,0,0,0.15)" }}>
+                <img src={a.logo} alt={a.name} style={{ height:24, maxWidth:110, width:"auto", objectFit:"contain" }} />
               </div>
-              <span style={{ color:"rgba(255,255,255,0.7)", fontSize:13, fontWeight:500, whiteSpace:"nowrap" }}>{a.name}</span>
-              <span style={{ color:"rgba(255,255,255,0.2)", fontSize:20, marginLeft:10 }}>·</span>
+              <span style={{ color:"rgba(255,255,255,0.2)", fontSize:20, marginLeft:20 }}>·</span>
             </div>
           ))}
         </div>
