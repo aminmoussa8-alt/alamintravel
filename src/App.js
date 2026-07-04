@@ -28,12 +28,12 @@ const DESTINATIONS = [
 
 // ── SERVICES ──────────────────────────────────────────────────────────────────
 const SERVICES = [
-  { icon:"✈️", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
-  { icon:"🏨", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
-  { icon:"🕌", title:"Omra", desc:"Packages complets Omra. Accompagnement spirituel.", color:"#4527A0" },
-  { icon:"🚗", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
-  { icon:"📋", title:"Visa & Documents", desc:"Assistance visa pour toutes destinations. Traitement rapide.", color:"#1B5E20" },
-  { icon:"🌍", title:"Voyages Organisés", desc:"Circuits à Djibouti et en Afrique de l'Est. Groupes et individuels.", color:"#E65100" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/White_Plane_Blue_Sky.jpg", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Hotel_room_interior_at_hotel_Radisson_Blu_Oulu.jpg", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kaaba_%281%29_Makkah_%28Mecca%29.jpg", title:"Omra", desc:"Packages complets Omra. Accompagnement spirituel.", color:"#4527A0" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Enterprise_rent_a_car_airport_counter_Portland_International_Jetport_PWM_AutoRentals.jpg", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/My_collection_of_passport_stamps.jpg", title:"Visa & Documents", desc:"Assistance visa pour toutes destinations. Traitement rapide.", color:"#1B5E20" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Man_looking_for_new_travel_destinations_on_the_world_map.jpg", title:"Voyages Organisés", desc:"Circuits à Djibouti et en Afrique de l'Est. Groupes et individuels.", color:"#E65100" },
 ];
 
 // ── TÉMOIGNAGES ───────────────────────────────────────────────────────────────
@@ -59,6 +59,11 @@ const AIRLINES = [
   { name:"Emirates", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Emirates_logo.svg" },
   { name:"flydubai", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Fly_Dubai_logo_2010_05.svg" },
   { name:"flynas", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Flynas_Logo.svg" },
+  { name:"Turkish Airlines", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Turkish_Airlines_logo_2019_compact.svg" },
+  { name:"Air France", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Air_France_Logo.svg" },
+  { name:"Kenya Airways", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Kenya_Airways_Logo.svg" },
+  { name:"Saudia", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/Saudia_logo_2023.png" },
+  { name:"IATA", logo:"https://commons.wikimedia.org/wiki/Special:FilePath/IATA_logo.svg" },
 ];
 
 // ── COMPOSANT LOGO ────────────────────────────────────────────────────────────
@@ -537,7 +542,10 @@ export default function AlaminLanding() {
       <FlightSearchWidget />
 
       {/* ══ CAROUSEL COMPAGNIES ══ */}
-      <div style={{ background:T.navy, padding:"16px 0", overflow:"hidden", position:"relative" }}>
+      <div style={{ background:T.navy, padding:"28px 0 16px", overflow:"hidden", position:"relative" }}>
+        <div style={{ textAlign:"center", marginBottom:16 }}>
+          <span style={{ color:"rgba(255,255,255,0.5)", fontSize:11, fontWeight:700, letterSpacing:3 }}>NOS PARTENAIRES</span>
+        </div>
         <div style={{ position:"absolute", left:0, top:0, bottom:0, width:80, background:`linear-gradient(to right,${T.navy},transparent)`, zIndex:2 }}/>
         <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:`linear-gradient(to left,${T.navy},transparent)`, zIndex:2 }}/>
         <div className="al-track">
@@ -568,18 +576,23 @@ export default function AlaminLanding() {
           <div className="services-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:24 }}>
             {SERVICES.map((s, i) => (
               <div key={i} className="service-card" style={{
-                background:"white", borderRadius:20, padding:32,
+                position:"relative", background:"white", borderRadius:20,
                 boxShadow:"0 4px 24px rgba(11,31,58,0.06)",
                 border:"1px solid rgba(11,31,58,0.06)",
-                transition:"all 0.3s ease", cursor:"default"
+                transition:"all 0.3s ease", cursor:"default", overflow:"hidden",
               }}>
-                <div style={{ width:56, height:56, borderRadius:16, background:`${s.color}12`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, marginBottom:20 }}>
-                  {s.icon}
+                <div style={{ position:"relative", height:160, overflow:"hidden" }}>
+                  <img src={s.img} alt={s.title} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  <div style={{ position:"absolute", inset:0, background:`linear-gradient(180deg, transparent 40%, ${s.color}CC 100%)` }}/>
+                  <div style={{ position:"absolute", bottom:12, left:20, right:20 }}>
+                    <h3 style={{ fontFamily:"'Playfair Display', serif", fontSize:20, fontWeight:700, color:"white" }}>{s.title}</h3>
+                  </div>
                 </div>
-                <h3 style={{ fontFamily:"'Playfair Display', serif", fontSize:20, fontWeight:700, color:T.navy, marginBottom:10 }}>{s.title}</h3>
-                <p style={{ fontSize:14, color:T.gray500, lineHeight:1.7 }}>{s.desc}</p>
-                <div style={{ marginTop:20, color:s.color, fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
-                  En savoir plus <span>→</span>
+                <div style={{ padding:"24px 28px 28px" }}>
+                  <p style={{ fontSize:14, color:T.gray500, lineHeight:1.7 }}>{s.desc}</p>
+                  <div style={{ marginTop:20, color:s.color, fontSize:13, fontWeight:600, display:"flex", alignItems:"center", gap:6 }}>
+                    En savoir plus <span>→</span>
+                  </div>
                 </div>
               </div>
             ))}
