@@ -30,7 +30,7 @@ const DESTINATIONS = [
 const SERVICES = [
   { icon:"✈️", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
   { icon:"🏨", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
-  { icon:"🕌", title:"Hajj & Omra", desc:"Packages complets Hajj et Omra. Accompagnement spirituel.", color:"#4527A0" },
+  { icon:"🕌", title:"Omra", desc:"Packages complets Omra. Accompagnement spirituel.", color:"#4527A0" },
   { icon:"🚗", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
   { icon:"📋", title:"Visa & Documents", desc:"Assistance visa pour toutes destinations. Traitement rapide.", color:"#1B5E20" },
   { icon:"🌍", title:"Voyages Organisés", desc:"Circuits à Djibouti et en Afrique de l'Est. Groupes et individuels.", color:"#E65100" },
@@ -107,6 +107,47 @@ const GLOBAL_CSS = `
   .btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(245,166,35,0.5) !important; }
   .nav-link:hover { color:${T.sky} !important; }
   .testimonial-card:hover { transform:translateY(-4px); }
+
+  /* ── RESPONSIVE / MOBILE ─────────────────────────────────────────────── */
+  .mobile-menu-btn { display:none; }
+
+  @media (max-width: 900px) {
+    .desktop-nav-links { display:none !important; }
+    .desktop-nav-actions { display:none !important; }
+    .mobile-menu-btn { display:flex !important; }
+    nav > div { padding: 0 20px !important; }
+  }
+
+  @media (max-width: 768px) {
+    section { padding-left:20px !important; padding-right:20px !important; }
+    .hero-section { padding-left:0 !important; padding-right:0 !important; }
+    .hero-content { padding-left:20px !important; padding-right:20px !important; }
+    .hero-flex { flex-direction:column !important; align-items:flex-start !important; }
+    .hero-title { font-size:38px !important; }
+    .hero-contact-card { margin-left:0 !important; margin-top:28px !important; width:100%; }
+    .hero-stats { gap:24px !important; }
+    .section-title { font-size:30px !important; }
+    .services-grid, .packages-grid, .testimonials-grid { grid-template-columns:1fr !important; }
+    .dest-grid { grid-template-columns:1fr !important; grid-template-rows:auto !important; }
+    .dest-grid > div { grid-row:auto !important; height:220px !important; }
+    .dest-header { flex-direction:column !important; align-items:flex-start !important; gap:16px; }
+    .dest-header p { text-align:left !important; max-width:100% !important; }
+    .agence-photos-grid { grid-template-columns:1fr 1fr !important; }
+    .agence-photos-grid > div:first-child { grid-column:span 2 !important; }
+    .agence-info-grid { grid-template-columns:1fr !important; }
+    .footer-grid { grid-template-columns:1fr 1fr !important; gap:28px !important; }
+    .cta-title { font-size:32px !important; }
+  }
+
+  @media (max-width: 480px) {
+    .footer-grid { grid-template-columns:1fr !important; }
+    .hero-title { font-size:30px !important; }
+    .section-title { font-size:26px !important; }
+    .flight-search-form { flex-direction:column !important; }
+    .flight-search-form input, .flight-search-form select, .flight-search-form button {
+      width:100% !important; min-width:0 !important;
+    }
+  }
 `;
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -203,7 +244,7 @@ function FlightSearchWidget() {
           </h2>
         </div>
 
-        <form onSubmit={handleSearch} style={{
+        <form onSubmit={handleSearch} className="flight-search-form" style={{
           display: "flex", flexWrap: "wrap", gap: 12, background: "white", padding: 20,
           borderRadius: 20, boxShadow: "0 8px 32px rgba(0,0,0,0.1)", marginBottom: 32,
         }}>
@@ -316,6 +357,7 @@ export default function AlaminLanding() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("accueil");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -331,6 +373,7 @@ export default function AlaminLanding() {
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior:"smooth" });
     setActiveSection(id);
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -348,7 +391,7 @@ export default function AlaminLanding() {
       }}>
         <div style={{ maxWidth:1200, margin:"0 auto", height:72, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <Logo size={44} light />
-          <div style={{ display:"flex", gap:32, alignItems:"center" }}>
+          <div className="desktop-nav-links" style={{ display:"flex", gap:32, alignItems:"center" }}>
             {[["accueil","Accueil"],["recherche","Rechercher un vol"],["services","Services"],["destinations","Djibouti"],["packages","Packages"],["agence","Contact"]].map(([id,label])=>(
               <button key={id} className="nav-link" onClick={()=>scrollTo(id)} style={{
                 background:"none", border:"none", cursor:"pointer",
@@ -359,7 +402,7 @@ export default function AlaminLanding() {
               }}>{label}</button>
             ))}
           </div>
-          <div style={{ display:"flex", gap:12 }}>
+          <div className="desktop-nav-actions" style={{ display:"flex", gap:12 }}>
             <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
               display:"flex", alignItems:"center", gap:6, padding:"8px 18px",
               background:"#25D366", color:"white", borderRadius:8,
@@ -371,11 +414,54 @@ export default function AlaminLanding() {
               cursor:"pointer", transition:"all 0.2s"
             }}>Réserver →</button>
           </div>
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(o => !o)}
+            aria-label="Menu"
+            style={{
+              alignItems:"center", justifyContent:"center", width:40, height:40,
+              background:"rgba(255,255,255,0.08)", border:"none", borderRadius:8,
+              cursor:"pointer", flexDirection:"column", gap:4,
+            }}
+          >
+            <span style={{ width:20, height:2, background:"white", borderRadius:2, transition:"all 0.2s", transform: mobileMenuOpen ? "translateY(6px) rotate(45deg)" : "none" }} />
+            <span style={{ width:20, height:2, background:"white", borderRadius:2, opacity: mobileMenuOpen ? 0 : 1, transition:"all 0.2s" }} />
+            <span style={{ width:20, height:2, background:"white", borderRadius:2, transition:"all 0.2s", transform: mobileMenuOpen ? "translateY(-6px) rotate(-45deg)" : "none" }} />
+          </button>
         </div>
+
+        {/* Menu mobile déroulant */}
+        {mobileMenuOpen && (
+          <div style={{
+            background:"rgba(6,15,30,0.98)", backdropFilter:"blur(20px)",
+            padding:"12px 20px 24px", display:"flex", flexDirection:"column", gap:4,
+            borderTop:"1px solid rgba(255,255,255,0.08)",
+          }}>
+            {[["accueil","Accueil"],["recherche","Rechercher un vol"],["services","Services"],["destinations","Djibouti"],["packages","Packages"],["agence","Contact"]].map(([id,label])=>(
+              <button key={id} onClick={()=>scrollTo(id)} style={{
+                background:"none", border:"none", cursor:"pointer", textAlign:"left",
+                color: activeSection===id ? T.sky : "rgba(255,255,255,0.85)",
+                fontFamily:"inherit", fontSize:16, fontWeight:500,
+                padding:"12px 4px", borderBottom:"1px solid rgba(255,255,255,0.06)",
+              }}>{label}</button>
+            ))}
+            <div style={{ display:"flex", gap:10, marginTop:14 }}>
+              <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{
+                flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:6, padding:"12px",
+                background:"#25D366", color:"white", borderRadius:8,
+                fontSize:14, fontWeight:600, textDecoration:"none",
+              }}>💬 WhatsApp</a>
+              <button onClick={()=>scrollTo("packages")} style={{
+                flex:1, padding:"12px", background:`linear-gradient(135deg,${T.gold},${T.goldD})`,
+                color:"white", border:"none", borderRadius:8, fontSize:14, fontWeight:600, cursor:"pointer",
+              }}>Réserver →</button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* ══ HERO ══ */}
-      <section id="accueil" style={{ position:"relative", height:"100vh", minHeight:700, overflow:"hidden" }}>
+      <section id="accueil" className="hero-section" style={{ position:"relative", height:"100vh", minHeight:700, overflow:"hidden" }}>
         {/* Background */}
         <div style={{
           position:"absolute", inset:0,
@@ -387,23 +473,23 @@ export default function AlaminLanding() {
         <div style={{ position:"absolute", inset:0, background:"linear-gradient(135deg, rgba(11,31,58,0.88) 0%, rgba(11,31,58,0.5) 50%, rgba(11,31,58,0.75) 100%)" }}/>
 
         {/* Contenu hero */}
-        <div style={{ position:"relative", zIndex:2, maxWidth:1200, margin:"0 auto", padding:"0 40px", height:"100%", display:"flex", alignItems:"center" }}>
+        <div className="hero-content hero-flex" style={{ position:"relative", zIndex:2, maxWidth:1200, margin:"0 auto", padding:"0 40px", height:"100%", display:"flex", alignItems:"center" }}>
           <div style={{ maxWidth:680 }}>
             {/* Badge */}
             <div className="fade-up" style={{ animationDelay:"0.1s", display:"inline-flex", alignItems:"center", gap:8, background:"rgba(245,166,35,0.15)", border:"1px solid rgba(245,166,35,0.4)", borderRadius:30, padding:"6px 16px", marginBottom:24 }}>
               <span style={{ fontSize:10 }}>⭐</span>
-              <span style={{ color:T.gold, fontSize:12, fontWeight:600, letterSpacing:2 }}>AGENT IATA ACCRÉDITÉ · DEPUIS 2010</span>
+              <span style={{ color:T.gold, fontSize:12, fontWeight:600, letterSpacing:2 }}>AGENT IATA ACCRÉDITÉ</span>
             </div>
 
-            <h1 className="fade-up" style={{ animationDelay:"0.2s", fontFamily:"'Playfair Display', serif", fontSize:68, fontWeight:900, color:"#fff", lineHeight:1.05, marginBottom:24 }}>
+            <h1 className="fade-up hero-title" style={{ animationDelay:"0.2s", fontFamily:"'Playfair Display', serif", fontSize:68, fontWeight:900, color:"#fff", lineHeight:1.05, marginBottom:24 }}>
               Votre Voyage<br/>
               <span style={{ color:T.sky }}>Commence</span><br/>
               à Djibouti
             </h1>
 
             <p className="fade-up" style={{ animationDelay:"0.3s", fontSize:18, color:"rgba(255,255,255,0.75)", lineHeight:1.7, marginBottom:40, maxWidth:520 }}>
-              Vols internationaux, hôtels, Hajj & Omra, packages touristiques. 
-              Service personnalisé depuis plus de 15 ans.
+              Vols internationaux, hôtels, Omra, packages touristiques. 
+              Service personnalisé et de confiance.
             </p>
 
             <div className="fade-up" style={{ animationDelay:"0.4s", display:"flex", gap:16, flexWrap:"wrap" }}>
@@ -420,8 +506,8 @@ export default function AlaminLanding() {
             </div>
 
             {/* Stats rapides */}
-            <div className="fade-up" style={{ animationDelay:"0.5s", display:"flex", gap:40, marginTop:52, paddingTop:32, borderTop:"1px solid rgba(255,255,255,0.1)" }}>
-              {STATS.slice(0,3).map(s=>(
+            <div className="fade-up hero-stats" style={{ animationDelay:"0.5s", display:"flex", gap:40, marginTop:52, paddingTop:32, borderTop:"1px solid rgba(255,255,255,0.1)" }}>
+              {STATS.slice(1,4).map(s=>(
                 <div key={s.label}>
                   <div style={{ fontSize:28, fontWeight:900, color:T.sky, fontFamily:"'Playfair Display', serif" }}>{s.value}</div>
                   <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", marginTop:2 }}>{s.label}</div>
@@ -431,7 +517,7 @@ export default function AlaminLanding() {
           </div>
 
           {/* Carte contact flottante */}
-          <div className="fade-up" style={{ animationDelay:"0.6s", marginLeft:"auto", background:"rgba(255,255,255,0.07)", backdropFilter:"blur(20px)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:20, padding:28, minWidth:260 }}>
+          <div className="fade-up hero-contact-card" style={{ animationDelay:"0.6s", marginLeft:"auto", background:"rgba(255,255,255,0.07)", backdropFilter:"blur(20px)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:20, padding:28, minWidth:260 }}>
             <div style={{ fontSize:12, color:T.sky, fontWeight:700, letterSpacing:2, marginBottom:16 }}>CONTACTEZ-NOUS</div>
             {[["📞","+253 21 25 07 17"],["📱","+253 77 64 64 05"],["✉️","reservations@alamintravel-dj.com"],["📍","Salines Ouest, Djibouti"],["🕐","Sam-Jeu 8h-20h"]].map(([icon,val])=>(
               <div key={val} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:12 }}>
@@ -478,7 +564,7 @@ export default function AlaminLanding() {
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:64 }}>
             <div style={{ display:"inline-block", background:`${T.blue}15`, color:T.blue, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>NOS SERVICES</div>
-            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy, marginBottom:16 }}>
+            <h2 className="section-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy, marginBottom:16 }}>
               Tout ce dont vous<br/>avez besoin pour voyager
             </h2>
             <p style={{ fontSize:16, color:T.gray500, maxWidth:500, margin:"0 auto", lineHeight:1.7 }}>
@@ -486,7 +572,7 @@ export default function AlaminLanding() {
             </p>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:24 }}>
+          <div className="services-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:24 }}>
             {SERVICES.map((s, i) => (
               <div key={i} className="service-card" style={{
                 background:"white", borderRadius:20, padding:32,
@@ -511,10 +597,10 @@ export default function AlaminLanding() {
       {/* ══ DESTINATIONS DJIBOUTI ══ */}
       <section id="destinations" style={{ padding:"96px 40px", background:"white" }}>
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:48 }}>
+          <div className="dest-header" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:48 }}>
             <div>
               <div style={{ display:"inline-block", background:`${T.gold}15`, color:T.goldD, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>TOURISME LOCAL</div>
-              <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>
+              <h2 className="section-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>
                 Découvrez<br/><span style={{ color:T.blue }}>Djibouti</span>
               </h2>
             </div>
@@ -523,7 +609,7 @@ export default function AlaminLanding() {
             </p>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr", gridTemplateRows:"240px 240px", gap:16 }}>
+          <div className="dest-grid" style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr", gridTemplateRows:"240px 240px", gap:16 }}>
             {DESTINATIONS.map((d, i) => (
               <div key={i} className="dest-card" style={{
                 position:"relative", borderRadius:20, overflow:"hidden",
@@ -552,13 +638,13 @@ export default function AlaminLanding() {
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:64 }}>
             <div style={{ display:"inline-block", background:"rgba(79,195,247,0.15)", color:T.sky, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>PACKAGES PHARES</div>
-            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>Nos Meilleures Offres</h2>
+            <h2 className="section-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>Nos Meilleures Offres</h2>
             <p style={{ fontSize:16, color:"rgba(255,255,255,0.55)", maxWidth:500, margin:"0 auto" }}>Packages complets incluant vols, hébergement et accompagnement</p>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
+          <div className="packages-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
             {[
-              { name:"Hajj Premium 2026", price:"810 000", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://images.unsplash.com/photo-1591604328740-f52fc7af0f76?w=600&q=80", tagColor:T.gold },
+              { name:"Omra Premium", price:"198 500", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://images.unsplash.com/photo-1591604328740-f52fc7af0f76?w=600&q=80", tagColor:T.gold },
               { name:"Omra Ramadan", price:"504 000", duration:"14 jours", places:"40 places", tag:"RAMADAN", img:"https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=600&q=80", tagColor:"#E91E63" },
               { name:"Dubai City Break", price:"180 000", duration:"5 jours", places:"20 places", tag:"NOUVEAU", img:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80", tagColor:T.blue },
             ].map((p, i) => (
@@ -596,10 +682,10 @@ export default function AlaminLanding() {
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:64 }}>
             <div style={{ display:"inline-block", background:`${T.blue}15`, color:T.blue, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>TÉMOIGNAGES</div>
-            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>Ce que disent nos clients</h2>
+            <h2 className="section-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>Ce que disent nos clients</h2>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:24 }}>
+          <div className="testimonials-grid" style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:24 }}>
             {TESTIMONIALS.map((t, i) => (
               <div key={i} className="testimonial-card" style={{
                 padding:36, borderRadius:20,
@@ -628,10 +714,10 @@ export default function AlaminLanding() {
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:48 }}>
             <div style={{ display:"inline-block", background:`${T.gold}15`, color:T.goldD, fontSize:11, fontWeight:700, letterSpacing:3, padding:"6px 16px", borderRadius:30, marginBottom:16 }}>NOTRE AGENCE</div>
-            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>Visitez-nous à Djibouti</h2>
+            <h2 className="section-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:T.navy }}>Visitez-nous à Djibouti</h2>
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, marginBottom:32 }}>
+          <div className="agence-photos-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, marginBottom:32 }}>
             {[
               { src:"/agence1.jpg.jpeg", label:"Notre façade", span:2 },
               { src:"/agence2.jpg.jpeg", label:"Notre bureau", span:1 },
@@ -648,7 +734,7 @@ export default function AlaminLanding() {
             ))}
           </div>
 
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+          <div className="agence-info-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
             <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 4px 24px rgba(0,0,0,0.1)", height:300 }}>
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3885.5!2d43.1456!3d11.5886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zQWxhbWluIFRvdXJpc20!5e0!3m2!1sfr!2sdj"
@@ -685,7 +771,7 @@ export default function AlaminLanding() {
       {/* ══ CTA FINAL ══ */}
       <section style={{ padding:"80px 40px", background:`linear-gradient(135deg, ${T.blue} 0%, ${T.navy} 100%)`, textAlign:"center" }}>
         <div style={{ maxWidth:700, margin:"0 auto" }}>
-          <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>
+          <h2 className="cta-title" style={{ fontFamily:"'Playfair Display', serif", fontSize:46, fontWeight:700, color:"white", marginBottom:16 }}>
             Prêt à voyager ?
           </h2>
           <p style={{ fontSize:17, color:"rgba(255,255,255,0.7)", marginBottom:40, lineHeight:1.7 }}>
@@ -707,11 +793,11 @@ export default function AlaminLanding() {
       {/* ══ FOOTER ══ */}
       <footer style={{ background:T.navyD, padding:"48px 40px 24px", borderTop:"1px solid rgba(255,255,255,0.05)" }}>
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
-          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:40, marginBottom:40 }}>
+          <div className="footer-grid" style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:40, marginBottom:40 }}>
             <div>
               <Logo size={48} light />
               <p style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginTop:16, lineHeight:1.8, maxWidth:280 }}>
-                Votre partenaire de voyage de confiance à Djibouti depuis 2010. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Hajj & Omra.
+                Votre partenaire de voyage de confiance à Djibouti. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Omra.
               </p>
               <div style={{ display:"flex", gap:12, marginTop:20 }}>
                 {["Facebook","Instagram","WhatsApp"].map(s=>(
@@ -723,7 +809,7 @@ export default function AlaminLanding() {
             </div>
             <div>
               <div style={{ fontSize:11, fontWeight:700, color:T.sky, letterSpacing:2, marginBottom:20 }}>SERVICES</div>
-              {["Billets d'avion","Hôtels","Hajj & Omra","Location voiture","Assistance visa","Voyages organisés"].map(s=>(
+              {["Billets d'avion","Hôtels","Omra","Location voiture","Assistance visa","Voyages organisés"].map(s=>(
                 <div key={s} style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginBottom:10, cursor:"pointer" }}>{s}</div>
               ))}
             </div>
