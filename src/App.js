@@ -305,6 +305,7 @@ function FlightSearchWidget() {
               </div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontWeight: 800, color: T.blue, fontSize: 18, fontFamily: "'Playfair Display', serif" }}>{offer.total_amount} {offer.total_currency}</div>
+                <div style={{ fontSize: 10, color: T.gray500, marginTop: 2 }}>Prix indicatif, converti sur devis</div>
                 <button onClick={() => openReserveModal(offer)} className="btn-gold" style={{
                   marginTop: 8, padding: "9px 20px", background: `linear-gradient(135deg,${T.gold},${T.goldD})`,
                   color: "white", border: "none", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
@@ -591,7 +592,7 @@ export default function AlaminLanding() {
                 transition:"all 0.3s ease", cursor:"default", overflow:"hidden",
               }}>
                 <div style={{ position:"relative", height:160, overflow:"hidden" }}>
-                  <img src={s.img} alt={s.title} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  <img src={s.img} alt={s.title} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                   <div style={{ position:"absolute", inset:0, background:`linear-gradient(180deg, transparent 40%, ${s.color}CC 100%)` }}/>
                   <div style={{ position:"absolute", bottom:12, left:20, right:20 }}>
                     <h3 style={{ fontFamily:"'Playfair Display', serif", fontSize:20, fontWeight:700, color:"white" }}>{s.title}</h3>
@@ -632,7 +633,7 @@ export default function AlaminLanding() {
                 cursor:"pointer",
                 boxShadow:"0 8px 32px rgba(0,0,0,0.12)"
               }}>
-                <img className="dest-img" src={d.img} alt={d.name} style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.6s ease" }}/>
+                <img className="dest-img" src={d.img} alt={d.name} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover", transition:"transform 0.6s ease" }}/>
                 <div style={{ position:"absolute", inset:0, background:`linear-gradient(to top, ${d.color}ee 0%, ${d.color}44 50%, transparent 100%)` }}/>
                 <div className="dest-overlay" style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.2)", opacity:0, transition:"opacity 0.3s" }}/>
                 <div style={{ position:"absolute", top:16, left:16 }}>
@@ -665,7 +666,7 @@ export default function AlaminLanding() {
             ].map((p, i) => (
               <div key={i} style={{ borderRadius:20, overflow:"hidden", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", transition:"all 0.3s" }}>
                 <div style={{ position:"relative", height:200, overflow:"hidden" }}>
-                  <img src={p.img} alt={p.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  <img src={p.img} alt={p.name} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                   <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, transparent, rgba(0,0,0,0.4))" }}/>
                   <div style={{ position:"absolute", top:12, left:12, background:p.tagColor, color:"white", fontSize:9, fontWeight:800, padding:"4px 10px", borderRadius:20, letterSpacing:1 }}>{p.tag}</div>
                 </div>
@@ -741,7 +742,7 @@ export default function AlaminLanding() {
               { src:"/agence4.jpg.jpeg", label:"Vue extérieure", span:1 },
             ].map((p, i) => (
               <div key={i} style={{ gridColumn:`span ${p.span}`, borderRadius:16, overflow:"hidden", height:i===0?220:160, position:"relative", boxShadow:"0 4px 20px rgba(0,0,0,0.1)" }}>
-                <img src={p.src} alt={p.label} style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                <img src={p.src} alt={p.label} loading="lazy" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                 <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(transparent,rgba(0,0,0,0.6))", padding:"10px 14px" }}>
                   <span style={{ color:"white", fontSize:11, fontWeight:600 }}>{p.label}</span>
                 </div>
@@ -842,11 +843,9 @@ export default function AlaminLanding() {
                 Votre partenaire de voyage de confiance à Djibouti. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Omra.
               </p>
               <div style={{ display:"flex", gap:12, marginTop:20 }}>
-                {["Facebook","Instagram","WhatsApp"].map(s=>(
-                  <div key={s} style={{ width:36, height:36, borderRadius:8, background:"rgba(255,255,255,0.08)", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:14 }}>
-                    {s==="Facebook"?"f":s==="Instagram"?"📷":<WhatsAppIcon size={15}/>}
-                  </div>
-                ))}
+                <a href="https://wa.me/25377646406" target="_blank" rel="noopener noreferrer" style={{ width:36, height:36, borderRadius:8, background:"rgba(255,255,255,0.08)", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}>
+                  <WhatsAppIcon size={15}/>
+                </a>
               </div>
             </div>
             <div>
