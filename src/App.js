@@ -74,8 +74,20 @@ const WhatsAppIcon = ({ size = 18, color = "white" }) => (
   </svg>
 );
 
+// ── ICÔNES DU WIDGET DE RECHERCHE (traits fins, cohérentes avec la charte) ───
+const SearchIcons = {
+  takeoff: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 19h19"/><path d="M17 19l-5.5-11L6 10.5"/><path d="M11.5 8L21 5"/></svg>,
+  landing: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 19h19"/><path d="M4 14l7-3 9 4-3 3-6-1.5-5 2z"/></svg>,
+  calendar: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>,
+  users: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.9-5.5 6.5-5.5s6.5 2.2 6.5 5.5"/><path d="M16 8.2a3 3 0 010 5.9M19.5 20c0-2.8-1.7-4.8-4-5.4"/></svg>,
+  search: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>,
+  swap: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>,
+  plus: (p) => <svg width={p.size||14} height={p.size||14} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
+  trash: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/></svg>,
+  ticket: (p) => <svg width={p.size||16} height={p.size||16} viewBox="0 0 24 24" fill="none" stroke={p.color||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/><path d="M14 6v12" strokeDasharray="2 3"/></svg>,
+};
 
-// Logo officiel Alamin Tourism & Travel — image fournie, affichée telle quelle
+
 // (aucune retouche de couleur/forme), centrée, responsive, proportions conservées.
 // Fichier attendu : /public/alamin-logo.png
 const Logo = ({ size = 52 }) => (
@@ -158,7 +170,8 @@ const GLOBAL_CSS = `
     .hero-title { font-size:30px !important; }
     .section-title { font-size:26px !important; }
     .flight-search-form { flex-direction:column !important; }
-    .flight-search-form input, .flight-search-form select, .flight-search-form button {
+    .flight-search-form > div, .flight-search-form > button[type="submit"] { width:100% !important; }
+    .flight-search-form input, .flight-search-form select, .flight-search-form button:not([title="Inverser"]) {
       width:100% !important; min-width:0 !important;
     }
   }
@@ -173,7 +186,12 @@ const inputStyle = {
 };
 
 function FlightSearchWidget() {
+  const [tripType, setTripType] = useState("roundtrip"); // roundtrip | oneway | multi | manage
   const [form, setForm] = useState({ origin: "", destination: "", departureDate: "", returnDate: "", passengers: "1" });
+  const [multiSlices, setMultiSlices] = useState([
+    { origin: "", destination: "", departureDate: "" },
+    { origin: "", destination: "", departureDate: "" },
+  ]);
   const [offers, setOffers] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -181,10 +199,47 @@ function FlightSearchWidget() {
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "", notes: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [manageForm, setManageForm] = useState({ reference: "", lastName: "", phone: "" });
+  const [manageSent, setManageSent] = useState(false);
 
   function handleChange(e) {
     const { id, value } = e.target;
     setForm((f) => ({ ...f, [id]: id === "origin" || id === "destination" ? value.toUpperCase() : value }));
+  }
+
+  function swapOriginDestination() {
+    setForm((f) => ({ ...f, origin: f.destination, destination: f.origin }));
+  }
+
+  function updateMultiSlice(index, field, value) {
+    setMultiSlices((prev) => prev.map((s, i) => i === index
+      ? { ...s, [field]: (field === "origin" || field === "destination") ? value.toUpperCase() : value }
+      : s));
+  }
+
+  function addMultiSlice() {
+    setMultiSlices((prev) => [...prev, { origin: "", destination: "", departureDate: "" }]);
+  }
+
+  function removeMultiSlice(index) {
+    setMultiSlices((prev) => prev.length > 2 ? prev.filter((_, i) => i !== index) : prev);
+  }
+
+  function selectTripType(type) {
+    setTripType(type);
+    setOffers(null);
+    setError("");
+  }
+
+  function handleManageSubmit(e) {
+    e.preventDefault();
+    if (!manageForm.reference.trim() || !manageForm.lastName.trim()) {
+      alert("Merci de remplir la référence et le nom.");
+      return;
+    }
+    const message = `Bonjour, je souhaite gérer ma réservation.\nRéférence : ${manageForm.reference}\nNom : ${manageForm.lastName}\nTéléphone : ${manageForm.phone || "-"}`;
+    window.open(`https://wa.me/25377646406?text=${encodeURIComponent(message)}`, "_blank");
+    setManageSent(true);
   }
 
   async function handleSearch(e) {
@@ -193,16 +248,19 @@ function FlightSearchWidget() {
     setError("");
     setOffers(null);
     try {
+      const payload = tripType === "multi"
+        ? { slices: multiSlices, passengers: form.passengers }
+        : {
+            origin: form.origin,
+            destination: form.destination,
+            departureDate: form.departureDate,
+            returnDate: tripType === "roundtrip" ? (form.returnDate || undefined) : undefined,
+            passengers: form.passengers,
+          };
       const resp = await fetch("/api/search-flights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          origin: form.origin,
-          destination: form.destination,
-          departureDate: form.departureDate,
-          returnDate: form.returnDate || undefined,
-          passengers: form.passengers,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await resp.json();
       if (!resp.ok) setError(data.error || "Erreur inconnue");
@@ -258,30 +316,203 @@ function FlightSearchWidget() {
           </h2>
         </div>
 
-        <form onSubmit={handleSearch} className="flight-search-form" style={{
-          display: "flex", flexWrap: "wrap", gap: 12, background: "white", padding: 20,
-          borderRadius: 20, boxShadow: "0 8px 32px rgba(0,0,0,0.1)", marginBottom: 32,
-        }}>
-          <input id="origin" placeholder="Origine (ex: JIB)" maxLength={3} required
-            value={form.origin} onChange={handleChange} style={{ ...inputStyle, textTransform: "uppercase" }} />
-          <input id="destination" placeholder="Destination (ex: CDG)" maxLength={3} required
-            value={form.destination} onChange={handleChange} style={{ ...inputStyle, textTransform: "uppercase" }} />
-          <input id="departureDate" type="date" required
-            value={form.departureDate} onChange={handleChange} style={inputStyle} />
-          <input id="returnDate" type="date"
-            value={form.returnDate} onChange={handleChange} style={inputStyle} />
-          <select id="passengers" value={form.passengers} onChange={handleChange} style={inputStyle}>
-            <option value="1">1 passager</option>
-            <option value="2">2 passagers</option>
-            <option value="3">3 passagers</option>
-            <option value="4">4 passagers</option>
-          </select>
-          <button type="submit" className="btn-primary" disabled={loading} style={{
-            padding: "13px 32px", background: `linear-gradient(135deg,${T.blue},${T.blueL})`,
-            color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600,
-            cursor: "pointer", transition: "all 0.2s",
-          }}>{loading ? "Recherche…" : "✈️ Rechercher"}</button>
-        </form>
+        {/* Onglets externes, comme les vrais sites de compagnies (Air France, Turkish Airlines) */}
+        <div style={{ display: "flex", justifyContent: "center", gap: 4, marginBottom: 14 }}>
+          {[
+            ["book", "Réserver un vol"],
+            ["manage", "Gérer ma réservation"],
+          ].map(([key, label]) => {
+            const active = (key === "manage") ? tripType === "manage" : tripType !== "manage";
+            return (
+              <button key={key} type="button"
+                onClick={() => selectTripType(key === "manage" ? "manage" : "roundtrip")}
+                style={{
+                  padding: "10px 22px", border: "none", borderRadius: "10px 10px 0 0",
+                  background: active ? "white" : "transparent", color: active ? T.navy : "rgba(11,31,58,0.5)",
+                  fontWeight: active ? 700 : 500, fontSize: 14, cursor: "pointer",
+                  borderBottom: active ? `3px solid ${T.gold}` : "3px solid transparent",
+                }}>{label}</button>
+            );
+          })}
+        </div>
+
+        <div style={{ background: "white", borderRadius: 20, boxShadow: "0 8px 32px rgba(11,31,58,0.1)", border: `1px solid ${T.gray100}`, marginBottom: 32, overflow: "hidden" }}>
+
+          {/* Type de vol (uniquement en mode Réserver) */}
+          {tripType !== "manage" && (
+            <div style={{ display: "flex", gap: 22, alignItems: "center", padding: "16px 24px", borderBottom: `1px solid ${T.gray100}`, flexWrap: "wrap" }}>
+              {[
+                ["roundtrip", "Aller-retour"],
+                ["oneway", "Aller simple"],
+                ["multi", "Multi-destination"],
+              ].map(([key, label]) => (
+                <label key={key} style={{ display: "flex", alignItems: "center", gap: 7, cursor: "pointer", fontSize: 13.5, fontWeight: tripType === key ? 700 : 500, color: tripType === key ? T.navy : T.gray500 }}>
+                  <span style={{
+                    width: 16, height: 16, borderRadius: "50%", border: `2px solid ${tripType === key ? T.blue : T.gray300}`,
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>
+                    {tripType === key && <span style={{ width: 8, height: 8, borderRadius: "50%", background: T.blue }} />}
+                  </span>
+                  <input type="radio" name="tripType" checked={tripType === key} onChange={() => selectTripType(key)} style={{ display: "none" }} />
+                  {label}
+                </label>
+              ))}
+            </div>
+          )}
+
+          <div style={{ padding: 24 }}>
+
+          {tripType === "manage" ? (
+            <form onSubmit={handleManageSubmit} style={{ padding: 28, maxWidth: 440, margin: "0 auto" }}>
+              {manageSent ? (
+                <p style={{ color: T.navy, fontWeight: 700, textAlign: "center", lineHeight: 1.6 }}>
+                  ✅ Ta demande a été envoyée sur WhatsApp. Notre équipe te répond rapidement.
+                </p>
+              ) : (
+                <>
+                  <p style={{ fontSize: 14, color: T.gray500, marginBottom: 20, textAlign: "center" }}>
+                    Entre les infos de ta réservation, on te répond directement sur WhatsApp.
+                  </p>
+                  <input placeholder="Référence de réservation" required value={manageForm.reference}
+                    onChange={(e) => setManageForm((m) => ({ ...m, reference: e.target.value }))}
+                    style={{ ...inputStyle, width: "100%", marginBottom: 10, boxSizing: "border-box" }} />
+                  <input placeholder="Nom de famille" required value={manageForm.lastName}
+                    onChange={(e) => setManageForm((m) => ({ ...m, lastName: e.target.value }))}
+                    style={{ ...inputStyle, width: "100%", marginBottom: 10, boxSizing: "border-box" }} />
+                  <input type="tel" placeholder="Téléphone (optionnel)" value={manageForm.phone}
+                    onChange={(e) => setManageForm((m) => ({ ...m, phone: e.target.value }))}
+                    style={{ ...inputStyle, width: "100%", marginBottom: 18, boxSizing: "border-box" }} />
+                  <button type="submit" style={{
+                    width: "100%", padding: 14, background: "#25D366", color: "white",
+                    border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  }}><WhatsAppIcon size={16}/> Envoyer sur WhatsApp</button>
+                </>
+              )}
+            </form>
+          ) : tripType === "multi" ? (
+            <form onSubmit={handleSearch}>
+              {multiSlices.map((s, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 14, paddingBottom: 14, borderBottom: i < multiSlices.length - 1 ? `1px solid ${T.gray100}` : "none" }}>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", background: `${T.blue}12`, color: T.blue, fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
+                  <div style={{ flex: "1 1 100px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                    {SearchIcons.takeoff({ size: 15, color: T.gray500 })}
+                    <input placeholder="Origine (JIB)" maxLength={3} required value={s.origin}
+                      onChange={(e) => updateMultiSlice(i, "origin", e.target.value)}
+                      style={{ border: "none", outline: "none", width: "100%", fontSize: 14, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+                  </div>
+                  <div style={{ flex: "1 1 100px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                    {SearchIcons.landing({ size: 15, color: T.gray500 })}
+                    <input placeholder="Destination (CDG)" maxLength={3} required value={s.destination}
+                      onChange={(e) => updateMultiSlice(i, "destination", e.target.value)}
+                      style={{ border: "none", outline: "none", width: "100%", fontSize: 14, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+                  </div>
+                  <div style={{ flex: "1 1 140px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                    {SearchIcons.calendar({ size: 15, color: T.gray500 })}
+                    <input type="date" required value={s.departureDate}
+                      onChange={(e) => updateMultiSlice(i, "departureDate", e.target.value)}
+                      style={{ border: "none", outline: "none", width: "100%", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit" }} />
+                  </div>
+                  {multiSlices.length > 2 && (
+                    <button type="button" onClick={() => removeMultiSlice(i)} style={{
+                      border: "none", background: "none", color: "#B00020", cursor: "pointer", padding: 6, display: "flex",
+                    }}>{SearchIcons.trash({ size: 16, color: "#B00020" })}</button>
+                  )}
+                </div>
+              ))}
+              <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
+                <button type="button" onClick={addMultiSlice} style={{
+                  display: "flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 8, border: `1px dashed ${T.blue}`, background: "none",
+                  color: T.blue, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                }}>{SearchIcons.plus({ size: 13 })} Ajouter un vol</button>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                  {SearchIcons.users({ size: 15, color: T.gray500 })}
+                  <select id="passengers" value={form.passengers} onChange={handleChange} style={{ border: "none", outline: "none", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit", background: "transparent" }}>
+                    <option value="1">1 passager</option>
+                    <option value="2">2 passagers</option>
+                    <option value="3">3 passagers</option>
+                    <option value="4">4 passagers</option>
+                  </select>
+                </div>
+                <button type="submit" disabled={loading} style={{
+                  marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, padding: "13px 30px", background: `linear-gradient(135deg,${T.blue},${T.blueL})`,
+                  color: "white", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer",
+                }}>{SearchIcons.search({ size: 15, color: "white" })} {loading ? "Recherche…" : "Rechercher"}</button>
+              </div>
+            </form>
+          ) : (
+          <form onSubmit={handleSearch} className="flight-search-form" style={{
+            display: "flex", flexWrap: "wrap", gap: 12, alignItems: "stretch",
+          }}>
+            {/* Pilule Origine ⇄ Destination */}
+            <div style={{
+              flex: "2 1 320px", display: "flex", alignItems: "stretch", border: `1.5px solid ${T.gray300}`,
+              borderRadius: 100, overflow: "hidden", background: "white",
+            }}>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "14px 20px", minWidth: 0 }}>
+                {SearchIcons.takeoff({ size: 15, color: T.gray500 })}
+                <input id="origin" placeholder="Origine (JIB)" maxLength={3} required
+                  value={form.origin} onChange={handleChange}
+                  style={{ border: "none", outline: "none", width: "100%", fontSize: 15, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+              </div>
+              <button type="button" onClick={swapOriginDestination} title="Inverser" style={{
+                border: `1.5px solid ${T.gray300}`, background: "white", color: T.blue, width: 32, height: 32, alignSelf: "center",
+                borderRadius: "50%", cursor: "pointer", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 1px 4px rgba(11,31,58,0.1)",
+              }}>{SearchIcons.swap({ size: 13, color: T.blue })}</button>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "14px 20px", minWidth: 0 }}>
+                {SearchIcons.landing({ size: 15, color: T.gray500 })}
+                <input id="destination" placeholder="Destination (CDG)" maxLength={3} required
+                  value={form.destination} onChange={handleChange}
+                  style={{ border: "none", outline: "none", width: "100%", fontSize: 15, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+              </div>
+            </div>
+
+            {/* Pilule Dates */}
+            <div style={{
+              flex: "1.5 1 220px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${T.gray300}`,
+              borderRadius: 100, padding: "14px 18px", background: "white",
+            }}>
+              {SearchIcons.calendar({ size: 15, color: T.gray500 })}
+              <input id="departureDate" type="date" required
+                value={form.departureDate} onChange={handleChange}
+                style={{ border: "none", outline: "none", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit", width: tripType === "roundtrip" ? "48%" : "100%" }} />
+              {tripType === "roundtrip" && (
+                <>
+                  <span style={{ color: T.gray300 }}>—</span>
+                  <input id="returnDate" type="date"
+                    value={form.returnDate} onChange={handleChange}
+                    style={{ border: "none", outline: "none", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit", width: "48%" }} />
+                </>
+              )}
+            </div>
+
+            {/* Pilule Passagers */}
+            <div style={{
+              flex: "1 1 150px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${T.gray300}`,
+              borderRadius: 100, padding: "14px 18px", background: "white",
+            }}>
+              {SearchIcons.users({ size: 15, color: T.gray500 })}
+              <select id="passengers" value={form.passengers} onChange={handleChange}
+                style={{ border: "none", outline: "none", width: "100%", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit", background: "transparent" }}>
+                <option value="1">1 passager</option>
+                <option value="2">2 passagers</option>
+                <option value="3">3 passagers</option>
+                <option value="4">4 passagers</option>
+              </select>
+            </div>
+
+            {/* Bouton Rechercher */}
+            <button type="submit" className="btn-primary" disabled={loading} style={{
+              flex: "1 1 160px", padding: "0 30px", background: `linear-gradient(135deg,${T.blue},${T.blueL})`,
+              color: "white", border: "none", borderRadius: 100, fontSize: 15, fontWeight: 700,
+              cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              boxShadow: `0 6px 20px ${T.blue}40`,
+            }}>{SearchIcons.search({ size: 16, color: "white" })} {loading ? "Recherche…" : "Rechercher"}</button>
+          </form>
+          )}
+          </div>
+        </div>
 
         {error && <p style={{ color: "#B00020", textAlign: "center" }}>Erreur : {error}</p>}
         {offers && offers.length === 0 && <p style={{ textAlign: "center", color: T.gray500 }}>Aucun vol trouvé pour ces critères.</p>}
@@ -302,6 +533,11 @@ function FlightSearchWidget() {
                   Départ {new Date(seg0.departing_at).toLocaleString("fr-FR")} — Arrivée {new Date(segLast.arriving_at).toLocaleString("fr-FR")}
                   {slice.segments.length > 1 ? ` (${slice.segments.length - 1} escale(s))` : " (direct)"}
                 </div>
+                {offer.slices.length > 1 && (
+                  <div style={{ fontSize: 11, color: T.blue, marginTop: 4 }}>
+                    Trajet complet : {offer.slices.map((s) => s.origin).join(" → ")} → {offer.slices[offer.slices.length - 1].destination}
+                  </div>
+                )}
               </div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontWeight: 800, color: T.blue, fontSize: 18, fontFamily: "'Playfair Display', serif" }}>{offer.total_amount} {offer.total_currency}</div>
