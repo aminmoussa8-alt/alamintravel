@@ -478,7 +478,7 @@ export default function AlaminLanding() {
             {/* Badge */}
             <div className="fade-up" style={{ animationDelay:"0.1s", display:"inline-flex", alignItems:"center", gap:8, background:"rgba(245,166,35,0.15)", border:"1px solid rgba(245,166,35,0.4)", borderRadius:30, padding:"6px 16px", marginBottom:24 }}>
               <span style={{ fontSize:10 }}>⭐</span>
-              <span style={{ color:T.gold, fontSize:12, fontWeight:600, letterSpacing:2 }}>AGENT IATA ACCRÉDITÉ · DEPUIS 2010</span>
+              <span style={{ color:T.gold, fontSize:12, fontWeight:600, letterSpacing:2 }}>AGENT IATA ACCRÉDITÉ</span>
             </div>
 
             <h1 className="fade-up hero-title" style={{ animationDelay:"0.2s", fontFamily:"'Playfair Display', serif", fontSize:68, fontWeight:900, color:"#fff", lineHeight:1.05, marginBottom:24 }}>
@@ -489,7 +489,7 @@ export default function AlaminLanding() {
 
             <p className="fade-up" style={{ animationDelay:"0.3s", fontSize:18, color:"rgba(255,255,255,0.75)", lineHeight:1.7, marginBottom:40, maxWidth:520 }}>
               Vols internationaux, hôtels, Hajj & Omra, packages touristiques. 
-              Service personnalisé depuis plus de 15 ans.
+              Service personnalisé et de confiance.
             </p>
 
             <div className="fade-up" style={{ animationDelay:"0.4s", display:"flex", gap:16, flexWrap:"wrap" }}>
@@ -507,7 +507,7 @@ export default function AlaminLanding() {
 
             {/* Stats rapides */}
             <div className="fade-up hero-stats" style={{ animationDelay:"0.5s", display:"flex", gap:40, marginTop:52, paddingTop:32, borderTop:"1px solid rgba(255,255,255,0.1)" }}>
-              {STATS.slice(0,3).map(s=>(
+              {STATS.slice(1,4).map(s=>(
                 <div key={s.label}>
                   <div style={{ fontSize:28, fontWeight:900, color:T.sky, fontFamily:"'Playfair Display', serif" }}>{s.value}</div>
                   <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", marginTop:2 }}>{s.label}</div>
@@ -797,7 +797,7 @@ export default function AlaminLanding() {
             <div>
               <Logo size={48} light />
               <p style={{ fontSize:13, color:"rgba(255,255,255,0.45)", marginTop:16, lineHeight:1.8, maxWidth:280 }}>
-                Votre partenaire de voyage de confiance à Djibouti depuis 2010. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Hajj & Omra.
+                Votre partenaire de voyage de confiance à Djibouti. Agent IATA accrédité, spécialisé dans les vols internationaux, hôtels et packages Hajj & Omra.
               </p>
               <div style={{ display:"flex", gap:12, marginTop:20 }}>
                 {["Facebook","Instagram","WhatsApp"].map(s=>(
