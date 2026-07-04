@@ -19,11 +19,11 @@ const T = {
 
 // ── DESTINATIONS DJIBOUTI ──────────────────────────────────────────────────────
 const DESTINATIONS = [
-  { name:"Lac Assal", tag:"Incontournable", desc:"Le point le plus bas d'Afrique • 155m sous le niveau de la mer", img:"https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=900&q=90", color:"#0B4D68" },
-  { name:"Lac Abbé", tag:"Aventure", desc:"Cheminées de calcaire • Paysage lunaire unique au monde", img:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=90", color:"#5C3A1E" },
-  { name:"Requins baleines", tag:"Plongée", desc:"Golfe de Tadjoura • Novembre à Février", img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=90", color:"#0D4A7A" },
-  { name:"Ville de Djibouti", tag:"Culture", desc:"Capitale cosmopolite • Carrefour de l'Afrique et de l'Orient", img:"https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=90", color:"#1A237E" },
-  { name:"Golfe de Tadjoura", tag:"Nature", desc:"Eaux turquoise • Faune marine exceptionnelle", img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=900&q=90", color:"#01579B" },
+  { name:"Lac Assal", tag:"Incontournable", desc:"Le point le plus bas d'Afrique • 155m sous le niveau de la mer", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Lake_Assal_1-Djibouti.jpg", color:"#0B4D68" },
+  { name:"Lac Abbé", tag:"Aventure", desc:"Cheminées de calcaire • Paysage lunaire unique au monde", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Lac_Abbe.JPG", color:"#5C3A1E" },
+  { name:"Requins baleines", tag:"Plongée", desc:"Golfe de Tadjoura • Novembre à Février", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Whale_Shark_AdF.jpg", color:"#0D4A7A" },
+  { name:"Ville de Djibouti", tag:"Culture", desc:"Capitale cosmopolite • Carrefour de l'Afrique et de l'Orient", img:"https://commons.wikimedia.org/wiki/Special:FilePath/An_aerial_view_of_Djibouti_City.jpg", color:"#1A237E" },
+  { name:"Golfe de Tadjoura", tag:"Nature", desc:"Eaux turquoise • Faune marine exceptionnelle", img:"https://commons.wikimedia.org/wiki/Special:FilePath/%C3%8Ele_maskali,_Djibouti.jpg", color:"#01579B" },
 ];
 
 // ── SERVICES ──────────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ const SERVICES = [
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/White_Plane_Blue_Sky.jpg", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Hotel_room_interior_at_hotel_Radisson_Blu_Oulu.jpg", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kaaba_%281%29_Makkah_%28Mecca%29.jpg", title:"Omra", desc:"Packages complets Omra. Accompagnement spirituel.", color:"#4527A0" },
-  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Enterprise_rent_a_car_airport_counter_Portland_International_Jetport_PWM_AutoRentals.jpg", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Car_rental_facility_near_DIA_filled_with_cars_during_the_pandemic._2020-04-30.jpg", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/My_collection_of_passport_stamps.jpg", title:"Visa & Documents", desc:"Assistance visa pour toutes destinations. Traitement rapide.", color:"#1B5E20" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Man_looking_for_new_travel_destinations_on_the_world_map.jpg", title:"Voyages Organisés", desc:"Circuits à Djibouti et en Afrique de l'Est. Groupes et individuels.", color:"#E65100" },
 ];
@@ -650,9 +650,9 @@ export default function AlaminLanding() {
 
           <div className="packages-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:24 }}>
             {[
-              { name:"Omra Premium", price:"198 500", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://images.unsplash.com/photo-1591604328740-f52fc7af0f76?w=600&q=80", tagColor:T.gold },
-              { name:"Omra Ramadan", price:"504 000", duration:"14 jours", places:"40 places", tag:"RAMADAN", img:"https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=600&q=80", tagColor:"#E91E63" },
-              { name:"Dubai City Break", price:"180 000", duration:"5 jours", places:"20 places", tag:"NOUVEAU", img:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80", tagColor:T.blue },
+              { name:"Omra Premium", price:"198 500", duration:"21 jours", places:"30 places", tag:"POPULAIRE", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kaaba_%281%29_Makkah_%28Mecca%29.jpg", tagColor:T.gold },
+              { name:"Omra Ramadan", price:"265 000", duration:"14 jours", places:"40 places", tag:"RAMADAN", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Masjid_Nabawi_The_Prophet's_Mosque,_Madina.jpg", tagColor:"#E91E63" },
+              { name:"Dubai City Break", price:"180 000", duration:"5 jours", places:"20 places", tag:"NOUVEAU", img:"https://commons.wikimedia.org/wiki/Special:FilePath/Dubai_Skyline_2016.jpg", tagColor:T.blue },
             ].map((p, i) => (
               <div key={i} style={{ borderRadius:20, overflow:"hidden", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", transition:"all 0.3s" }}>
                 <div style={{ position:"relative", height:200, overflow:"hidden" }}>
