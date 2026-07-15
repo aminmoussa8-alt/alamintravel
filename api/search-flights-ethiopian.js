@@ -195,13 +195,18 @@ async function parseOffers(xml) {
 module.exports = async (req, res) => {
   // CORS - même comportement que les autres fonctions Duffel du site
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  const { origin, destination, date, adults } = req.method === "GET" ? req.query : req.body;
+  // Supporte GET (tests directs via URL) et POST (widget du site, format Duffel)
+  const raw = req.method === "GET" ? req.query : req.body;
+  const origin = raw.origin;
+  const destination = raw.destination;
+  const date = raw.date || raw.departureDate;
+  const adults = raw.adults || raw.passengers || 1;
 
   if (!origin || !destination || !date) {
-    return res.status(400).json({ error: "Paramètres requis: origin, destination, date" });
+    return res.status(400).json({ error: "Paramètres requis: origin, destination, date (ou departureDate)" });
   }
 
   try {
