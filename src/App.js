@@ -178,7 +178,7 @@ const GLOBAL_CSS = `
 `;
 
 // ══════════════════════════════════════════════════════════════════════════════
-// RECHERCHE & RÉSERVATION DE VOLS (Duffel)
+// RECHERCHE & RÉSERVATION DE VOLS (Ethiopian Airlines - API NDC directe)
 // ══════════════════════════════════════════════════════════════════════════════
 const inputStyle = {
   flex: 1, minWidth: 130, padding: "13px 16px", border: `1px solid ${T.gray300}`,
@@ -196,7 +196,10 @@ function FlightSearchWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedOffer, setSelectedOffer] = useState(null);
-  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", notes: "" });
+  const [customer, setCustomer] = useState({
+    name: "", phone: "", email: "", notes: "",
+    birthdate: "", gender: "Male", idNumber: "", issuingCountry: "DJ", expiryDate: "",
+  });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [manageForm, setManageForm] = useState({ reference: "", lastName: "", phone: "" });
@@ -275,7 +278,10 @@ function FlightSearchWidget() {
   function openReserveModal(offer) {
     setSelectedOffer(offer);
     setSent(false);
-    setCustomer({ name: "", phone: "", email: "", notes: "" });
+    setCustomer({
+      name: "", phone: "", email: "", notes: "",
+      birthdate: "", gender: "Male", idNumber: "", issuingCountry: "DJ", expiryDate: "",
+    });
   }
 
   async function handleReserve() {
@@ -283,22 +289,44 @@ function FlightSearchWidget() {
       alert("Merci de remplir au moins le nom et le téléphone.");
       return;
     }
+    if (!customer.birthdate || !customer.idNumber.trim() || !customer.expiryDate) {
+      alert("Merci de remplir la date de naissance, le numéro de passeport et sa date d'expiration (obligatoires pour Ethiopian Airlines).");
+      return;
+    }
     setSending(true);
     try {
-      const resp = await fetch("/api/reserve", {
+      const nameParts = customer.name.trim().split(/\s+/);
+      const givenName = nameParts[0] || "N/A";
+      const surname = nameParts.slice(1).join(" ") || nameParts[0] || "N/A";
+
+      const resp = await fetch("/api/reserve-ethiopian", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          offer: selectedOffer,
-          customerName: customer.name,
-          customerPhone: customer.phone,
-          customerEmail: customer.email,
-          notes: customer.notes,
+          responseId: selectedOffer.responseId,
+          offerId: selectedOffer.offerId,
+          offerItemId: selectedOffer.offerItemId,
+          totalAmount: selectedOffer.totalAmount,
+          currency: selectedOffer.currency,
+          passenger: {
+            ptc: "ADT",
+            birthdate: customer.birthdate,
+            gender: customer.gender,
+            title: customer.gender === "Female" ? "MRS" : "MR",
+            givenName,
+            surname,
+            idNumber: customer.idNumber,
+            idType: "P",
+            issuingCountry: customer.issuingCountry,
+            citizenshipCountry: customer.issuingCountry,
+            issueDate: new Date().toISOString().slice(0, 10),
+            expiryDate: customer.expiryDate,
+          },
         }),
       });
       const data = await resp.json();
-      if (data.success) setSent(true);
-      else alert("Erreur lors de l'envoi de la demande, réessayez.");
+      if (data.orderId) setSent(true);
+      else alert("Erreur lors de l'envoi de la demande, réessayez. " + (data.error || ""));
     } catch (err) {
       alert("Erreur réseau, réessayez.");
     } finally {
@@ -575,6 +603,30 @@ function FlightSearchWidget() {
                 <input type="email" placeholder="Email (optionnel)" value={customer.email}
                   onChange={(e) => setCustomer((c) => ({ ...c, email: e.target.value }))}
                   style={{ ...inputStyle, width: "100%", marginBottom: 10, boxSizing: "border-box" }} />
+
+                <div style={{ fontSize: 11, color: T.gray500, marginBottom: 6, marginTop: 4 }}>Requis par Ethiopian Airlines pour l'émission du billet :</div>
+                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                  <input type="date" placeholder="Date de naissance" required value={customer.birthdate}
+                    onChange={(e) => setCustomer((c) => ({ ...c, birthdate: e.target.value }))}
+                    style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
+                  <select value={customer.gender}
+                    onChange={(e) => setCustomer((c) => ({ ...c, gender: e.target.value }))}
+                    style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }}>
+                    <option value="Male">Homme</option>
+                    <option value="Female">Femme</option>
+                  </select>
+                </div>
+                <input placeholder="Numéro de passeport" required value={customer.idNumber}
+                  onChange={(e) => setCustomer((c) => ({ ...c, idNumber: e.target.value }))}
+                  style={{ ...inputStyle, width: "100%", marginBottom: 10, boxSizing: "border-box" }} />
+                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                  <input placeholder="Pays émetteur (ex: DJ)" required value={customer.issuingCountry}
+                    onChange={(e) => setCustomer((c) => ({ ...c, issuingCountry: e.target.value.toUpperCase() }))}
+                    style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
+                  <input type="date" placeholder="Expiration passeport" required value={customer.expiryDate}
+                    onChange={(e) => setCustomer((c) => ({ ...c, expiryDate: e.target.value }))}
+                    style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
+                </div>
                 <textarea placeholder="Remarques (optionnel)" rows={2} value={customer.notes}
                   onChange={(e) => setCustomer((c) => ({ ...c, notes: e.target.value }))}
                   style={{ ...inputStyle, width: "100%", marginBottom: 16, boxSizing: "border-box" }} />
