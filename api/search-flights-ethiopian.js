@@ -38,8 +38,15 @@ const AGENCY_ID = process.env.ET_NDC_AGENCY_ID;
 
 async function getAccessToken() {
   const url = `${BASE_URL}/${RELATIVE}/Auth`;
-  const body = { Client: CLIENT, Secret: SECRET, Scope: SCOPE, grant_type: "client_credentials" };
-  const res = await axios.post(url, body, { headers: { "Content-Type": "application/json" } });
+  const params = new URLSearchParams();
+  params.append("Client", CLIENT);
+  params.append("Secret", SECRET);
+  params.append("Scope", SCOPE);
+  params.append("grant_type", "client_credentials");
+
+  const res = await axios.post(url, params, {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  });
   return res.data.access_token || res.data.token || res.data.accessToken;
 }
 
