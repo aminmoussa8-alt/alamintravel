@@ -105,6 +105,36 @@ async function parseOffers(xml) {
   const rs = parsed.AirShoppingRS;
   const responseId = rs.ShoppingResponseID?.ResponseID;
 
+  // --- Construire une carte des segments de vol (horaires) ---
+  const segmentsByKey = {};
+  let segments = rs.DataLists?.FlightSegmentList?.FlightSegment;
+  if (segments) {
+    if (!Array.isArray(segments)) segments = [segments];
+    segments.forEach((seg) => {
+      segmentsByKey[seg.$.SegmentKey] = {
+        depAirport: seg.Departure?.AirportCode,
+        depDate: seg.Departure?.Date,
+        depTime: seg.Departure?.Time,
+        arrAirport: seg.Arrival?.AirportCode,
+        arrDate: seg.Arrival?.Date,
+        arrTime: seg.Arrival?.Time,
+      };
+    });
+  }
+
+  // --- Construire une carte des vols (flightKey -> liste de segments) ---
+  const flightsByKey = {};
+  let flights = rs.DataLists?.FlightList?.Flight;
+  if (flights) {
+    if (!Array.isArray(flights)) flights = [flights];
+    flights.forEach((f) => {
+      let refs = f.SegmentReferences;
+      const refText = typeof refs === "object" ? refs._ : refs;
+      const keys = (refText || "").split(/\s+/).filter(Boolean);
+      flightsByKey[f.$.FlightKey] = keys.map((k) => segmentsByKey[k]).filter(Boolean);
+    });
+  }
+
   let airlineOffers = rs.OffersGroup?.AirlineOffers?.Offer;
   if (!airlineOffers) return [];
   if (!Array.isArray(airlineOffers)) airlineOffers = [airlineOffers];
@@ -120,6 +150,25 @@ async function parseOffers(xml) {
       const base = item.TotalPriceDetail?.BaseAmount;
       const taxes = item.TotalPriceDetail?.Taxes?.Total;
 
+      // Récupérer les segments de vol liés à cet OfferItem via Service->FlightRefs
+      let service = item.Service;
+      let flightRefsText = "";
+      if (service) {
+        if (Array.isArray(service)) {
+          flightRefsText = service.map((s) => (typeof s.FlightRefs === "object" ? s.FlightRefs._ : s.FlightRefs)).join(" ");
+        } else {
+          flightRefsText = typeof service.FlightRefs === "object" ? service.FlightRefs._ : service.FlightRefs;
+        }
+      }
+      const flightKeys = (flightRefsText || "").split(/\s+/).filter(Boolean);
+      let allSegments = [];
+      flightKeys.forEach((fk) => {
+        if (flightsByKey[fk]) allSegments = allSegments.concat(flightsByKey[fk]);
+      });
+
+      const firstSeg = allSegments[0];
+      const lastSeg = allSegments[allSegments.length - 1];
+
       offers.push({
         responseId,
         offerId: offer.$.OfferID,
@@ -128,6 +177,14 @@ async function parseOffers(xml) {
         baseAmount: typeof base === "object" ? base._ : base,
         taxAmount: typeof taxes === "object" ? taxes._ : taxes,
         currency: (typeof total === "object" ? total.$?.Code : null) || "ETB",
+        airline: "Ethiopian Airlines",
+        departureAirport: firstSeg?.depAirport || null,
+        departureDate: firstSeg?.depDate || null,
+        departureTime: firstSeg?.depTime || null,
+        arrivalAirport: lastSeg?.arrAirport || null,
+        arrivalDate: lastSeg?.arrDate || null,
+        arrivalTime: lastSeg?.arrTime || null,
+        stops: Math.max(allSegments.length - 1, 0),
       });
     });
   });
