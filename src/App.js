@@ -518,30 +518,25 @@ function FlightSearchWidget() {
         {offers && offers.length === 0 && <p style={{ textAlign: "center", color: T.gray500 }}>Aucun vol trouvé pour ces critères.</p>}
 
         {offers && offers.map((offer) => {
-          const slice = offer.slices[0];
-          const seg0 = slice.segments[0];
-          const segLast = slice.segments[slice.segments.length - 1];
+          const depDateTime = offer.departureDate && offer.departureTime ? `${offer.departureDate}T${offer.departureTime}` : null;
+          const arrDateTime = offer.arrivalDate && offer.arrivalTime ? `${offer.arrivalDate}T${offer.arrivalTime}` : null;
           return (
-            <div key={offer.id} style={{
+            <div key={offer.offerItemId} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12,
               background: "white", borderRadius: 16, padding: 20, marginBottom: 14,
               boxShadow: "0 4px 20px rgba(0,0,0,0.06)", border: `1px solid ${T.gray100}`,
             }}>
               <div>
-                <div style={{ fontWeight: 700, color: T.navy, fontSize: 15 }}>{offer.owner} — {slice.origin} → {slice.destination}</div>
+                <div style={{ fontWeight: 700, color: T.navy, fontSize: 15 }}>{offer.airline} — {offer.departureAirport} → {offer.arrivalAirport}</div>
                 <div style={{ fontSize: 12, color: T.gray500, marginTop: 4 }}>
-                  Départ {new Date(seg0.departing_at).toLocaleString("fr-FR")} — Arrivée {new Date(segLast.arriving_at).toLocaleString("fr-FR")}
-                  {slice.segments.length > 1 ? ` (${slice.segments.length - 1} escale(s))` : " (direct)"}
+                  {depDateTime ? `Départ ${new Date(depDateTime).toLocaleString("fr-FR")}` : "Horaire à confirmer"}
+                  {arrDateTime ? ` — Arrivée ${new Date(arrDateTime).toLocaleString("fr-FR")}` : ""}
+                  {" "}({offer.stops > 0 ? `${offer.stops} escale(s)` : "direct"})
                 </div>
-                {offer.slices.length > 1 && (
-                  <div style={{ fontSize: 11, color: T.blue, marginTop: 4 }}>
-                    Trajet complet : {offer.slices.map((s) => s.origin).join(" → ")} → {offer.slices[offer.slices.length - 1].destination}
-                  </div>
-                )}
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontWeight: 800, color: T.blue, fontSize: 18, fontFamily: "'Playfair Display', serif" }}>{offer.total_amount} {offer.total_currency}</div>
-                <div style={{ fontSize: 10, color: T.gray500, marginTop: 2 }}>Prix indicatif, converti sur devis</div>
+                <div style={{ fontWeight: 800, color: T.blue, fontSize: 18, fontFamily: "'Playfair Display', serif" }}>{offer.totalAmount} {offer.currency}</div>
+                <div style={{ fontSize: 10, color: T.gray500, marginTop: 2 }}>Prix Ethiopian Airlines</div>
                 <button onClick={() => openReserveModal(offer)} className="btn-gold" style={{
                   marginTop: 8, padding: "9px 20px", background: `linear-gradient(135deg,${T.gold},${T.goldD})`,
                   color: "white", border: "none", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
@@ -569,7 +564,7 @@ function FlightSearchWidget() {
               <>
                 <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, color: T.navy, marginBottom: 4 }}>Demande de réservation</h3>
                 <div style={{ fontSize: 13, color: T.gray500, marginBottom: 20 }}>
-                  {selectedOffer.owner} — {selectedOffer.slices[0].origin} → {selectedOffer.slices[0].destination} — {selectedOffer.total_amount} {selectedOffer.total_currency}
+                  {selectedOffer.airline} — {selectedOffer.departureAirport} → {selectedOffer.arrivalAirport} — {selectedOffer.totalAmount} {selectedOffer.currency}
                 </div>
                 <input placeholder="Nom complet" required value={customer.name}
                   onChange={(e) => setCustomer((c) => ({ ...c, name: e.target.value }))}
