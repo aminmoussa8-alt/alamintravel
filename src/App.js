@@ -257,7 +257,7 @@ function FlightSearchWidget() {
             returnDate: tripType === "roundtrip" ? (form.returnDate || undefined) : undefined,
             passengers: form.passengers,
           };
-      const resp = await fetch("/api/search-flights", {
+     const resp = await fetch("/api/search-flights-ethiopian", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
