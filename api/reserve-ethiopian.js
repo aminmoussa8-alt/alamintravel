@@ -218,18 +218,40 @@ module.exports = async (req, res) => {
     const token = await getAccessToken();
 
     // Étape obligatoire : OfferPrice, avant OrderCreate (sinon "Invalid Request")
-    const priced = await priceOffer(token, { responseId, offerId, offerItemId });
+    let priced;
+    try {
+      priced = await priceOffer(token, { responseId, offerId, offerItemId });
+      console.log("Ethiopian NDC OfferPrice OK:", JSON.stringify(priced));
+    } catch (priceErr) {
+      console.error("Ethiopian NDC OFFERPRICE error:", priceErr.response?.data || priceErr.message);
+      return res.status(502).json({
+        error: "Erreur à l'étape OfferPrice (avant réservation)",
+        step: "OfferPrice",
+        details: priceErr.response?.data || priceErr.message,
+      });
+    }
 
     const xml = buildOrderCreateXML({ ...priced, passenger });
 
-    const orderUrl = `${BASE_URL}/${RELATIVE}/OrderCreate`;
-    const response = await axios.post(orderUrl, xml, {
-      headers: {
-        "Content-Type": "application/xml",
-        Accept: "application/xml",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    let response;
+    try {
+      const orderUrl = `${BASE_URL}/${RELATIVE}/OrderCreate`;
+      response = await axios.post(orderUrl, xml, {
+        headers: {
+          "Content-Type": "application/xml",
+          Accept: "application/xml",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (orderErr) {
+      console.error("Ethiopian NDC ORDERCREATE error:", orderErr.response?.data || orderErr.message);
+      console.error("Ethiopian NDC ORDERCREATE request sent:", xml);
+      return res.status(502).json({
+        error: "Erreur à l'étape OrderCreate (réservation)",
+        step: "OrderCreate",
+        details: orderErr.response?.data || orderErr.message,
+      });
+    }
 
     const parsed = await xml2js.parseStringPromise(response.data, {
       explicitArray: false,
@@ -240,7 +262,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ orderId, raw: response.data });
   } catch (err) {
-    console.error("Ethiopian NDC reserve error:", err.response?.data || err.message);
+    console.error("Ethiopian NDC reserve error (general):", err.response?.data || err.message);
     return res.status(502).json({ error: "Erreur lors de la réservation Ethiopian Airlines", details: err.response?.data || err.message });
   }
 };
