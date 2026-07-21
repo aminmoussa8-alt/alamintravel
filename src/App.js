@@ -187,7 +187,7 @@ const inputStyle = {
 
 // ── SÉLECTEUR DE DATE (calendrier français, remplace les inputs natifs jj/mm/aaaa) ──
 const MONTHS_FR = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
-const DAYS_FR = ["L","M","M","J","V","S","D"];
+const DAYS_FR = ["D","L","M","M","J","V","S"];
 
 function toISO(d) {
   const y = d.getFullYear();
@@ -215,7 +215,7 @@ function startOfDay(d) {
 }
 function buildMonthGrid(year, month) {
   const first = new Date(year, month, 1);
-  const firstWeekday = (first.getDay() + 6) % 7; // lundi = 0
+  const firstWeekday = first.getDay(); // dimanche = 0, comme le calendrier Ethiopian
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const cells = [];
   for (let i = 0; i < firstWeekday; i++) cells.push(null);
@@ -244,6 +244,7 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
 
   const selStart = mode === "range" ? fromISO(startValue) : fromISO(value);
   const selEnd = mode === "range" ? fromISO(endValue) : null;
+  const pickingReturn = mode === "range" && !!selStart && !selEnd;
 
   function goMonth(delta) {
     let m = viewMonth + delta, y = viewYear;
@@ -260,20 +261,65 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
       setOpen(false);
       return;
     }
+    // Mode aller-retour : ne ferme plus automatiquement — l'utilisateur confirme via le bouton
     if (!selStart || (selStart && selEnd) || day < selStart) {
       onChangeRange(toISO(day), null);
     } else {
       onChangeRange(toISO(selStart), toISO(day));
-      setOpen(false);
     }
   }
 
-  const weeks = buildMonthGrid(viewYear, viewMonth);
+  function resetToPickStart() {
+    if (mode === "range") onChangeRange(null, null);
+  }
+
   const canGoPrev = !(viewYear === today.getFullYear() && viewMonth === today.getMonth());
   const hasValue = mode === "single" ? !!value : !!startValue;
   const displayLabel = mode === "single"
     ? (formatShort(value) || label || "Date")
     : (startValue ? `${formatShort(startValue)}${endValue ? " — " + formatShort(endValue) : ""}` : (label || "Dates"));
+
+  // Un mois pour l'aller simple / multi-destinations, deux mois côte à côte pour l'aller-retour
+  const monthsToShow = mode === "range" ? [0, 1] : [0];
+
+  function renderMonthCard(offset) {
+    let m = viewMonth + offset, y = viewYear;
+    if (m > 11) { m -= 12; y += 1; }
+    const weeks = buildMonthGrid(y, m);
+    return (
+      <div key={offset} style={{ minWidth: 220, flex: "1 1 220px" }}>
+        <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 700, color: T.navy, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 10 }}>
+          {MONTHS_FR[m]} {y}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", marginBottom: 2 }}>
+          {DAYS_FR.map((d, i) => (
+            <div key={i} style={{ textAlign: "center", fontSize: 10, fontWeight: 700, color: T.gray500, padding: "4px 0" }}>{d}</div>
+          ))}
+        </div>
+        {weeks.map((week, wi) => (
+          <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
+            {week.map((day, di) => {
+              if (!day) return <div key={di} />;
+              const disabled = day < today;
+              const isStart = selStart && isSameDay(day, selStart);
+              const isEnd = selEnd && isSameDay(day, selEnd);
+              const inRange = mode === "range" && selStart && selEnd && day > selStart && day < selEnd;
+              let bg = "transparent", color = T.navy, fontWeight = 500, radius = 8;
+              if (isStart || isEnd) { bg = T.blue; color = "white"; fontWeight = 700; }
+              else if (inRange) { bg = `${T.blue}18`; color = T.navy; radius = 0; }
+              return (
+                <button key={di} type="button" disabled={disabled} onClick={() => handlePick(day)} style={{
+                  border: "none", background: bg, color: disabled ? T.gray300 : color, fontWeight,
+                  borderRadius: radius, height: 30, margin: "1px 0", fontSize: 12, cursor: disabled ? "default" : "pointer",
+                  fontFamily: "inherit",
+                }}>{day.getDate()}</button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div ref={wrapRef} style={{ position: "relative", flex: 1, minWidth: 0 }}>
@@ -291,50 +337,51 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
         <div style={{
           position: "absolute", top: "calc(100% + 10px)", left: 0, zIndex: 50,
           background: "white", borderRadius: 16, boxShadow: "0 12px 40px rgba(11,31,58,0.18)",
-          border: `1px solid ${T.gray100}`, padding: 16, width: 300, maxWidth: "92vw", boxSizing: "border-box",
+          border: `1px solid ${T.gray100}`, padding: 18, width: mode === "range" ? 460 : 260,
+          maxWidth: "94vw", boxSizing: "border-box",
         }}>
           {mode === "range" && (
-            <div style={{ fontSize: 11, color: T.gray500, marginBottom: 10, textAlign: "center" }}>
-              {!selStart ? "Choisissez la date de départ" : !selEnd ? "Choisissez la date de retour" : ""}
+            <div style={{ display: "flex", borderBottom: `1px solid ${T.gray100}`, marginBottom: 14 }}>
+              <button type="button" onClick={resetToPickStart} style={{
+                flex: 1, textAlign: "center", padding: "0 0 10px", border: "none", background: "none", cursor: "pointer", fontFamily: "inherit",
+                fontSize: 11.5, fontWeight: 700, letterSpacing: 0.5, color: !pickingReturn ? T.blue : T.gray500,
+                borderBottom: !pickingReturn ? `2px solid ${T.blue}` : "2px solid transparent", marginBottom: -1,
+              }}>DÉPART{selStart ? ` · ${formatShort(startValue)}` : ""}</button>
+              <div style={{
+                flex: 1, textAlign: "center", padding: "0 0 10px", fontSize: 11.5, fontWeight: 700, letterSpacing: 0.5,
+                color: pickingReturn ? T.blue : (selEnd ? T.navy : T.gray300),
+                borderBottom: pickingReturn ? `2px solid ${T.blue}` : "2px solid transparent", marginBottom: -1,
+              }}>RETOUR{selEnd ? ` · ${formatShort(endValue)}` : ""}</div>
             </div>
           )}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
             <button type="button" onClick={() => canGoPrev && goMonth(-1)} disabled={!canGoPrev} style={{
-              border: "none", background: "none", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? T.navy : T.gray300,
-              width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit",
+              border: `1px solid ${T.gray300}`, background: "white", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? T.navy : T.gray300,
+              width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontFamily: "inherit",
             }}>‹</button>
-            <div style={{ fontSize: 13.5, fontWeight: 700, color: T.navy }}>{MONTHS_FR[viewMonth]} {viewYear}</div>
+            <div style={{ fontSize: 11, color: T.gray500 }}>
+              {mode === "range" ? "Cliquez le départ, puis le retour" : "Sélectionnez une date"}
+            </div>
             <button type="button" onClick={() => goMonth(1)} style={{
-              border: "none", background: "none", cursor: "pointer", color: T.navy,
-              width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit",
+              border: `1px solid ${T.gray300}`, background: "white", cursor: "pointer", color: T.navy,
+              width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontFamily: "inherit",
             }}>›</button>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", marginBottom: 2 }}>
-            {DAYS_FR.map((d, i) => (
-              <div key={i} style={{ textAlign: "center", fontSize: 10.5, fontWeight: 700, color: T.gray500, padding: "4px 0" }}>{d}</div>
-            ))}
+
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+            {monthsToShow.map((offset) => renderMonthCard(offset))}
           </div>
-          {weeks.map((week, wi) => (
-            <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
-              {week.map((day, di) => {
-                if (!day) return <div key={di} />;
-                const disabled = day < today;
-                const isStart = selStart && isSameDay(day, selStart);
-                const isEnd = selEnd && isSameDay(day, selEnd);
-                const inRange = mode === "range" && selStart && selEnd && day > selStart && day < selEnd;
-                let bg = "transparent", color = T.navy, fontWeight = 500;
-                if (isStart || isEnd) { bg = T.blue; color = "white"; fontWeight = 700; }
-                else if (inRange) { bg = `${T.blue}18`; color = T.navy; }
-                return (
-                  <button key={di} type="button" disabled={disabled} onClick={() => handlePick(day)} style={{
-                    border: "none", background: bg, color: disabled ? T.gray300 : color, fontWeight,
-                    borderRadius: 8, height: 32, margin: "1px 0", fontSize: 12.5, cursor: disabled ? "default" : "pointer",
-                    fontFamily: "inherit",
-                  }}>{day.getDate()}</button>
-                );
-              })}
+
+          {mode === "range" && (
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14, paddingTop: 12, borderTop: `1px solid ${T.gray100}` }}>
+              <button type="button" onClick={() => setOpen(false)} disabled={!selStart || !selEnd} style={{
+                padding: "8px 20px", borderRadius: 8, border: "none", cursor: (selStart && selEnd) ? "pointer" : "default",
+                background: (selStart && selEnd) ? T.blue : T.gray100, color: (selStart && selEnd) ? "white" : T.gray500,
+                fontSize: 12.5, fontWeight: 700, fontFamily: "inherit",
+              }}>Confirmer</button>
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
