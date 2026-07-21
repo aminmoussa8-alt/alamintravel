@@ -227,7 +227,7 @@ function buildMonthGrid(year, month) {
   return weeks;
 }
 
-function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, onChangeRange, label }) {
+function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, onChangeRange, label, restrict = "futureOnly" }) {
   const [open, setOpen] = useState(false);
   const today = startOfDay(new Date());
   const initialRef = mode === "single" ? (fromISO(value) || today) : (fromISO(startValue) || today);
@@ -277,6 +277,12 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
   const selEnd = mode === "range" ? fromISO(endValue) : null;
   const pickingReturn = mode === "range" && !!selStart && !selEnd;
 
+  function isDisabledDay(day) {
+    if (restrict === "futureOnly") return day < today;
+    if (restrict === "pastOnly") return day > today;
+    return false;
+  }
+
   function goMonth(delta) {
     let m = viewMonth + delta, y = viewYear;
     if (m < 0) { m = 11; y -= 1; }
@@ -286,7 +292,7 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
   }
 
   function handlePick(day) {
-    if (!day || day < today) return;
+    if (!day || isDisabledDay(day)) return;
     if (mode === "single") {
       onChangeSingle(toISO(day));
       setOpen(false);
@@ -304,7 +310,11 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
     if (mode === "range") onChangeRange(null, null);
   }
 
-  const canGoPrev = !(viewYear === today.getFullYear() && viewMonth === today.getMonth());
+  const canGoPrev = restrict === "futureOnly" ? !(viewYear === today.getFullYear() && viewMonth === today.getMonth()) : true;
+  const canGoNext = restrict === "pastOnly" ? !(viewYear === today.getFullYear() && viewMonth === today.getMonth()) : true;
+  const yearOptions = restrict === "pastOnly"
+    ? Array.from({ length: 100 }, (_, i) => today.getFullYear() - i)
+    : Array.from({ length: 16 }, (_, i) => today.getFullYear() + i);
   const hasValue = mode === "single" ? !!value : !!startValue;
   const displayLabel = mode === "single"
     ? (formatShort(value) || label || "Date")
@@ -319,9 +329,27 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
     const weeks = buildMonthGrid(y, m);
     return (
       <div key={offset} style={{ minWidth: 220, flex: "1 1 220px" }}>
-        <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 700, color: T.navy, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 10 }}>
-          {MONTHS_FR[m]} {y}
-        </div>
+        {offset === 0 && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 }}>
+            <select value={viewMonth} onChange={(e) => setViewMonth(Number(e.target.value))} style={{
+              border: `1px solid ${T.gray300}`, borderRadius: 6, fontSize: 12, fontWeight: 700, color: T.navy,
+              fontFamily: "inherit", padding: "4px 6px", background: "white",
+            }}>
+              {MONTHS_FR.map((mn, i) => <option key={i} value={i}>{mn}</option>)}
+            </select>
+            <select value={viewYear} onChange={(e) => setViewYear(Number(e.target.value))} style={{
+              border: `1px solid ${T.gray300}`, borderRadius: 6, fontSize: 12, fontWeight: 700, color: T.navy,
+              fontFamily: "inherit", padding: "4px 6px", background: "white",
+            }}>
+              {yearOptions.map((yr) => <option key={yr} value={yr}>{yr}</option>)}
+            </select>
+          </div>
+        )}
+        {offset !== 0 && (
+          <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 700, color: T.navy, letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 10 }}>
+            {MONTHS_FR[m]} {y}
+          </div>
+        )}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", marginBottom: 2 }}>
           {DAYS_FR.map((d, i) => (
             <div key={i} style={{ textAlign: "center", fontSize: 10, fontWeight: 700, color: T.gray500, padding: "4px 0" }}>{d}</div>
@@ -331,7 +359,7 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
           <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
             {week.map((day, di) => {
               if (!day) return <div key={di} />;
-              const disabled = day < today;
+              const disabled = isDisabledDay(day);
               const isStart = selStart && isSameDay(day, selStart);
               const isEnd = selEnd && isSameDay(day, selEnd);
               const inRange = mode === "range" && selStart && selEnd && day > selStart && day < selEnd;
@@ -394,8 +422,8 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
             <div style={{ fontSize: 11, color: T.gray500 }}>
               {mode === "range" ? "Cliquez le départ, puis le retour" : "Sélectionnez une date"}
             </div>
-            <button type="button" onClick={() => goMonth(1)} style={{
-              border: `1px solid ${T.gray300}`, background: "white", cursor: "pointer", color: T.navy,
+            <button type="button" onClick={() => canGoNext && goMonth(1)} disabled={!canGoNext} style={{
+              border: `1px solid ${T.gray300}`, background: "white", cursor: canGoNext ? "pointer" : "default", color: canGoNext ? T.navy : T.gray300,
               width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontFamily: "inherit",
             }}>›</button>
           </div>
@@ -413,6 +441,143 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
               }}>Confirmer</button>
             </div>
           )}
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+// ── AUTOCOMPLÉTION AÉROPORTS (tape "JIB" → affiche "Djibouti — Djibouti") ──
+const AIRPORTS = [
+  { code: "JIB", city: "Djibouti", country: "Djibouti" },
+  { code: "ADD", city: "Addis-Abeba", country: "Éthiopie" },
+  { code: "DXB", city: "Dubaï", country: "Émirats arabes unis" },
+  { code: "AUH", city: "Abou Dabi", country: "Émirats arabes unis" },
+  { code: "DOH", city: "Doha", country: "Qatar" },
+  { code: "IST", city: "Istanbul", country: "Turquie" },
+  { code: "CDG", city: "Paris", country: "France" },
+  { code: "NBO", city: "Nairobi", country: "Kenya" },
+  { code: "JED", city: "Djeddah", country: "Arabie Saoudite" },
+  { code: "MED", city: "Médine", country: "Arabie Saoudite" },
+  { code: "RUH", city: "Riyad", country: "Arabie Saoudite" },
+  { code: "CAI", city: "Le Caire", country: "Égypte" },
+  { code: "MGQ", city: "Mogadiscio", country: "Somalie" },
+  { code: "HGA", city: "Hargeisa", country: "Somaliland" },
+  { code: "ASM", city: "Asmara", country: "Érythrée" },
+  { code: "KRT", city: "Khartoum", country: "Soudan" },
+  { code: "DAR", city: "Dar es Salaam", country: "Tanzanie" },
+  { code: "EBB", city: "Entebbe / Kampala", country: "Ouganda" },
+  { code: "KGL", city: "Kigali", country: "Rwanda" },
+  { code: "JNB", city: "Johannesburg", country: "Afrique du Sud" },
+  { code: "LHR", city: "Londres", country: "Royaume-Uni" },
+  { code: "FRA", city: "Francfort", country: "Allemagne" },
+  { code: "MCT", city: "Mascate", country: "Oman" },
+  { code: "KWI", city: "Koweït", country: "Koweït" },
+  { code: "BAH", city: "Manama", country: "Bahreïn" },
+  { code: "AMM", city: "Amman", country: "Jordanie" },
+  { code: "BEY", city: "Beyrouth", country: "Liban" },
+  { code: "MXP", city: "Milan", country: "Italie" },
+  { code: "FCO", city: "Rome", country: "Italie" },
+  { code: "MAD", city: "Madrid", country: "Espagne" },
+  { code: "BRU", city: "Bruxelles", country: "Belgique" },
+  { code: "AMS", city: "Amsterdam", country: "Pays-Bas" },
+  { code: "GVA", city: "Genève", country: "Suisse" },
+  { code: "ZRH", city: "Zurich", country: "Suisse" },
+  { code: "DEL", city: "New Delhi", country: "Inde" },
+  { code: "BKK", city: "Bangkok", country: "Thaïlande" },
+  { code: "KUL", city: "Kuala Lumpur", country: "Malaisie" },
+  { code: "SIN", city: "Singapour", country: "Singapour" },
+  { code: "CMN", city: "Casablanca", country: "Maroc" },
+  { code: "TUN", city: "Tunis", country: "Tunisie" },
+  { code: "ALG", city: "Alger", country: "Algérie" },
+  { code: "IAD", city: "Washington", country: "États-Unis" },
+  { code: "JFK", city: "New York", country: "États-Unis" },
+];
+
+function matchAirports(query) {
+  if (!query) return AIRPORTS.slice(0, 8);
+  const q = query.toLowerCase();
+  const starts = AIRPORTS.filter((a) => a.code.toLowerCase().startsWith(q));
+  const rest = AIRPORTS.filter((a) =>
+    !a.code.toLowerCase().startsWith(q) &&
+    (a.code.toLowerCase().includes(q) || a.city.toLowerCase().includes(q) || a.country.toLowerCase().includes(q))
+  );
+  return [...starts, ...rest].slice(0, 8);
+}
+
+function AirportField({ value, onChange, placeholder, icon }) {
+  const [text, setText] = useState(value || "");
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+  const wrapDivRef = useRef(null);
+  const popRef = useRef(null);
+
+  useEffect(() => { setText(value || ""); }, [value]);
+
+  function openList() {
+    if (wrapDivRef.current) {
+      const rect = wrapDivRef.current.getBoundingClientRect();
+      setCoords({ top: rect.bottom + 8, left: rect.left, width: rect.width });
+    }
+    setOpen(true);
+  }
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        wrapDivRef.current && !wrapDivRef.current.contains(e.target) &&
+        popRef.current && !popRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const matches = matchAirports(text);
+
+  function selectAirport(a) {
+    setText(a.code);
+    onChange(a.code);
+    setOpen(false);
+  }
+
+  return (
+    <div ref={wrapDivRef} style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+      {icon}
+      <input
+        placeholder={placeholder} maxLength={3} value={text}
+        onFocus={openList}
+        onChange={(e) => {
+          const v = e.target.value.toUpperCase();
+          setText(v);
+          onChange(v);
+          openList();
+        }}
+        style={{ border: "none", outline: "none", width: "100%", fontSize: 15, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }}
+      />
+      {open && matches.length > 0 && createPortal(
+        <div ref={popRef} style={{
+          position: "fixed", top: coords.top, left: coords.left, width: Math.max(coords.width, 240), zIndex: 9999,
+          background: "white", borderRadius: 12, boxShadow: "0 12px 40px rgba(11,31,58,0.22)", border: `1px solid ${T.gray100}`,
+          padding: 6, maxHeight: 300, overflowY: "auto", boxSizing: "border-box",
+        }}>
+          {matches.map((a) => (
+            <button key={a.code} type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => selectAirport(a)}
+              style={{
+                display: "flex", alignItems: "baseline", gap: 8, width: "100%", textAlign: "left",
+                padding: "8px 10px", border: "none", background: "transparent", cursor: "pointer",
+                borderRadius: 8, fontFamily: "inherit",
+              }}>
+              <span style={{ fontWeight: 700, color: T.navy, fontSize: 13, minWidth: 32 }}>{a.code}</span>
+              <span style={{ fontSize: 12.5, color: T.gray700 }}>{a.city}</span>
+              <span style={{ fontSize: 11.5, color: T.gray500, marginLeft: "auto" }}>{a.country}</span>
+            </button>
+          ))}
         </div>,
         document.body
       )}
@@ -674,17 +839,21 @@ function FlightSearchWidget() {
               {multiSlices.map((s, i) => (
                 <div key={i} style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 14, paddingBottom: 14, borderBottom: i < multiSlices.length - 1 ? `1px solid ${T.gray100}` : "none" }}>
                   <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 24, height: 24, borderRadius: "50%", background: `${T.blue}12`, color: T.blue, fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{i + 1}</span>
-                  <div style={{ flex: "1 1 100px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
-                    {SearchIcons.takeoff({ size: 15, color: T.gray500 })}
-                    <input placeholder="Origine (JIB)" maxLength={3} required value={s.origin}
-                      onChange={(e) => updateMultiSlice(i, "origin", e.target.value)}
-                      style={{ border: "none", outline: "none", width: "100%", fontSize: 14, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+                  <div style={{ flex: "1 1 100px", display: "flex", alignItems: "center", border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                    <AirportField
+                      value={s.origin}
+                      onChange={(v) => updateMultiSlice(i, "origin", v)}
+                      placeholder="Origine (JIB)"
+                      icon={SearchIcons.takeoff({ size: 15, color: T.gray500 })}
+                    />
                   </div>
-                  <div style={{ flex: "1 1 100px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
-                    {SearchIcons.landing({ size: 15, color: T.gray500 })}
-                    <input placeholder="Destination (CDG)" maxLength={3} required value={s.destination}
-                      onChange={(e) => updateMultiSlice(i, "destination", e.target.value)}
-                      style={{ border: "none", outline: "none", width: "100%", fontSize: 14, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+                  <div style={{ flex: "1 1 100px", display: "flex", alignItems: "center", border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                    <AirportField
+                      value={s.destination}
+                      onChange={(v) => updateMultiSlice(i, "destination", v)}
+                      placeholder="Destination (CDG)"
+                      icon={SearchIcons.landing({ size: 15, color: T.gray500 })}
+                    />
                   </div>
                   <div style={{ flex: "1 1 140px", display: "flex", alignItems: "center", border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
                     <DatePickerField
@@ -730,22 +899,26 @@ function FlightSearchWidget() {
               flex: "2 1 320px", display: "flex", alignItems: "stretch", border: `1.5px solid ${T.gray300}`,
               borderRadius: 100, overflow: "hidden", background: "white",
             }}>
-              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "14px 20px", minWidth: 0 }}>
-                {SearchIcons.takeoff({ size: 15, color: T.gray500 })}
-                <input id="origin" placeholder="Origine (JIB)" maxLength={3} required
-                  value={form.origin} onChange={handleChange}
-                  style={{ border: "none", outline: "none", width: "100%", fontSize: 15, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+              <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "14px 20px", minWidth: 0 }}>
+                <AirportField
+                  value={form.origin}
+                  onChange={(v) => setForm((f) => ({ ...f, origin: v }))}
+                  placeholder="Origine (JIB)"
+                  icon={SearchIcons.takeoff({ size: 15, color: T.gray500 })}
+                />
               </div>
               <button type="button" onClick={swapOriginDestination} title="Inverser" style={{
                 border: `1.5px solid ${T.gray300}`, background: "white", color: T.blue, width: 32, height: 32, alignSelf: "center",
                 borderRadius: "50%", cursor: "pointer", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: "0 1px 4px rgba(11,31,58,0.1)",
               }}>{SearchIcons.swap({ size: 13, color: T.blue })}</button>
-              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "14px 20px", minWidth: 0 }}>
-                {SearchIcons.landing({ size: 15, color: T.gray500 })}
-                <input id="destination" placeholder="Destination (CDG)" maxLength={3} required
-                  value={form.destination} onChange={handleChange}
-                  style={{ border: "none", outline: "none", width: "100%", fontSize: 15, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
+              <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "14px 20px", minWidth: 0 }}>
+                <AirportField
+                  value={form.destination}
+                  onChange={(v) => setForm((f) => ({ ...f, destination: v }))}
+                  placeholder="Destination (CDG)"
+                  icon={SearchIcons.landing({ size: 15, color: T.gray500 })}
+                />
               </div>
             </div>
 
@@ -863,9 +1036,15 @@ function FlightSearchWidget() {
 
                 <div style={{ fontSize: 11, color: T.gray500, marginBottom: 6, marginTop: 4 }}>Requis par Ethiopian Airlines pour l'émission du billet :</div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                  <input type="date" placeholder="Date de naissance" required value={customer.birthdate}
-                    onChange={(e) => setCustomer((c) => ({ ...c, birthdate: e.target.value }))}
-                    style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
+                  <div style={{ ...inputStyle, flex: 1, boxSizing: "border-box", display: "flex", alignItems: "center" }}>
+                    <DatePickerField
+                      mode="single"
+                      restrict="pastOnly"
+                      value={customer.birthdate}
+                      onChangeSingle={(d) => setCustomer((c) => ({ ...c, birthdate: d }))}
+                      label="Date de naissance"
+                    />
+                  </div>
                   <select value={customer.gender}
                     onChange={(e) => setCustomer((c) => ({ ...c, gender: e.target.value }))}
                     style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }}>
@@ -880,9 +1059,15 @@ function FlightSearchWidget() {
                   <input placeholder="Pays émetteur (ex: DJ)" required maxLength={2} value={customer.issuingCountry}
                     onChange={(e) => setCustomer((c) => ({ ...c, issuingCountry: e.target.value.toUpperCase().slice(0, 2) }))}
                     style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
-                  <input type="date" placeholder="Expiration passeport" required value={customer.expiryDate}
-                    onChange={(e) => setCustomer((c) => ({ ...c, expiryDate: e.target.value }))}
-                    style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
+                  <div style={{ ...inputStyle, flex: 1, boxSizing: "border-box", display: "flex", alignItems: "center" }}>
+                    <DatePickerField
+                      mode="single"
+                      restrict="futureOnly"
+                      value={customer.expiryDate}
+                      onChangeSingle={(d) => setCustomer((c) => ({ ...c, expiryDate: d }))}
+                      label="Expiration passeport"
+                    />
+                  </div>
                 </div>
                 <textarea placeholder="Remarques (optionnel)" rows={2} value={customer.notes}
                   onChange={(e) => setCustomer((c) => ({ ...c, notes: e.target.value }))}
