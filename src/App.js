@@ -585,6 +585,61 @@ function AirportField({ value, onChange, placeholder, icon }) {
   );
 }
 
+// ── SÉLECTEUR JOUR / MOIS / ANNÉE (inspiré d'Opodo — plus simple et fiable qu'un calendrier
+// en popup pour les dates de naissance / expiration, sans risque de bug d'affichage) ──
+function DateSelectTriple({ value, onChange, restrict = "futureOnly" }) {
+  const today = startOfDay(new Date());
+  const initial = fromISO(value);
+  const [day, setDay] = useState(initial ? initial.getDate() : "");
+  const [month, setMonth] = useState(initial ? initial.getMonth() : "");
+  const [year, setYear] = useState(initial ? initial.getFullYear() : "");
+
+  useEffect(() => {
+    const d = fromISO(value);
+    setDay(d ? d.getDate() : "");
+    setMonth(d ? d.getMonth() : "");
+    setYear(d ? d.getFullYear() : "");
+  }, [value]);
+
+  useEffect(() => {
+    if (day !== "" && month !== "" && year !== "") {
+      const candidate = new Date(Number(year), Number(month), Number(day));
+      const iso = toISO(candidate);
+      if (iso !== value) onChange(iso);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [day, month, year]);
+
+  const years = restrict === "pastOnly"
+    ? Array.from({ length: 100 }, (_, i) => today.getFullYear() - i)
+    : Array.from({ length: 16 }, (_, i) => today.getFullYear() + i);
+
+  const daysInSelectedMonth = (month !== "" && year !== "") ? new Date(Number(year), Number(month) + 1, 0).getDate() : 31;
+  const dayOptions = Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1);
+
+  const selectStyle = {
+    border: "none", outline: "none", fontSize: 13, fontWeight: 600, color: T.navy,
+    fontFamily: "inherit", background: "transparent", flex: 1, minWidth: 0, WebkitAppearance: "none",
+  };
+
+  return (
+    <div style={{ display: "flex", gap: 4, width: "100%" }}>
+      <select value={day} onChange={(e) => setDay(e.target.value === "" ? "" : Number(e.target.value))} style={selectStyle}>
+        <option value="">Jour</option>
+        {dayOptions.map((dd) => <option key={dd} value={dd}>{dd}</option>)}
+      </select>
+      <select value={month} onChange={(e) => setMonth(e.target.value === "" ? "" : Number(e.target.value))} style={selectStyle}>
+        <option value="">Mois</option>
+        {MONTHS_FR.map((m, i) => <option key={i} value={i}>{m}</option>)}
+      </select>
+      <select value={year} onChange={(e) => setYear(e.target.value === "" ? "" : Number(e.target.value))} style={selectStyle}>
+        <option value="">Année</option>
+        {years.map((y) => <option key={y} value={y}>{y}</option>)}
+      </select>
+    </div>
+  );
+}
+
 function FlightSearchWidget() {
   const [tripType, setTripType] = useState("roundtrip"); // roundtrip | oneway | multi | manage
   const [form, setForm] = useState({ origin: "", destination: "", departureDate: "", returnDate: "", passengers: "1" });
@@ -1036,13 +1091,11 @@ function FlightSearchWidget() {
 
                 <div style={{ fontSize: 11, color: T.gray500, marginBottom: 6, marginTop: 4 }}>Requis par Ethiopian Airlines pour l'émission du billet :</div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                  <div style={{ ...inputStyle, flex: 1, boxSizing: "border-box", display: "flex", alignItems: "center" }}>
-                    <DatePickerField
-                      mode="single"
+                  <div style={{ ...inputStyle, flex: 1, boxSizing: "border-box", display: "flex", alignItems: "center", padding: "13px 10px" }}>
+                    <DateSelectTriple
                       restrict="pastOnly"
                       value={customer.birthdate}
-                      onChangeSingle={(d) => setCustomer((c) => ({ ...c, birthdate: d }))}
-                      label="Date de naissance"
+                      onChange={(d) => setCustomer((c) => ({ ...c, birthdate: d }))}
                     />
                   </div>
                   <select value={customer.gender}
@@ -1059,13 +1112,11 @@ function FlightSearchWidget() {
                   <input placeholder="Pays émetteur (ex: DJ)" required maxLength={2} value={customer.issuingCountry}
                     onChange={(e) => setCustomer((c) => ({ ...c, issuingCountry: e.target.value.toUpperCase().slice(0, 2) }))}
                     style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
-                  <div style={{ ...inputStyle, flex: 1, boxSizing: "border-box", display: "flex", alignItems: "center" }}>
-                    <DatePickerField
-                      mode="single"
+                  <div style={{ ...inputStyle, flex: 1, boxSizing: "border-box", display: "flex", alignItems: "center", padding: "13px 10px" }}>
+                    <DateSelectTriple
                       restrict="futureOnly"
                       value={customer.expiryDate}
-                      onChangeSingle={(d) => setCustomer((c) => ({ ...c, expiryDate: d }))}
-                      label="Expiration passeport"
+                      onChange={(d) => setCustomer((c) => ({ ...c, expiryDate: d }))}
                     />
                   </div>
                 </div>
