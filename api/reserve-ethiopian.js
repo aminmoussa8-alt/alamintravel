@@ -34,17 +34,6 @@
  *   }
  *
  * Réponse JSON : { orderId, raw }
- *
- * ------------------------------------------------------------------------
- * CORRECTIFS (voir commentaires marqués "FIX:") :
- * 1. Le XML OrderCreate référençait un contact (CTC01) sans jamais le
- *    définir dans <DataLists>, ce qui provoque une erreur de validation
- *    côté Ethiopian (référence orpheline). Ajout du bloc <ContactInfoList>.
- * 2. Le formulaire du site affiche "Email (optionnel)" — la validation
- *    n'exige donc plus l'email du client. Si absent, l'email de l'agence
- *    (reservations@alamintravel-dj.com) est utilisé en secours, car
- *    Ethiopian NDC exige un contact valide dans tous les cas.
- * ------------------------------------------------------------------------
  */
 
 const axios = require("axios");
@@ -59,7 +48,6 @@ const AGENCY_NAME = process.env.ET_NDC_AGENCY_NAME || "Alamin Travels";
 const IATA_NUMBER = process.env.ET_NDC_IATA_NUMBER;
 const AGENCY_ID = process.env.ET_NDC_AGENCY_ID;
 
-// FIX: email de secours utilisé quand le client ne fournit pas le sien
 const FALLBACK_AGENCY_EMAIL = "reservations@alamintravel-dj.com";
 
 async function getAccessToken() {
@@ -191,45 +179,61 @@ function buildOrderCreateXML({ responseId, offerId, offerItemId, totalAmount, cu
                 </Payer>
             </Payment>
         </Payments>
+        <!-- FIX: DataLists doit être imbriqué DANS Query pour OrderCreateRQ,
+             contrairement à OfferPriceRQ où DataLists est au même niveau que Query
+             (confirmé par la documentation officielle Ethiopian NDC API Guide). -->
+        <DataLists>
+            <PassengerList>
+                <Passenger PassengerID="PAX001">
+                    <PTC>${passenger.ptc}</PTC>
+                    <Individual>
+                        <Birthdate>${passenger.birthdate}</Birthdate>
+                        <Gender>${passenger.gender}</Gender>
+                        <NameTitle>${passenger.title}</NameTitle>
+                        <GivenName>${passenger.givenName}</GivenName>
+                        <Surname>${passenger.surname}</Surname>
+                    </Individual>
+                    <IdentityDocument>
+                        <IdentityDocumentNumber>${passenger.idNumber}</IdentityDocumentNumber>
+                        <IdentityDocumentType>${passenger.idType}</IdentityDocumentType>
+                        <IssuingCountryCode>${passenger.issuingCountry}</IssuingCountryCode>
+                        <CitizenshipCountryCode>${passenger.citizenshipCountry}</CitizenshipCountryCode>
+                        <IssueDate>${passenger.issueDate}</IssueDate>
+                        <ExpiryDate>${passenger.expiryDate}</ExpiryDate>
+                        <Birthdate>${passenger.birthdate}</Birthdate>
+                        <Birthplace>${passenger.issuingCountry}</Birthplace>
+                    </IdentityDocument>
+                    <ContactInfoRef>CTC01</ContactInfoRef>
+                </Passenger>
+            </PassengerList>
+            <!-- FIX: le vrai nom est ContactList (pas ContactInfoList), attribut ContactID
+                 (pas ContactInfoID), un <ContactProvided> séparé par email/téléphone,
+                 EmailAddressValue (pas EmailAddressText), ContactType au lieu de
+                 ContactTypeText, et un <Individual> requis car ce contact est aussi le Payer. -->
+            <ContactList>
+                <ContactInformation ContactID="CTC01">
+                    <ContactType>PAYMENT</ContactType>
+                    <ContactProvided>
+                        <EmailAddress>
+                            <Label>HOME</Label>
+                            <EmailAddressValue>${passenger.email}</EmailAddressValue>
+                        </EmailAddress>
+                    </ContactProvided>
+                    <ContactProvided>
+                        <Phone>
+                            <Label>MOBILE</Label>
+                            <CountryDialingCode>${passenger.phoneCountryCode || "253"}</CountryDialingCode>
+                            <PhoneNumber>${passenger.phone}</PhoneNumber>
+                        </Phone>
+                    </ContactProvided>
+                    <Individual>
+                        <GivenName>${passenger.givenName}</GivenName>
+                        <Surname>${passenger.surname}</Surname>
+                    </Individual>
+                </ContactInformation>
+            </ContactList>
+        </DataLists>
     </Query>
-    <DataLists>
-        <!-- FIX: bloc ajouté pour définir le contact référencé par CTC01
-             (Payer.ContactInfoRefs et Passenger.ContactInfoRef) -->
-        <ContactInfoList>
-            <ContactInformation ContactInfoID="CTC01">
-                <ContactTypeText>Personal</ContactTypeText>
-                <EmailAddress>
-                    <EmailAddressText>${passenger.email}</EmailAddressText>
-                </EmailAddress>
-                <Phone>
-                    <CountryDialingCode>${passenger.phoneCountryCode || "253"}</CountryDialingCode>
-                    <PhoneNumber>${passenger.phone}</PhoneNumber>
-                </Phone>
-            </ContactInformation>
-        </ContactInfoList>
-        <PassengerList>
-            <Passenger PassengerID="PAX001">
-                <PTC>${passenger.ptc}</PTC>
-                <Individual>
-                    <Birthdate>${passenger.birthdate}</Birthdate>
-                    <Gender>${passenger.gender}</Gender>
-                    <NameTitle>${passenger.title}</NameTitle>
-                    <GivenName>${passenger.givenName}</GivenName>
-                    <Surname>${passenger.surname}</Surname>
-                </Individual>
-                <IdentityDocument>
-                    <IdentityDocumentNumber>${passenger.idNumber}</IdentityDocumentNumber>
-                    <IdentityDocumentType>${passenger.idType}</IdentityDocumentType>
-                    <IssuingCountryCode>${passenger.issuingCountry}</IssuingCountryCode>
-                    <CitizenshipCountryCode>${passenger.citizenshipCountry}</CitizenshipCountryCode>
-                    <IssueDate>${passenger.issueDate}</IssueDate>
-                    <ExpiryDate>${passenger.expiryDate}</ExpiryDate>
-                    <Birthdate>${passenger.birthdate}</Birthdate>
-                </IdentityDocument>
-                <ContactInfoRef>CTC01</ContactInfoRef>
-            </Passenger>
-        </PassengerList>
-    </DataLists>
 </OrderCreateRQ>`;
 }
 
@@ -245,12 +249,9 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: "Champs requis manquants: responseId, offerId, offerItemId, totalAmount, passenger" });
   }
 
-  // FIX: le téléphone reste requis (le formulaire du site le demande déjà).
   if (!passenger.phone) {
     return res.status(400).json({ error: "Champ requis manquant dans passenger: phone" });
   }
-  // FIX: email optionnel côté client — repli sur l'email de l'agence si absent,
-  // car Ethiopian NDC exige un contact valide même si le client n'en fournit pas.
   if (!passenger.email) {
     passenger.email = FALLBACK_AGENCY_EMAIL;
   }
@@ -258,7 +259,6 @@ module.exports = async (req, res) => {
   try {
     const token = await getAccessToken();
 
-    // Étape obligatoire : OfferPrice, avant OrderCreate (sinon "Invalid Request")
     let priced;
     try {
       priced = await priceOffer(token, { responseId, offerId, offerItemId });
