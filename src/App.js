@@ -321,6 +321,9 @@ function FlightSearchWidget() {
             citizenshipCountry: customer.issuingCountry,
             issueDate: new Date().toISOString().slice(0, 10),
             expiryDate: customer.expiryDate,
+            phone: customer.phone,
+            phoneCountryCode: "253",
+            email: customer.email || undefined,
           },
         }),
       });
