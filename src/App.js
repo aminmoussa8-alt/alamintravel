@@ -185,6 +185,162 @@ const inputStyle = {
   borderRadius: 10, fontSize: 14, fontFamily: "inherit", color: T.navy, background: "white",
 };
 
+// ── SÉLECTEUR DE DATE (calendrier français, remplace les inputs natifs jj/mm/aaaa) ──
+const MONTHS_FR = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const DAYS_FR = ["L","M","M","J","V","S","D"];
+
+function toISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+function fromISO(s) {
+  if (!s) return null;
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function formatShort(s) {
+  const d = fromISO(s);
+  if (!d) return null;
+  return `${d.getDate()} ${MONTHS_FR[d.getMonth()].slice(0, 3).toLowerCase()}`;
+}
+function isSameDay(a, b) {
+  return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+function startOfDay(d) {
+  const n = new Date(d);
+  n.setHours(0, 0, 0, 0);
+  return n;
+}
+function buildMonthGrid(year, month) {
+  const first = new Date(year, month, 1);
+  const firstWeekday = (first.getDay() + 6) % 7; // lundi = 0
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstWeekday; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
+  while (cells.length % 7 !== 0) cells.push(null);
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}
+
+function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, onChangeRange, label }) {
+  const [open, setOpen] = useState(false);
+  const today = startOfDay(new Date());
+  const initialRef = mode === "single" ? (fromISO(value) || today) : (fromISO(startValue) || today);
+  const [viewYear, setViewYear] = useState(initialRef.getFullYear());
+  const [viewMonth, setViewMonth] = useState(initialRef.getMonth());
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selStart = mode === "range" ? fromISO(startValue) : fromISO(value);
+  const selEnd = mode === "range" ? fromISO(endValue) : null;
+
+  function goMonth(delta) {
+    let m = viewMonth + delta, y = viewYear;
+    if (m < 0) { m = 11; y -= 1; }
+    if (m > 11) { m = 0; y += 1; }
+    setViewMonth(m);
+    setViewYear(y);
+  }
+
+  function handlePick(day) {
+    if (!day || day < today) return;
+    if (mode === "single") {
+      onChangeSingle(toISO(day));
+      setOpen(false);
+      return;
+    }
+    if (!selStart || (selStart && selEnd) || day < selStart) {
+      onChangeRange(toISO(day), null);
+    } else {
+      onChangeRange(toISO(selStart), toISO(day));
+      setOpen(false);
+    }
+  }
+
+  const weeks = buildMonthGrid(viewYear, viewMonth);
+  const canGoPrev = !(viewYear === today.getFullYear() && viewMonth === today.getMonth());
+  const hasValue = mode === "single" ? !!value : !!startValue;
+  const displayLabel = mode === "single"
+    ? (formatShort(value) || label || "Date")
+    : (startValue ? `${formatShort(startValue)}${endValue ? " — " + formatShort(endValue) : ""}` : (label || "Dates"));
+
+  return (
+    <div ref={wrapRef} style={{ position: "relative", flex: 1, minWidth: 0 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)} style={{
+        display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", cursor: "pointer",
+        width: "100%", padding: 0, fontFamily: "inherit", textAlign: "left",
+      }}>
+        {SearchIcons.calendar({ size: 15, color: T.gray500 })}
+        <span style={{ fontSize: 13.5, fontWeight: 600, color: hasValue ? T.navy : T.gray500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {displayLabel}
+        </span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 10px)", left: 0, zIndex: 50,
+          background: "white", borderRadius: 16, boxShadow: "0 12px 40px rgba(11,31,58,0.18)",
+          border: `1px solid ${T.gray100}`, padding: 16, width: 300, maxWidth: "92vw", boxSizing: "border-box",
+        }}>
+          {mode === "range" && (
+            <div style={{ fontSize: 11, color: T.gray500, marginBottom: 10, textAlign: "center" }}>
+              {!selStart ? "Choisissez la date de départ" : !selEnd ? "Choisissez la date de retour" : ""}
+            </div>
+          )}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <button type="button" onClick={() => canGoPrev && goMonth(-1)} disabled={!canGoPrev} style={{
+              border: "none", background: "none", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? T.navy : T.gray300,
+              width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit",
+            }}>‹</button>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: T.navy }}>{MONTHS_FR[viewMonth]} {viewYear}</div>
+            <button type="button" onClick={() => goMonth(1)} style={{
+              border: "none", background: "none", cursor: "pointer", color: T.navy,
+              width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit",
+            }}>›</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", marginBottom: 2 }}>
+            {DAYS_FR.map((d, i) => (
+              <div key={i} style={{ textAlign: "center", fontSize: 10.5, fontWeight: 700, color: T.gray500, padding: "4px 0" }}>{d}</div>
+            ))}
+          </div>
+          {weeks.map((week, wi) => (
+            <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
+              {week.map((day, di) => {
+                if (!day) return <div key={di} />;
+                const disabled = day < today;
+                const isStart = selStart && isSameDay(day, selStart);
+                const isEnd = selEnd && isSameDay(day, selEnd);
+                const inRange = mode === "range" && selStart && selEnd && day > selStart && day < selEnd;
+                let bg = "transparent", color = T.navy, fontWeight = 500;
+                if (isStart || isEnd) { bg = T.blue; color = "white"; fontWeight = 700; }
+                else if (inRange) { bg = `${T.blue}18`; color = T.navy; }
+                return (
+                  <button key={di} type="button" disabled={disabled} onClick={() => handlePick(day)} style={{
+                    border: "none", background: bg, color: disabled ? T.gray300 : color, fontWeight,
+                    borderRadius: 8, height: 32, margin: "1px 0", fontSize: 12.5, cursor: disabled ? "default" : "pointer",
+                    fontFamily: "inherit",
+                  }}>{day.getDate()}</button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function FlightSearchWidget() {
   const [tripType, setTripType] = useState("roundtrip"); // roundtrip | oneway | multi | manage
   const [form, setForm] = useState({ origin: "", destination: "", departureDate: "", returnDate: "", passengers: "1" });
@@ -247,6 +403,19 @@ function FlightSearchWidget() {
 
   async function handleSearch(e) {
     e.preventDefault();
+    if (tripType === "multi") {
+      const incomplete = multiSlices.some((s) => !s.origin || !s.destination || !s.departureDate);
+      if (incomplete) { alert("Merci de renseigner l'origine, la destination et la date pour chaque vol."); return; }
+    } else {
+      if (!form.origin || !form.destination || !form.departureDate) {
+        alert("Merci de renseigner l'origine, la destination et la date de départ.");
+        return;
+      }
+      if (tripType === "roundtrip" && !form.returnDate) {
+        alert("Merci de sélectionner une date de retour.");
+        return;
+      }
+    }
     setLoading(true);
     setError("");
     setOffers(null);
@@ -438,11 +607,13 @@ function FlightSearchWidget() {
                       onChange={(e) => updateMultiSlice(i, "destination", e.target.value)}
                       style={{ border: "none", outline: "none", width: "100%", fontSize: 14, fontWeight: 600, color: T.navy, textTransform: "uppercase", fontFamily: "inherit" }} />
                   </div>
-                  <div style={{ flex: "1 1 140px", display: "flex", alignItems: "center", gap: 8, border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
-                    {SearchIcons.calendar({ size: 15, color: T.gray500 })}
-                    <input type="date" required value={s.departureDate}
-                      onChange={(e) => updateMultiSlice(i, "departureDate", e.target.value)}
-                      style={{ border: "none", outline: "none", width: "100%", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit" }} />
+                  <div style={{ flex: "1 1 140px", display: "flex", alignItems: "center", border: `1px solid ${T.gray300}`, borderRadius: 10, padding: "10px 12px" }}>
+                    <DatePickerField
+                      mode="single"
+                      value={s.departureDate}
+                      onChangeSingle={(d) => updateMultiSlice(i, "departureDate", d)}
+                      label="Date"
+                    />
                   </div>
                   {multiSlices.length > 2 && (
                     <button type="button" onClick={() => removeMultiSlice(i)} style={{
@@ -501,20 +672,24 @@ function FlightSearchWidget() {
 
             {/* Pilule Dates */}
             <div style={{
-              flex: "1.5 1 220px", display: "flex", alignItems: "center", gap: 8, border: `1.5px solid ${T.gray300}`,
+              flex: "1.5 1 220px", display: "flex", alignItems: "center", border: `1.5px solid ${T.gray300}`,
               borderRadius: 100, padding: "14px 18px", background: "white",
             }}>
-              {SearchIcons.calendar({ size: 15, color: T.gray500 })}
-              <input id="departureDate" type="date" required
-                value={form.departureDate} onChange={handleChange}
-                style={{ border: "none", outline: "none", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit", width: tripType === "roundtrip" ? "48%" : "100%" }} />
-              {tripType === "roundtrip" && (
-                <>
-                  <span style={{ color: T.gray300 }}>—</span>
-                  <input id="returnDate" type="date"
-                    value={form.returnDate} onChange={handleChange}
-                    style={{ border: "none", outline: "none", fontSize: 13, fontWeight: 600, color: T.navy, fontFamily: "inherit", width: "48%" }} />
-                </>
+              {tripType === "roundtrip" ? (
+                <DatePickerField
+                  mode="range"
+                  startValue={form.departureDate}
+                  endValue={form.returnDate}
+                  onChangeRange={(start, end) => setForm((f) => ({ ...f, departureDate: start, returnDate: end || "" }))}
+                  label="Aller — Retour"
+                />
+              ) : (
+                <DatePickerField
+                  mode="single"
+                  value={form.departureDate}
+                  onChangeSingle={(d) => setForm((f) => ({ ...f, departureDate: d }))}
+                  label="Date de départ"
+                />
               )}
             </div>
 
