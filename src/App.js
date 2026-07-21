@@ -623,8 +623,8 @@ function FlightSearchWidget() {
                   onChange={(e) => setCustomer((c) => ({ ...c, idNumber: e.target.value }))}
                   style={{ ...inputStyle, width: "100%", marginBottom: 10, boxSizing: "border-box" }} />
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                  <input placeholder="Pays émetteur (ex: DJ)" required value={customer.issuingCountry}
-                    onChange={(e) => setCustomer((c) => ({ ...c, issuingCountry: e.target.value.toUpperCase() }))}
+                  <input placeholder="Pays émetteur (ex: DJ)" required maxLength={2} value={customer.issuingCountry}
+                    onChange={(e) => setCustomer((c) => ({ ...c, issuingCountry: e.target.value.toUpperCase().slice(0, 2) }))}
                     style={{ ...inputStyle, flex: 1, boxSizing: "border-box" }} />
                   <input type="date" placeholder="Expiration passeport" required value={customer.expiryDate}
                     onChange={(e) => setCustomer((c) => ({ ...c, expiryDate: e.target.value }))}
