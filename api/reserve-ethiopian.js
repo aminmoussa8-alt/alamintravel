@@ -7,7 +7,7 @@
  * Utilise les mêmes variables d'environnement que search-flights-ethiopian.js
  * (voir ce fichier pour la liste complète).
  *
- * Appel depuis le frontend (POST) :
+ * Appel depuis le frontend (POST) :BBBB
  *   {
  *     "responseId": "...",       // reçu de search-flights-ethiopian
  *     "offerId": "...",
@@ -26,11 +26,22 @@
  *        "issuingCountry": "DJ",
  *        "citizenshipCountry": "DJ",
  *        "issueDate": "2020-01-01",
- *        "expiryDate": "2030-01-01"
+ *        "expiryDate": "2030-01-01",
+ *        "email": "client@example.com",
+ *        "phone": "77123456",
+ *        "phoneCountryCode": "253"
  *     }
  *   }
  *
  * Réponse JSON : { orderId, raw }
+ *
+ * ------------------------------------------------------------------------
+ * CORRECTIF (voir commentaires marqués "FIX:") :
+ * Le XML OrderCreate référençait un contact (CTC01) sans jamais le définir
+ * dans <DataLists>, ce qui provoque une erreur de validation côté Ethiopian
+ * (référence orpheline). Ajout du bloc <ContactInfoList> + validation des
+ * champs email/phone du passager.
+ * ------------------------------------------------------------------------
  */
 
 const axios = require("axios");
@@ -176,6 +187,20 @@ function buildOrderCreateXML({ responseId, offerId, offerItemId, totalAmount, cu
         </Payments>
     </Query>
     <DataLists>
+        <!-- FIX: bloc ajouté pour définir le contact référencé par CTC01
+             (Payer.ContactInfoRefs et Passenger.ContactInfoRef) -->
+        <ContactInfoList>
+            <ContactInformation ContactInfoID="CTC01">
+                <ContactTypeText>Personal</ContactTypeText>
+                <EmailAddress>
+                    <EmailAddressText>${passenger.email}</EmailAddressText>
+                </EmailAddress>
+                <Phone>
+                    <CountryDialingCode>${passenger.phoneCountryCode || "253"}</CountryDialingCode>
+                    <PhoneNumber>${passenger.phone}</PhoneNumber>
+                </Phone>
+            </ContactInformation>
+        </ContactInfoList>
         <PassengerList>
             <Passenger PassengerID="PAX001">
                 <PTC>${passenger.ptc}</PTC>
@@ -212,6 +237,12 @@ module.exports = async (req, res) => {
 
   if (!responseId || !offerId || !offerItemId || !totalAmount || !passenger) {
     return res.status(400).json({ error: "Champs requis manquants: responseId, offerId, offerItemId, totalAmount, passenger" });
+  }
+
+  // FIX: validation ajoutée — email et phone sont désormais requis
+  // car ils alimentent le bloc ContactInfoList indispensable à OrderCreate.
+  if (!passenger.email || !passenger.phone) {
+    return res.status(400).json({ error: "Champs requis manquants dans passenger: email, phone" });
   }
 
   try {
