@@ -607,7 +607,7 @@ function DateSelectTriple({ value, onChange, restrict = "futureOnly" }) {
       const iso = toISO(candidate);
       if (iso !== value) onChange(iso);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [day, month, year]);
 
   const years = restrict === "pastOnly"
