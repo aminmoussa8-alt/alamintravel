@@ -50,11 +50,24 @@ async function getAccessToken() {
   return res.data.access_token || res.data.token || res.data.accessToken;
 }
 
-function buildAirShoppingXML({ origin, destination, date, adults }) {
+function buildAirShoppingXML({ slices, adults }) {
+  // `slices` est désormais un tableau de { origin, destination, date } —
+  // 1 élément = aller simple, 2 éléments = aller-retour, 3+ = multi-destinations.
   const passengers = Array.from({ length: adults }, (_, i) => `
             <Passenger PassengerID="PAX00${i + 1}">
                 <PTC>ADT</PTC>
             </Passenger>`).join("");
+
+  const originDestinations = slices.map((s) => `
+            <OriginDestination>
+                <Departure>
+                    <AirportCode>${s.origin}</AirportCode>
+                    <Date>${s.date}</Date>
+                </Departure>
+                <Arrival>
+                    <AirportCode>${s.destination}</AirportCode>
+                </Arrival>
+            </OriginDestination>`).join("");
 
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <AirShoppingRQ xmlns="http://www.iata.org/IATA/EDIST/2017.2" Version="2017.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -78,16 +91,7 @@ function buildAirShoppingXML({ origin, destination, date, adults }) {
         </Recipient>
     </Party>
     <CoreQuery>
-        <OriginDestinations>
-            <OriginDestination>
-                <Departure>
-                    <AirportCode>${origin}</AirportCode>
-                    <Date>${date}</Date>
-                </Departure>
-                <Arrival>
-                    <AirportCode>${destination}</AirportCode>
-                </Arrival>
-            </OriginDestination>
+        <OriginDestinations>${originDestinations}
         </OriginDestinations>
     </CoreQuery>
     <DataLists>
@@ -200,22 +204,44 @@ module.exports = async (req, res) => {
 
   // Supporte GET (tests directs via URL) et POST (widget du site, format Duffel)
   const raw = req.method === "GET" ? req.query : req.body;
-  const origin = raw.origin;
-  const destination = raw.destination;
-  const date = raw.date || raw.departureDate;
-  const adults = raw.adults || raw.passengers || 1;
+  const adults = parseInt(raw.adults || raw.passengers, 10) || 1;
 
-  if (!origin || !destination || !date) {
-    return res.status(400).json({ error: "Paramètres requis: origin, destination, date (ou departureDate)" });
+  // Construire le tableau de slices selon le format reçu :
+  //  - multi-destinations : { slices: [{origin,destination,departureDate}, ...] }
+  //  - aller-retour / aller simple : { origin, destination, departureDate, returnDate? }
+  let slices = [];
+
+  if (Array.isArray(raw.slices) && raw.slices.length > 0) {
+    slices = raw.slices.map((s) => ({
+      origin: (s.origin || "").toUpperCase(),
+      destination: (s.destination || "").toUpperCase(),
+      date: s.date || s.departureDate,
+    }));
+  } else {
+    const origin = raw.origin;
+    const destination = raw.destination;
+    const date = raw.date || raw.departureDate;
+    const returnDate = raw.returnDate;
+
+    if (origin && destination && date) {
+      slices.push({ origin: origin.toUpperCase(), destination: destination.toUpperCase(), date });
+      // Aller-retour : on ajoute une seconde OriginDestination inversée
+      if (returnDate) {
+        slices.push({ origin: destination.toUpperCase(), destination: origin.toUpperCase(), date: returnDate });
+      }
+    }
+  }
+
+  const hasIncompleteSlice = slices.some((s) => !s.origin || !s.destination || !s.date);
+  if (slices.length === 0 || hasIncompleteSlice) {
+    return res.status(400).json({ error: "Paramètres requis: origin, destination, date (ou departureDate), ou un tableau slices complet pour le multi-destinations" });
   }
 
   try {
     const token = await getAccessToken();
     const xml = buildAirShoppingXML({
-      origin: origin.toUpperCase(),
-      destination: destination.toUpperCase(),
-      date,
-      adults: parseInt(adults, 10) || 1,
+      slices,
+      adults,
     });
 
     const shoppingUrl = `${BASE_URL}/${RELATIVE}/AirShopping`;
