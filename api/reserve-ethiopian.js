@@ -7,7 +7,7 @@
  * Utilise les mêmes variables d'environnement que search-flights-ethiopian.js
  * (voir ce fichier pour la liste complète).
  *
- * Appel depuis le frontend (POST) :BBBB
+ * Appel depuis le frontend (POST) :
  *   {
  *     "responseId": "...",       // reçu de search-flights-ethiopian
  *     "offerId": "...",
@@ -27,8 +27,8 @@
  *        "citizenshipCountry": "DJ",
  *        "issueDate": "2020-01-01",
  *        "expiryDate": "2030-01-01",
- *        "email": "client@example.com",
- *        "phone": "77123456",
+ *        "email": "client@example.com",   // OPTIONNEL — email agence utilisé en secours
+ *        "phone": "77123456",             // REQUIS
  *        "phoneCountryCode": "253"
  *     }
  *   }
@@ -36,11 +36,14 @@
  * Réponse JSON : { orderId, raw }
  *
  * ------------------------------------------------------------------------
- * CORRECTIF (voir commentaires marqués "FIX:") :
- * Le XML OrderCreate référençait un contact (CTC01) sans jamais le définir
- * dans <DataLists>, ce qui provoque une erreur de validation côté Ethiopian
- * (référence orpheline). Ajout du bloc <ContactInfoList> + validation des
- * champs email/phone du passager.
+ * CORRECTIFS (voir commentaires marqués "FIX:") :
+ * 1. Le XML OrderCreate référençait un contact (CTC01) sans jamais le
+ *    définir dans <DataLists>, ce qui provoque une erreur de validation
+ *    côté Ethiopian (référence orpheline). Ajout du bloc <ContactInfoList>.
+ * 2. Le formulaire du site affiche "Email (optionnel)" — la validation
+ *    n'exige donc plus l'email du client. Si absent, l'email de l'agence
+ *    (reservations@alamintravel-dj.com) est utilisé en secours, car
+ *    Ethiopian NDC exige un contact valide dans tous les cas.
  * ------------------------------------------------------------------------
  */
 
@@ -55,6 +58,9 @@ const SCOPE = process.env.ET_NDC_SCOPE;
 const AGENCY_NAME = process.env.ET_NDC_AGENCY_NAME || "Alamin Travels";
 const IATA_NUMBER = process.env.ET_NDC_IATA_NUMBER;
 const AGENCY_ID = process.env.ET_NDC_AGENCY_ID;
+
+// FIX: email de secours utilisé quand le client ne fournit pas le sien
+const FALLBACK_AGENCY_EMAIL = "reservations@alamintravel-dj.com";
 
 async function getAccessToken() {
   const url = `${BASE_URL}/${RELATIVE}/Auth`;
@@ -239,10 +245,14 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: "Champs requis manquants: responseId, offerId, offerItemId, totalAmount, passenger" });
   }
 
-  // FIX: validation ajoutée — email et phone sont désormais requis
-  // car ils alimentent le bloc ContactInfoList indispensable à OrderCreate.
-  if (!passenger.email || !passenger.phone) {
-    return res.status(400).json({ error: "Champs requis manquants dans passenger: email, phone" });
+  // FIX: le téléphone reste requis (le formulaire du site le demande déjà).
+  if (!passenger.phone) {
+    return res.status(400).json({ error: "Champ requis manquant dans passenger: phone" });
+  }
+  // FIX: email optionnel côté client — repli sur l'email de l'agence si absent,
+  // car Ethiopian NDC exige un contact valide même si le client n'en fournit pas.
+  if (!passenger.email) {
+    passenger.email = FALLBACK_AGENCY_EMAIL;
   }
 
   try {
