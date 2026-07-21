@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // ── PALETTE ────────────────────────────────────────────────────────────────────
 const T = {
@@ -232,14 +233,44 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
   const initialRef = mode === "single" ? (fromISO(value) || today) : (fromISO(startValue) || today);
   const [viewYear, setViewYear] = useState(initialRef.getFullYear());
   const [viewMonth, setViewMonth] = useState(initialRef.getMonth());
-  const wrapRef = useRef(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+  const popRef = useRef(null);
 
+  const popoverWidth = mode === "range" ? 460 : 260;
+
+  function openPopover() {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      let left = rect.left;
+      const maxLeft = window.innerWidth - popoverWidth - 12;
+      if (left > maxLeft) left = Math.max(12, maxLeft);
+      setCoords({ top: rect.bottom + 10, left });
+    }
+    setOpen(true);
+  }
+
+  // FIX: le calendrier est affiché via un portail dans document.body, pour ne jamais être
+  // coupé par un ancêtre en overflow:hidden ni recouvert par une section suivante
+  // (problème de contexte d'empilement CSS observé avec le positionnement "absolute" classique).
   useEffect(() => {
     function handleClickOutside(e) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+      if (
+        btnRef.current && !btnRef.current.contains(e.target) &&
+        popRef.current && !popRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
     }
+    function handleScrollOrResize() { setOpen(false); }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScrollOrResize, true);
+    window.addEventListener("resize", handleScrollOrResize);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScrollOrResize, true);
+      window.removeEventListener("resize", handleScrollOrResize);
+    };
   }, []);
 
   const selStart = mode === "range" ? fromISO(startValue) : fromISO(value);
@@ -322,8 +353,8 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
   }
 
   return (
-    <div ref={wrapRef} style={{ position: "relative", flex: 1, minWidth: 0 }}>
-      <button type="button" onClick={() => setOpen((o) => !o)} style={{
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <button ref={btnRef} type="button" onClick={() => (open ? setOpen(false) : openPopover())} style={{
         display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", cursor: "pointer",
         width: "100%", padding: 0, fontFamily: "inherit", textAlign: "left",
       }}>
@@ -333,11 +364,11 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
         </span>
       </button>
 
-      {open && (
-        <div style={{
-          position: "absolute", top: "calc(100% + 10px)", left: 0, zIndex: 50,
-          background: "white", borderRadius: 16, boxShadow: "0 12px 40px rgba(11,31,58,0.18)",
-          border: `1px solid ${T.gray100}`, padding: 18, width: mode === "range" ? 460 : 260,
+      {open && createPortal(
+        <div ref={popRef} style={{
+          position: "fixed", top: coords.top, left: coords.left, zIndex: 9999,
+          background: "white", borderRadius: 16, boxShadow: "0 12px 40px rgba(11,31,58,0.22)",
+          border: `1px solid ${T.gray100}`, padding: 18, width: popoverWidth,
           maxWidth: "94vw", boxSizing: "border-box",
         }}>
           {mode === "range" && (
@@ -382,7 +413,8 @@ function DatePickerField({ mode, value, onChangeSingle, startValue, endValue, on
               }}>Confirmer</button>
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
