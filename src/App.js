@@ -583,7 +583,7 @@ function FlightSearchWidget() {
           })}
         </div>
 
-        <div style={{ background: "white", borderRadius: 20, boxShadow: "0 8px 32px rgba(11,31,58,0.1)", border: `1px solid ${T.gray100}`, marginBottom: 32, overflow: "hidden" }}>
+        <div style={{ background: "white", borderRadius: 20, boxShadow: "0 8px 32px rgba(11,31,58,0.1)", border: `1px solid ${T.gray100}`, marginBottom: 32 }}>
 
           {/* Type de vol (uniquement en mode Réserver) */}
           {tripType !== "manage" && (
