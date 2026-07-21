@@ -28,7 +28,7 @@ const DESTINATIONS = [
 
 // ── SERVICES ──────────────────────────────────────────────────────────────────
 const SERVICES = [
-  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/White_Plane_Blue_Sky.jpg", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti via Amadeus. Meilleurs tarifs garantis.", color:"#1565C0" },
+  { img:"https://commons.wikimedia.org/wiki/Special:FilePath/White_Plane_Blue_Sky.jpg", title:"Billets d'Avion", desc:"Vols internationaux depuis Djibouti. Meilleurs tarifs garantis.", color:"#1565C0" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Hotel_room_interior_at_hotel_Radisson_Blu_Oulu.jpg", title:"Hôtels & Séjours", desc:"Sélection d'hôtels à Djibouti et dans le monde entier.", color:"#0D47A1" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Kaaba_%281%29_Makkah_%28Mecca%29.jpg", title:"Omra", desc:"Packages complets Omra. Accompagnement spirituel.", color:"#4527A0" },
   { img:"https://commons.wikimedia.org/wiki/Special:FilePath/Car_rental_facility_near_DIA_filled_with_cars_during_the_pandemic._2020-04-30.jpg", title:"Location de Voitures", desc:"Véhicules disponibles à Djibouti. Chauffeurs expérimentés.", color:"#006064" },
