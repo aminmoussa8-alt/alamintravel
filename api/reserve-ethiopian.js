@@ -298,8 +298,9 @@ module.exports = async (req, res) => {
       explicitArray: false,
       tagNameProcessors: [xml2js.processors.stripPrefix],
     });
-    const orderIdRaw = parsed.OrderViewRS?.Response?.Order?.OrderID;
-    const orderId = typeof orderIdRaw === "object" ? orderIdRaw._ : orderIdRaw;
+    // FIX: OrderID est un attribut XML (<Order OrderID="SNOSQH">), pas une balise-fille.
+    // Avec xml2js, les attributs sont dans la clé "$", pas directement sur l'objet Order.
+    const orderId = parsed.OrderViewRS?.Response?.Order?.$?.OrderID || null;
 
     return res.status(200).json({ orderId, raw: response.data });
   } catch (err) {
