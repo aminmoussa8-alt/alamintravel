@@ -38,6 +38,7 @@
 
 const axios = require("axios");
 const xml2js = require("xml2js");
+const nodemailer = require("nodemailer");
 
 const BASE_URL = process.env.ET_NDC_BASE_URL;
 const RELATIVE = process.env.ET_NDC_RELATIVE;
@@ -49,6 +50,114 @@ const IATA_NUMBER = process.env.ET_NDC_IATA_NUMBER;
 const AGENCY_ID = process.env.ET_NDC_AGENCY_ID;
 
 const FALLBACK_AGENCY_EMAIL = "reservations@alamintravel-dj.com";
+const AGENCY_NOTIFY_EMAIL = process.env.GMAIL_USER || FALLBACK_AGENCY_EMAIL;
+
+function getTransporter() {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return null;
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
+  });
+}
+
+// Extrait le résumé du vol confirmé directement depuis la réponse OrderCreate d'Ethiopian
+// (plus fiable que les données de recherche initiales, puisque c'est la réservation confirmée).
+function extractFlightSummary(parsedOrderView) {
+  try {
+    const dataLists = parsedOrderView.OrderViewRS?.Response?.DataLists || parsedOrderView.OrderViewRS?.DataLists;
+    let segments = dataLists?.FlightSegmentList?.FlightSegment;
+    if (!segments) return [];
+    if (!Array.isArray(segments)) segments = [segments];
+    return segments.map((seg) => ({
+      depAirport: seg.Departure?.AirportCode,
+      depDate: seg.Departure?.Date,
+      depTime: seg.Departure?.Time,
+      arrAirport: seg.Arrival?.AirportCode,
+      arrDate: seg.Arrival?.Date,
+      arrTime: seg.Arrival?.Time,
+      flightNumber: seg.MarketingCarrier?.FlightNumber,
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+function buildFlightLinesHtml(segments) {
+  if (!segments.length) return "<p>Détails du vol à confirmer avec l'agence.</p>";
+  return segments.map((s) => `
+    <p style="margin:4px 0;">
+      <strong>ET${s.flightNumber || ""}</strong> — ${s.depAirport} → ${s.arrAirport}<br/>
+      Départ : ${s.depDate} à ${s.depTime} — Arrivée : ${s.arrDate} à ${s.arrTime}
+    </p>
+  `).join("");
+}
+
+async function sendConfirmationEmails({ orderId, passenger, totalAmount, currency, segments, ticketNumbers = [] }) {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("Email non envoyé : GMAIL_USER / GMAIL_APP_PASSWORD non configurés sur Vercel.");
+    return;
+  }
+
+  const flightHtml = buildFlightLinesHtml(segments);
+  const fullName = `${passenger.givenName || ""} ${passenger.surname || ""}`.trim();
+  const ticketLine = ticketNumbers.length
+    ? `<p><strong>N° de billet : ${ticketNumbers.join(", ")}</strong></p>`
+    : `<p style="color:#B00020;">Billet en cours d'émission — à confirmer par l'agence.</p>`;
+
+  // Email au client
+  const clientHtml = `
+    <div style="font-family: Arial, sans-serif; color:#0B1F3A;">
+      <h2 style="color:#1565C0;">Confirmation de votre demande de réservation</h2>
+      <p>Bonjour ${fullName || "Cher client"},</p>
+      <p>Votre demande de réservation Ethiopian Airlines a bien été enregistrée. Notre équipe vous contactera rapidement pour finaliser le paiement et l'émission du billet.</p>
+      <p><strong>Référence de réservation (PNR) : ${orderId || "en attente"}</strong></p>
+      ${ticketLine}
+      ${flightHtml}
+      <p><strong>Montant total : ${totalAmount} ${currency}</strong></p>
+      <p>Pour toute question, contactez-nous sur WhatsApp au +253 77 646 406.</p>
+      <p style="margin-top:24px;">Alamin Tourism & Travel<br/>Salines Ouest, Mohamed Kamil Road, Djibouti</p>
+    </div>
+  `;
+
+  // Email interne à l'agence (suivi + encaissement)
+  const agencyHtml = `
+    <div style="font-family: Arial, sans-serif; color:#0B1F3A;">
+      <h2 style="color:#D4881A;">Nouvelle réservation Ethiopian Airlines</h2>
+      <p><strong>PNR : ${orderId || "en attente"}</strong></p>
+      ${ticketLine}
+      <p><strong>Passager :</strong> ${fullName || "-"}<br/>
+         <strong>Téléphone :</strong> ${passenger.phone || "-"}<br/>
+         <strong>Email :</strong> ${passenger.email || "-"}<br/>
+         <strong>Passeport :</strong> ${passenger.idNumber || "-"} (${passenger.issuingCountry || "-"}, expire le ${passenger.expiryDate || "-"})</p>
+      ${flightHtml}
+      <p><strong>Montant total : ${totalAmount} ${currency}</strong></p>
+      <p style="color:#B00020;">⚠️ Action requise : contacter le client pour encaissement${ticketNumbers.length ? "" : " et suivi de l'émission du billet"}.</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"Alamin Travels" <${process.env.GMAIL_USER}>`,
+      to: passenger.email,
+      subject: `Confirmation de votre demande de réservation - PNR ${orderId || ""}`,
+      html: clientHtml,
+    });
+  } catch (e) {
+    console.error("Erreur envoi email client:", e.message);
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `"Alamin Travels - Notifications" <${process.env.GMAIL_USER}>`,
+      to: AGENCY_NOTIFY_EMAIL,
+      subject: `Nouvelle réservation Ethiopian Airlines - PNR ${orderId || ""}`,
+      html: agencyHtml,
+    });
+  } catch (e) {
+    console.error("Erreur envoi email agence:", e.message);
+  }
+}
 
 async function getAccessToken() {
   const url = `${BASE_URL}/${RELATIVE}/Auth`;
@@ -237,6 +346,130 @@ function buildOrderCreateXML({ responseId, offerId, offerItemId, totalAmount, cu
 </OrderCreateRQ>`;
 }
 
+// ── ÉMISSION DU BILLET (AirDocIssue) ──
+// D'après la doc technique Ethiopian : OrderCreate crée seulement le PNR (dossier de réservation).
+// Le billet (avec son numéro, ex: 0712128964680) n'est émis qu'après un appel séparé à AirDocIssue.
+function buildAirDocIssueXML({ orderId, totalAmount, currency, passenger }) {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AirDocIssueRQ xmlns="http://www.iata.org/IATA/EDIST/2017.2" Version="2017.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Document>
+        <Name>ETHIOPIAN AIRLINES NDC API</Name>
+        <ReferenceVersion>1.0</ReferenceVersion>
+    </Document>
+    <Party>
+        <Sender>
+            <TravelAgencySender>
+                <Name>${AGENCY_NAME}</Name>
+                <IATA_Number>${IATA_NUMBER}</IATA_Number>
+                <AgencyID Owner="ET">${AGENCY_ID}</AgencyID>
+            </TravelAgencySender>
+        </Sender>
+        <Recipient>
+            <ORA_Recipient>
+                <AirlineID>ET</AirlineID>
+                <Name>ETHIOPIAN AIRLINES</Name>
+            </ORA_Recipient>
+        </Recipient>
+    </Party>
+    <Query>
+        <TicketDocQuantity>1</TicketDocQuantity>
+        <TicketDocInfo>
+            <PassengerReference>PAX001</PassengerReference>
+            <OrderReference>
+                <OrderID Owner="ET">${orderId}</OrderID>
+                <BookingReference>
+                    <ID>${orderId}</ID>
+                    <AirlineID>ET</AirlineID>
+                </BookingReference>
+            </OrderReference>
+            <Payments>
+                <Payment>
+                    <Type>CA</Type>
+                    <Method>
+                        <Cash/>
+                    </Method>
+                    <Amount Code="${currency}">${totalAmount}</Amount>
+                    <Payer>
+                        <ContactInfoRefs>CTC01</ContactInfoRefs>
+                    </Payer>
+                    <Order OrderID="${orderId}" Owner="ET"></Order>
+                </Payment>
+            </Payments>
+        </TicketDocInfo>
+        <DataLists>
+            <PassengerList>
+                <Passenger PassengerID="PAX001">
+                    <PTC>${passenger.ptc}</PTC>
+                    <Individual>
+                        <GivenName>${passenger.givenName}</GivenName>
+                        <Surname>${passenger.surname}</Surname>
+                    </Individual>
+                    <ContactInfoRef>CTC01</ContactInfoRef>
+                </Passenger>
+            </PassengerList>
+            <ContactList>
+                <ContactInformation ContactID="CTC01">
+                    <!-- NOTE: adresse postale non collectée dans le formulaire du site — adresse de
+                         l'agence utilisée par défaut, comme indiqué requis par l'exemple officiel Ethiopian. -->
+                    <PostalAddress>
+                        <Label>HOME</Label>
+                        <Street>Mohamed Kamil Road</Street>
+                        <PostalCode>00000</PostalCode>
+                        <CityName>Djibouti</CityName>
+                        <CountrySubdivisionName>Salines Ouest</CountrySubdivisionName>
+                        <CountryName>DJIBOUTI</CountryName>
+                        <CountryCode>${passenger.issuingCountry || "DJ"}</CountryCode>
+                    </PostalAddress>
+                    <ContactProvided>
+                        <Phone>
+                            <Label>HOME</Label>
+                            <CountryDialingCode>${passenger.phoneCountryCode || "253"}</CountryDialingCode>
+                            <AreaCode>000</AreaCode>
+                            <PhoneNumber>${passenger.phone}</PhoneNumber>
+                        </Phone>
+                    </ContactProvided>
+                    <!-- Individual requis ici car l'agence règle pour le compte du client (paiement cash) -->
+                    <Individual>
+                        <GivenName>${passenger.givenName}</GivenName>
+                        <Surname>${passenger.surname}</Surname>
+                    </Individual>
+                </ContactInformation>
+            </ContactList>
+        </DataLists>
+    </Query>
+</AirDocIssueRQ>`;
+}
+
+async function issueTicket(token, { orderId, totalAmount, currency, passenger }) {
+  const url = `${BASE_URL}/${RELATIVE}/AirDocIssue`;
+  const xml = buildAirDocIssueXML({ orderId, totalAmount, currency, passenger });
+
+  const response = await axios.post(url, xml, {
+    headers: {
+      "Content-Type": "application/xml",
+      Accept: "application/xml",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const parsed = await xml2js.parseStringPromise(response.data, {
+    explicitArray: false,
+    tagNameProcessors: [xml2js.processors.stripPrefix],
+  });
+
+  let ticketInfos = parsed.OrderViewRS?.Response?.TicketDocInfos?.TicketDocInfo;
+  if (!ticketInfos) return { ticketNumbers: [], raw: response.data };
+  if (!Array.isArray(ticketInfos)) ticketInfos = [ticketInfos];
+
+  const ticketNumbers = ticketInfos.map((t) => {
+    const nbr = t.TicketDocument?.TicketDocNbr;
+    return typeof nbr === "object" ? nbr._ : nbr;
+  }).filter(Boolean);
+
+  return { ticketNumbers, raw: response.data };
+}
+
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -302,7 +535,32 @@ module.exports = async (req, res) => {
     // Avec xml2js, les attributs sont dans la clé "$", pas directement sur l'objet Order.
     const orderId = parsed.OrderViewRS?.Response?.Order?.$?.OrderID || null;
 
-    return res.status(200).json({ orderId, raw: response.data });
+    // Étape finale : émission du billet (AirDocIssue). Le PNR existe déjà à ce stade —
+    // si cette étape échoue, on ne fait pas échouer toute la réservation (le PNR reste valide),
+    // on renvoie juste ticketNumbers vide et une note d'erreur pour suivi manuel par l'agence.
+    let ticketNumbers = [];
+    let issueError = null;
+    if (orderId) {
+      try {
+        const issued = await issueTicket(token, { orderId, totalAmount, currency, passenger });
+        ticketNumbers = issued.ticketNumbers;
+        console.log("Ethiopian NDC AirDocIssue OK:", JSON.stringify(ticketNumbers));
+      } catch (issueErr) {
+        issueError = issueErr.response?.data || issueErr.message;
+        console.error("Ethiopian NDC AIRDOCISSUE error:", issueError);
+      }
+    }
+
+    // Envoi des emails de confirmation (client + agence) — ne bloque jamais la réponse
+    // de succès si l'email échoue, la réservation est déjà confirmée côté Ethiopian.
+    try {
+      const segments = extractFlightSummary(parsed);
+      await sendConfirmationEmails({ orderId, passenger, totalAmount, currency, segments, ticketNumbers });
+    } catch (emailErr) {
+      console.error("Erreur lors de l'envoi des emails de confirmation:", emailErr.message);
+    }
+
+    return res.status(200).json({ orderId, ticketNumbers, issueError, raw: response.data });
   } catch (err) {
     console.error("Ethiopian NDC reserve error (general):", err.response?.data || err.message);
     return res.status(502).json({ error: "Erreur lors de la réservation Ethiopian Airlines", details: err.response?.data || err.message });
