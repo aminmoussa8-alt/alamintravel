@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Alamin Travels — Émettre un billet</title>
+<meta name="robots" content="noindex, nofollow" />
+<style>
+  body { font-family: Arial, sans-serif; background:#F4F6F9; margin:0; padding:40px 16px; color:#0B1F3A; }
+  .card { max-width: 480px; margin: 0 auto; background:white; border-radius:16px; padding:28px; box-shadow:0 8px 24px rgba(11,31,58,0.12); }
+  h1 { font-size:20px; margin-top:0; }
+  label { display:block; font-size:12.5px; font-weight:600; margin:14px 0 4px; color:#33415C; }
+  input { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #D8DEE8; border-radius:8px; font-size:14px; }
+  button { margin-top:20px; width:100%; padding:12px; border:none; border-radius:8px; background:#1565C0; color:white; font-weight:700; font-size:14px; cursor:pointer; }
+  button:disabled { background:#9FB3CC; cursor:default; }
+  #result { margin-top:18px; padding:12px; border-radius:8px; font-size:13px; white-space:pre-wrap; display:none; }
+  .ok { background:#E8F5E9; color:#1B5E20; display:block !important; }
+  .err { background:#FDECEA; color:#B00020; display:block !important; }
+  .row { display:flex; gap:10px; }
+  .row > div { flex:1; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Émettre un billet Ethiopian Airlines</h1>
+    <p style="font-size:12.5px;color:#5C6B85;">
+      À utiliser UNIQUEMENT après avoir confirmé le paiement du client. Cette action facture réellement le compte agence (BSP) une fois en production.
+    </p>
+
+    <label>Mot de passe agence</label>
+    <input id="secret" type="password" placeholder="Mot de passe" />
+
+    <label>PNR (référence de réservation)</label>
+    <input id="orderId" type="text" placeholder="ex: REPBLW" style="text-transform:uppercase" />
+
+    <div class="row">
+      <div>
+        <label>Montant</label>
+        <input id="totalAmount" type="text" placeholder="399.10" />
+      </div>
+      <div>
+        <label>Devise</label>
+        <input id="currency" type="text" placeholder="USD" style="text-transform:uppercase" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Prénom du passager</label>
+        <input id="givenName" type="text" placeholder="AMIN" />
+      </div>
+      <div>
+        <label>Nom du passager</label>
+        <input id="surname" type="text" placeholder="MOUSSA" />
+      </div>
+    </div>
+
+    <label>Téléphone du passager</label>
+    <input id="phone" type="text" placeholder="77646406" />
+
+    <label>Email du passager (pour lui envoyer le billet)</label>
+    <input id="email" type="email" placeholder="client@example.com" />
+
+    <label>Pays émetteur du passeport (2 lettres)</label>
+    <input id="issuingCountry" type="text" placeholder="DJ" maxlength="2" style="text-transform:uppercase" />
+
+    <button id="submitBtn" onclick="issuerBillet()">Émettre le billet</button>
+
+    <div id="result"></div>
+  </div>
+
+<script>
+async function issuerBillet() {
+  const btn = document.getElementById("submitBtn");
+  const resultBox = document.getElementById("result");
+  resultBox.className = "";
+  resultBox.style.display = "none";
+
+  const payload = {
+    secret: document.getElementById("secret").value,
+    orderId: document.getElementById("orderId").value.trim().toUpperCase(),
+    totalAmount: document.getElementById("totalAmount").value.trim(),
+    currency: document.getElementById("currency").value.trim().toUpperCase(),
+    passenger: {
+      ptc: "ADT",
+      givenName: document.getElementById("givenName").value.trim(),
+      surname: document.getElementById("surname").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      phoneCountryCode: "253",
+      issuingCountry: document.getElementById("issuingCountry").value.trim().toUpperCase() || "DJ",
+    },
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Émission en cours...";
+
+  try {
+    const resp = await fetch("/api/issue-ticket-ethiopian", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+
+    if (resp.ok && data.ticketNumbers && data.ticketNumbers.length) {
+      resultBox.className = "ok";
+      resultBox.textContent = "✅ Billet émis avec succès !\nNuméro(s) de billet : " + data.ticketNumbers.join(", ") + "\nUn email a été envoyé au client.";
+    } else {
+      resultBox.className = "err";
+      resultBox.textContent = "❌ Erreur : " + (data.error || "réponse inattendue") + (data.details ? "\n\nDétails : " + JSON.stringify(data.details) : "");
+    }
+  } catch (e) {
+    resultBox.className = "err";
+    resultBox.textContent = "❌ Erreur réseau : " + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Émettre le billet";
+  }
+}
+</script>
+</body>
+</html>
