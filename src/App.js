@@ -654,6 +654,7 @@ function FlightSearchWidget() {
   const [customer, setCustomer] = useState({
     name: "", phone: "", email: "", notes: "",
     birthdate: "", gender: "Male", idNumber: "", issuingCountry: "DJ", expiryDate: "",
+    paymentMethod: "agency_cash",
   });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -749,6 +750,7 @@ function FlightSearchWidget() {
     setCustomer({
       name: "", phone: "", email: "", notes: "",
       birthdate: "", gender: "Male", idNumber: "", issuingCountry: "DJ", expiryDate: "",
+      paymentMethod: "agency_cash",
     });
   }
 
@@ -776,6 +778,7 @@ function FlightSearchWidget() {
           offerItemId: selectedOffer.offerItemId,
           totalAmount: selectedOffer.totalAmount,
           currency: selectedOffer.currency,
+          paymentMethod: customer.paymentMethod,
           passenger: {
             ptc: "ADT",
             birthdate: customer.birthdate,
@@ -1123,6 +1126,34 @@ function FlightSearchWidget() {
                 <textarea placeholder="Remarques (optionnel)" rows={2} value={customer.notes}
                   onChange={(e) => setCustomer((c) => ({ ...c, notes: e.target.value }))}
                   style={{ ...inputStyle, width: "100%", marginBottom: 16, boxSizing: "border-box" }} />
+
+                <div style={{ fontSize: 11, color: T.gray500, marginBottom: 6 }}>Comment souhaitez-vous régler ?</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                  {[
+                    { value: "agency_cash", label: "Espèces à l'agence", note: null },
+                    { value: "credit_card", label: "Carte de crédit", note: "L'agence vous contactera pour finaliser le paiement" },
+                    { value: "mobile_money", label: "Mobile Money (D-Money / Waafi)", note: "L'agence vous contactera pour finaliser le paiement" },
+                  ].map((opt) => (
+                    <label key={opt.value} style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      border: `1.5px solid ${customer.paymentMethod === opt.value ? T.blue : T.gray300}`,
+                      borderRadius: 10, cursor: "pointer",
+                      background: customer.paymentMethod === opt.value ? `${T.blue}0D` : "white",
+                    }}>
+                      <input type="radio" name="paymentMethod" value={opt.value}
+                        checked={customer.paymentMethod === opt.value}
+                        onChange={() => setCustomer((c) => ({ ...c, paymentMethod: opt.value }))} />
+                      <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 600, color: T.navy }}>{opt.label}</div>
+                        {opt.note && <div style={{ fontSize: 10.5, color: T.gray500 }}>{opt.note}</div>}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div style={{ fontSize: 10.5, color: T.gray500, marginBottom: 16, lineHeight: 1.4 }}>
+                  Cette étape crée votre demande de réservation. Le billet vous sera envoyé par email dès que le paiement sera confirmé par notre équipe.
+                </div>
+
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={handleReserve} disabled={sending} style={{
                     flex: 1, padding: 12, background: `linear-gradient(135deg,${T.blue},${T.blueL})`,
